@@ -1,0 +1,427 @@
+from __future__ import annotations
+import html as _html
+from datetime import datetime
+from urllib.parse import quote
+from fasthtml.common import *
+
+from .version import RELEASE_DATE, VERSION
+from .db import CATEGORIES
+from . import account_auth
+
+ACCENT = "#7c3aed"
+TINT = "#f5f3ff"
+FAVICON = "data:image/svg+xml," + quote(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+    '<rect width="64" height="64" rx="16" fill="#7c3aed"/>'
+    '<path fill="white" d="M40 22c-2-3-5-4.5-9-4.5-6 0-10 3.4-10 8.2 0 4.3 3 6.6 8.6 8 '
+    '4.4 1.1 5.8 1.9 5.8 3.7 0 1.8-1.7 3-4.6 3-3.2 0-5.3-1.4-6.6-3.9l-5.2 3c1.9 3.9 5.9 6 '
+    '11.7 6 6.6 0 10.9-3.3 10.9-8.5 0-4.6-3.1-6.8-9-8.2-4.2-1-5.4-1.7-5.4-3.4 0-1.6 1.4-2.7 '
+    '3.9-2.7 2.7 0 4.4 1.1 5.5 3.1z"/></svg>', safe="")
+
+PARTNERS = (
+    ("SAASPASS", "https://saaspass.com/", "https://saaspass.com/_next/static/assets/0176aeff921f6359fee88e796be31ace.png", "Full-stack identity and access management spanning MFA, SSO, passwordless access and integration APIs."),
+    ("Sixty Four", "https://sixtyfour.ee/", "https://sixtyfour.ee/favicon.ico", "A senior Tallinn technology studio delivering software, AI consultancy, service design and public-sector programmes."),
+    ("EDI Labs", "https://edilabs.tech/", "https://edilabs.tech/static/favicon.svg", "AI and data engineering for document intelligence, forecasting, geospatial systems and agentic workflows."),
+    ("Predictive Labs", "https://predictivelabs.ai/", "https://predictivelabs.ai/static/favicon.svg", "Auditable AI systems for health, defence, public management, mobility and financial services."),
+    ("Consistente", "https://consistente.tech/", "https://consistente.tech/static/favicon.svg", "Enterprise AI delivery across financial services, healthcare, the public sector and technology."),
+)
+
+CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d"}
+
+BASE_CSS = r"""
+:root{--accent:#7c3aed;--tint:#f5f3ff;--ink:#172033;--muted:#667085;--line:#e5e7eb;--panel:#f8fafc}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}a{color:inherit}
+.nav{height:68px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:auto;padding:0 24px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800}.mark{width:34px;height:34px;background:var(--accent);color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:800}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{text-decoration:none;font-weight:600;color:var(--ink)}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:var(--accent);color:#fff;padding:11px 17px;font-weight:700;text-decoration:none;cursor:pointer}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:8px 13px;font-size:13px}
+.hero{max-width:1000px;margin:auto;padding:66px 24px 24px;text-align:center}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.17em;text-transform:uppercase}.hero h1{font-size:clamp(38px,5.4vw,60px);line-height:1.04;letter-spacing:-.05em;margin:16px 0}.hero p{font-size:19px;line-height:1.6;color:var(--muted);max-width:660px;margin:0 auto}
+.searchwrap{max-width:640px;margin:30px auto 0}.searchbar{display:flex;gap:10px}.searchbar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font:inherit;font-size:15px}.searchbar input:focus{outline:2px solid color-mix(in srgb,var(--accent) 22%,white);border-color:var(--accent)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:900px;margin:26px auto 0;padding:0 24px}.tab{border:1px solid var(--line);background:#fff;border-radius:99px;padding:9px 16px;font-weight:650;font-size:14px;text-decoration:none;color:var(--ink);display:inline-flex;gap:7px;align-items:center}.tab .count{color:var(--muted);font-size:12px}.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.tab.active .count{color:#ffffffcc}
+.catwrap{max-width:1200px;margin:34px auto 0;padding:0 24px 70px}.catmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:var(--muted);font-size:14px;flex-wrap:wrap;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .15s,transform .15s}.card:hover{box-shadow:0 14px 40px #312e8118;transform:translateY(-2px)}
+.cardtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}
+.card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
+.cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;color:var(--muted)}.author{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ink)}.avatar{width:22px;height:22px;border-radius:99px;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:800}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.tag{font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:2px 9px}
+.empty{padding:60px 24px;text-align:center;color:var(--muted)}
+.footer{max-width:1200px;margin:auto;padding:36px 24px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line)}.footer a{text-decoration:none}
+.features{background:var(--panel);padding:70px 24px;margin-top:20px}.featuregrid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px}.feature b{color:var(--accent)}.feature h2{font-size:19px;margin:8px 0}.feature p{color:var(--muted);line-height:1.6;margin:0}
+.pricing,.partners{max-width:1200px;margin:auto;padding:70px 24px}.pricing h2,.partners h2{font-size:32px;margin:10px 0}.pricing>p,.partners>p{max-width:720px;color:var(--muted);line-height:1.65}.pricinggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}.pricingcard{border:1px solid var(--line);border-radius:17px;padding:22px}.pricingprice{font-size:34px;font-weight:800;margin:10px 0}.partnergrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:26px}.partner{min-width:0;border:1px solid var(--line);border-radius:17px;padding:18px;text-decoration:none}.partner img{width:40px;height:40px;object-fit:contain}.partner small{display:block;margin-top:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:11px}.partner h3{margin:6px 0;font-size:16px}.partner p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+/* detail */
+.detail{max-width:840px;margin:0 auto;padding:40px 24px 80px}.detailhead{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.detailhead h1{font-size:38px;letter-spacing:-.03em;margin:14px 0 10px}.detailmeta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}.detailactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.prose{font-size:16px;line-height:1.72}.prose h1,.prose h2,.prose h3{line-height:1.25;margin-top:1.6em}.prose h1{font-size:28px}.prose h2{font-size:23px}.prose h3{font-size:19px}.prose pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}.prose code{background:var(--panel);border-radius:5px;padding:1px 5px;font-size:.9em}.prose pre code{background:none;padding:0}.prose table{border-collapse:collapse;width:100%}.prose td,.prose th{border:1px solid var(--line);padding:7px 10px}.prose blockquote{border-left:3px solid var(--accent);margin:1em 0;padding-left:14px;color:var(--muted)}.prose img{max-width:100%}
+/* editor shell */
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{background:#f8fafc;border-right:1px solid var(--line);padding:18px;overflow:auto}.sidehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.side-user{font-size:12px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:12px}.sideitem{display:block;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px;color:var(--ink)}.sideitem:hover,.sideitem.active{background:var(--tint);color:var(--accent)}.sidelabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 4px;padding:0 10px}
+.workspace{overflow:auto}.topbar{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 22px;position:sticky;top:0;background:#fffc;backdrop-filter:blur(10px);z-index:3}.status{font-size:12px;color:var(--muted)}.pageactions{display:flex;gap:8px;align-items:center;margin-left:auto}.inlineform{display:inline-flex;margin:0}
+.editorwrap{max-width:880px;margin:auto;padding:40px 42px 70px}.titleinput{border:0;width:100%;font-size:38px;font-weight:800;letter-spacing:-.03em;outline:0;color:var(--ink)}
+.metagrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0 8px}.metafield label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px}.metafield input,.metafield select,.metafield textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit}.metafield.full{grid-column:1/-1}.metafield textarea{min-height:56px;resize:vertical}
+.toolbar{display:flex;gap:4px;flex-wrap:wrap;margin:18px 0 14px;padding:7px;border:1px solid var(--line);border-radius:11px;position:sticky;top:58px;background:#fff;z-index:2}.tool{border:0;background:#fff;border-radius:6px;padding:7px 9px;cursor:pointer}.tool:hover{background:var(--tint)}.tool.mode{border:1px solid var(--line);font-weight:700}.tool.mode.active{background:var(--accent);border-color:var(--accent);color:#fff}.toolbar-spacer{flex:1}
+.editor{min-height:400px;outline:0;font-size:16px;line-height:1.72}.editor h1,.editor h2,.editor h3{line-height:1.2}.editor img{max-width:100%}.editor table{border-collapse:collapse}.editor td,.editor th{border:1px solid var(--line);padding:7px}.ProseMirror:focus{outline:0}
+.markdown-editor{width:100%;min-height:400px;border:1px solid var(--line);border-radius:10px;padding:14px;font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical;outline:0}
+.block-editor{min-height:400px}.block-actions{margin-bottom:10px}.block-list{display:flex;flex-direction:column;gap:7px}.block-row{display:grid;grid-template-columns:auto 122px minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px;border:1px solid transparent;border-radius:10px}.block-row:hover{border-color:var(--line);background:#f8fafc}.block-format{display:flex;gap:2px;padding-top:4px}.block-format button{width:25px;height:25px;border:1px solid var(--line);border-radius:5px;background:#fff;cursor:pointer;font-size:11px}.block-type{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:7px;font:inherit;font-size:12px}.block-body{min-width:0}.block-edit,.block-raw{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 10px;font:inherit;line-height:1.5;outline:0}.block-edit.heading1{font-size:26px;font-weight:800}.block-edit.heading2{font-size:21px;font-weight:750}.block-edit.heading3{font-size:18px;font-weight:700}.block-edit.quote{border-left:4px solid var(--accent);color:var(--muted);font-style:italic}.block-raw{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}.block-controls{display:flex;gap:2px}.block-control{border:0;background:transparent;color:var(--muted);border-radius:5px;padding:5px;cursor:pointer}.block-control:hover{background:var(--tint);color:var(--accent)}.block-table{border-collapse:collapse;width:100%;font-size:13px}.block-table td,.block-table th{border:1px solid var(--line);padding:7px;min-width:75px}.block-table th{background:var(--tint)}.block-table-tools{display:flex;gap:5px;margin-top:5px}
+.breadcrumbs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-bottom:12px}.breadcrumbs a{text-decoration:none}.pagebadge{border-radius:99px;background:#fff7ed;color:#9a3412;font-size:10px;font-weight:800;padding:2px 7px;text-transform:uppercase}.pagebadge.published{background:#ecfdf3;color:#027a48}.pagebadge.public{background:#eef2ff;color:#3730a3}.pagebadge.private{background:#f3f4f6;color:#374151}
+.release{display:block;padding:14px 10px 0;color:var(--muted);font-size:10px}
+@media(max-width:960px){.grid,.featuregrid,.partnergrid{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.grid,.featuregrid,.partnergrid,.pricinggrid,.metagrid{grid-template-columns:1fr}.shell{grid-template-columns:1fr}.sidebar{display:none}.editorwrap{padding:28px 18px}}
+"""
+
+
+def head(title, description="An open, searchable catalog of Claude skills for Finance, Trading, Legal and Marketing."):
+    return Head(
+        Title(title), Meta(charset="utf-8"),
+        Meta(name="viewport", content="width=device-width,initial-scale=1"),
+        Meta(name="description", content=description),
+        Link(rel="icon", type="image/svg+xml", href=FAVICON),
+        Link(rel="preconnect", href="https://fonts.googleapis.com"),
+        Link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"),
+        Style(BASE_CSS), Style(account_auth.AUTH_CSS))
+
+
+def _initial(letter):
+    return (letter or "?").strip()[:1].upper() or "?"
+
+
+def public_nav(who):
+    if who:
+        right = Div(
+            A("Browse", href="/"),
+            A("My Skills", href="/mine"),
+            A("New Skill", href="/skills/new", cls="btn sm"),
+            Span(_initial(who.get("name") or who["email"]), cls="avatar", title=who.get("name")),
+            A("Sign out", href="/logout"),
+            cls="navlinks")
+    else:
+        right = Div(
+            A("Browse", href="/"),
+            Button("Sign in", cls="btn ghost sm", onclick="authOpen('login')", type="button"),
+            Button("Add a skill", cls="btn sm", onclick="authOpen('register')", type="button"),
+            cls="navlinks")
+    return Nav(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"), right, cls="nav")
+
+
+def skill_card(item):
+    color = CAT_COLOR.get(item["category"], ACCENT)
+    tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()][:3]
+    author = item.get("author_label") or item.get("owner_name") or "Community"
+    return A(
+        Div(Span(item["category"], cls="catbadge", style=f"background:{color}"),
+            (Span("Private", cls="pagebadge private") if item["visibility"] == "private" else None),
+            cls="cardtop"),
+        H3(item["title"]),
+        P((item.get("description") or (item.get("plain_text") or "")[:150]), cls="desc"),
+        (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
+        Div(Div(Span(_initial(author), cls="avatar"), author, cls="author"),
+            cls="cardfoot"),
+        href=f"/skills/{item['id']}", cls="card")
+
+
+def catalog_page(who, items, counts, active_category=None, q="", total=0):
+    tabs = [A("All", Span(str(total), cls="count"),
+              href="/" + (f"?q={quote(q)}" if q else ""),
+              cls="tab" + ("" if active_category else " active"))]
+    for c in CATEGORIES:
+        params = f"?category={quote(c)}" + (f"&q={quote(q)}" if q else "")
+        tabs.append(A(c, Span(str(counts.get(c, 0)), cls="count"), href="/" + params,
+                      cls="tab" + (" active" if active_category == c else "")))
+    grid = (Div(*[skill_card(i) for i in items], cls="grid") if items
+            else Div("No skills match your search yet.", cls="empty"))
+    heading = active_category or ("Results" if q else "All skills")
+    return Html(
+        head("FastSkills · The open skills library"),
+        Body(
+            public_nav(who),
+            Section(
+                Span("Open skills library", cls="eyebrow"),
+                H1("Find the skill for the job."),
+                P("A searchable catalog of Claude skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
+                Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
+                         Button("Search", cls="btn"), cls="searchbar"),
+                     (Input(type="hidden", name="category", value=active_category) if active_category else None),
+                     method="get", action="/", cls="searchwrap"),
+                cls="hero"),
+            Div(*tabs, cls="tabs"),
+            Div(Div(Span(f"{len(items)} skill{'s' if len(items) != 1 else ''} · {heading}"),
+                    (A("+ Add your skill", href="/skills/new", cls="btn ghost sm") if who
+                     else Button("+ Add your skill", cls="btn ghost sm", onclick="authOpen('register')", type="button")),
+                    cls="catmeta"),
+                grid, cls="catwrap"),
+            Footer(Span("FastSkills is part of the open-source FastSME suite."),
+                   A("Discover freedom with open source →", href="https://fastsme.com"),
+                   cls="footer"),
+            account_auth.auth_modal("FastSkills"),
+            Script(account_auth.AUTH_JS)))
+
+
+def detail_page(who, item, body_html):
+    color = CAT_COLOR.get(item["category"], ACCENT)
+    tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()]
+    author = item.get("author_label") or item.get("owner_name") or "Community"
+    editable = who and (item["owner_id"] == who["sub"])
+    actions = [A("Download SKILL.md", href=f"/skills/{item['id']}/download", cls="btn ghost")]
+    if item.get("source_url"):
+        actions.append(A("View source", href=item["source_url"], target="_blank", rel="noopener", cls="btn ghost"))
+    if editable:
+        actions.append(A("Edit", href=f"/skills/{item['id']}/edit", cls="btn"))
+    meta = [Span(_initial(author), cls="avatar"), B(author),
+            Span("·"), Span(item["category"]),
+            (Span("·") if item.get("license") else None),
+            (Span(item["license"]) if item.get("license") else None)]
+    return Html(
+        head(f"{item['title']} · FastSkills", item.get("description") or ""),
+        Body(
+            public_nav(who),
+            Div(
+                Div(Div(*[A("Browse", href="/"), Span("/"), Span(item["category"])], cls="breadcrumbs"),
+                    Span(item["category"], cls="catbadge", style=f"background:{color}"),
+                    H1(item["title"]),
+                    (P(item["description"], style="color:var(--muted);font-size:17px;margin:0 0 6px") if item.get("description") else None),
+                    Div(*[m for m in meta if m is not None], cls="detailmeta"),
+                    (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
+                    Div(*actions, cls="detailactions"),
+                    cls="detailhead"),
+                Div(NotStr(body_html), cls="prose"),
+                cls="detail"),
+            Footer(Span("FastSkills is part of the open-source FastSME suite."),
+                   A("Discover freedom with open source →", href="https://fastsme.com"),
+                   cls="footer"),
+            account_auth.auth_modal("FastSkills"),
+            Script(account_auth.AUTH_JS)))
+
+
+def _sidebar(who, active=""):
+    def item(label, href, key):
+        return A(label, href=href, cls="sideitem" + (" active" if key == active else ""))
+    cat_links = [A(c, href=f"/?category={quote(c)}", cls="sideitem") for c in CATEGORIES]
+    return Aside(
+        Div(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"),
+            A("＋", href="/skills/new", title="New skill"), cls="sidehead"),
+        Div(f"{who.get('name') or who['email']}", cls="side-user"),
+        item("Browse all", "/", "browse"),
+        item("My Skills", "/mine", "mine"),
+        item("New Skill", "/skills/new", "new"),
+        Div("Categories", cls="sidelabel"), *cat_links,
+        A("Sign out", href="/logout", cls="sideitem", style="margin-top:14px"),
+        Span(f"v{VERSION} · {RELEASE_DATE}", cls="release"),
+        cls="sidebar")
+
+
+def mine_page(who, items):
+    cards = (Div(*[skill_card(i) for i in items], cls="grid") if items
+             else Div(P("You haven't created any skills yet."),
+                      A("Create your first skill", href="/skills/new", cls="btn"), cls="empty"))
+    return Html(head("My Skills · FastSkills"),
+                Body(_sidebar(who, "mine"),
+                     Main(Div(Div(Span(f"{len(items)} skill{'s' if len(items) != 1 else ''}"),
+                                  A("+ New Skill", href="/skills/new", cls="btn sm"), cls="catmeta"),
+                              H1("My Skills", style="margin:6px 0 20px"), cards,
+                              cls="catwrap", style="margin-top:26px"),
+                          cls="workspace"),
+                     cls="shell"))
+
+
+EDITOR_JS = r"""
+import { Editor } from 'https://esm.sh/@tiptap/core@3.6.6';
+import StarterKit from 'https://esm.sh/@tiptap/starter-kit@3.6.6';
+import Underline from 'https://esm.sh/@tiptap/extension-underline@3.6.6';
+import Link from 'https://esm.sh/@tiptap/extension-link@3.6.6';
+import Image from 'https://esm.sh/@tiptap/extension-image@3.6.6';
+import { Table } from 'https://esm.sh/@tiptap/extension-table@3.6.6';
+import { TableRow } from 'https://esm.sh/@tiptap/extension-table-row@3.6.6';
+import { TableCell } from 'https://esm.sh/@tiptap/extension-table-cell@3.6.6';
+import { TableHeader } from 'https://esm.sh/@tiptap/extension-table-header@3.6.6';
+const el=document.querySelector('#editor');
+const blockEditor=document.querySelector('#block-editor');
+const blockList=document.querySelector('#block-list');
+const markdown=document.querySelector('#markdown');
+const status=document.querySelector('#save-status');
+const content=JSON.parse(document.querySelector('#initial-content').textContent);
+const saveUrl=document.body.dataset.saveUrl;
+let switching=false;
+const state={mode:'rich',doc:content};
+const editor=new Editor({element:el,extensions:[StarterKit.configure({underline:false,link:false}),Underline,Link.configure({openOnClick:false}),Image,Table.configure({resizable:true}),TableRow,TableCell,TableHeader],content,onUpdate:()=>{if(!switching)queueSave()}});
+window.editor=editor;
+document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>{const c=editor.chain().focus(); const cmd=b.dataset.cmd;
+ if(cmd==='bold')c.toggleBold().run(); if(cmd==='italic')c.toggleItalic().run(); if(cmd==='underline')c.toggleUnderline().run(); if(cmd==='h2')c.toggleHeading({level:2}).run(); if(cmd==='bullet')c.toggleBulletList().run(); if(cmd==='ordered')c.toggleOrderedList().run(); if(cmd==='quote')c.toggleBlockquote().run(); if(cmd==='code')c.toggleCodeBlock().run(); if(cmd==='table')c.insertTable({rows:3,cols:3,withHeaderRow:true}).run();});
+let timer,version=Number(document.body.dataset.version);
+const title=document.querySelector('#skill-title'); title.addEventListener('input',queueSave);
+['#meta-description','#meta-category','#meta-author','#meta-tags','#meta-visibility'].forEach(sel=>{const node=document.querySelector(sel);if(node)node.addEventListener('input',queueSave)});
+function meta(sel){const node=document.querySelector(sel);return node?node.value:''}
+function queueSave(){status.textContent='Unsaved changes';clearTimeout(timer);timer=setTimeout(save,700)}
+
+const TYPES=[['paragraph','Paragraph'],['heading1','Heading 1'],['heading2','Heading 2'],['heading3','Heading 3'],['bullet','Bulleted list'],['numbered','Numbered list'],['quote','Quote'],['code','Code'],['table','Table'],['divider','Divider'],['raw','Raw JSON']];
+function make(tag,cls,text){const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node}
+function escapeHtml(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function inlineHtml(nodes){return (nodes||[]).map(node=>{
+ if(node.type==='hardBreak')return '<br>';
+ if(node.type!=='text')return inlineHtml(node.content);
+ let value=escapeHtml(node.text);
+ (node.marks||[]).forEach(mark=>{if(mark.type==='bold')value='<strong>'+value+'</strong>';if(mark.type==='italic')value='<em>'+value+'</em>';if(mark.type==='underline')value='<u>'+value+'</u>';if(mark.type==='strike')value='<s>'+value+'</s>';if(mark.type==='code')value='<code>'+value+'</code>';if(mark.type==='link'){const href=escapeHtml((mark.attrs||{}).href||'');value='<a href="'+href+'">'+value+'</a>'}});
+ return value;
+}).join('')}
+function domInline(root){
+ const out=[];
+ function visit(node,marks){
+  if(node.nodeType===Node.TEXT_NODE){if(node.nodeValue)out.push({type:'text',text:node.nodeValue,...(marks.length?{marks}: {})});return}
+  if(node.nodeType!==Node.ELEMENT_NODE)return;
+  if(node.tagName==='BR'){out.push({type:'hardBreak'});return}
+  const next=marks.slice(),tag=node.tagName;
+  if(tag==='STRONG'||tag==='B')next.push({type:'bold'});if(tag==='EM'||tag==='I')next.push({type:'italic'});if(tag==='U')next.push({type:'underline'});if(tag==='S'||tag==='STRIKE')next.push({type:'strike'});if(tag==='CODE')next.push({type:'code'});if(tag==='A')next.push({type:'link',attrs:{href:node.getAttribute('href')||''}});
+  node.childNodes.forEach(child=>visit(child,next));
+ }
+ root.childNodes.forEach(node=>visit(node,[]));
+ return out.filter(node=>node.type!=='text'||node.text.length)
+}
+function textContent(node){if(node.type==='text')return node.text||'';if(node.type==='hardBreak')return '\n';return (node.content||[]).map(textContent).join('')}
+function nodeBlock(node){
+ if(node.type==='heading')return {type:'heading'+Math.min(3,Math.max(1,Number((node.attrs||{}).level||2))),node};
+ if(node.type==='bulletList')return {type:'bullet',node};if(node.type==='orderedList')return {type:'numbered',node};if(node.type==='blockquote')return {type:'quote',node};if(node.type==='codeBlock')return {type:'code',node};if(node.type==='table')return {type:'table',node};if(node.type==='horizontalRule')return {type:'divider',node};if(node.type==='paragraph')return {type:'paragraph',node};
+ return {type:'raw',node};
+}
+function blockControls(row){
+ const controls=make('div','block-controls');
+ [['↑','Move up',()=>{const previous=row.previousElementSibling;if(previous)blockList.insertBefore(row,previous)}],['↓','Move down',()=>{const next=row.nextElementSibling;if(next)blockList.insertBefore(next,row)}],['＋','Add block below',()=>{const added=renderBlock({type:'paragraph',node:{type:'paragraph'}});blockList.insertBefore(added,row.nextElementSibling);added.querySelector('.block-edit').focus()}],['✕','Delete block',()=>{if(blockList.children.length>1)row.remove()}]].forEach(([label,hint,action])=>{const button=make('button','block-control',label);button.type='button';button.title=hint;button.onclick=()=>{action();queueSave()};controls.appendChild(button)});
+ return controls;
+}
+function blockFormat(row){
+ const toolbar=make('div','block-format');
+ [['B','bold','Bold'],['I','italic','Italic'],['U','underline','Underline'],['</>','code','Inline code']].forEach(([label,command,hint])=>{const button=make('button','',label);button.type='button';button.title=hint;button.onmousedown=event=>{const edit=row.querySelector('.block-edit'),selection=window.getSelection();button._range=selection?.rangeCount&&edit?.contains(selection.anchorNode)?selection.getRangeAt(0).cloneRange():null;event.preventDefault()};button.onclick=()=>{const edit=row.querySelector('.block-edit');if(!edit)return;const selection=window.getSelection();if(button._range){selection.removeAllRanges();selection.addRange(button._range)}else edit.focus();if(command==='code'){const selected=button._range?selection.toString():'code';document.execCommand('insertHTML',false,'<code>'+escapeHtml(selected||'code')+'</code>')}else document.execCommand(command,false,null);button._range=null;queueSave()};toolbar.appendChild(button)});
+ return toolbar;
+}
+function tableEditor(node){
+ const wrap=make('div');const table=make('table','block-table');
+ const sourceRows=(node.content||[]).length?node.content:[{type:'tableRow',content:[{type:'tableHeader',content:[{type:'paragraph'}]}]},{type:'tableRow',content:[{type:'tableCell',content:[{type:'paragraph'}]}]}];
+ sourceRows.forEach(sourceRow=>{const tr=make('tr');(sourceRow.content||[]).forEach(cell=>{const td=make(cell.type==='tableHeader'?'th':'td');td.contentEditable='true';td.dataset.cellType=cell.type||'tableCell';td.innerHTML=inlineHtml(((cell.content||[])[0]||{}).content)||'<br>';tr.appendChild(td)});table.appendChild(tr)});wrap.appendChild(table);
+ const tools=make('div','block-table-tools');
+ function button(label,action){const item=make('button','block-control',label);item.type='button';item.onclick=()=>{action();queueSave()};tools.appendChild(item)}
+ button('＋ Row',()=>{const columns=table.rows[0]?.cells.length||1;const tr=make('tr');for(let i=0;i<columns;i++){const td=make('td');td.contentEditable='true';td.dataset.cellType='tableCell';td.innerHTML='<br>';tr.appendChild(td)}table.appendChild(tr)});
+ button('＋ Column',()=>Array.from(table.rows).forEach((tr,index)=>{const cell=make(index===0?'th':'td');cell.contentEditable='true';cell.dataset.cellType=index===0?'tableHeader':'tableCell';cell.innerHTML='<br>';tr.appendChild(cell)}));
+ button('－ Row',()=>{if(table.rows.length>1)table.deleteRow(-1)});wrap.appendChild(tools);return wrap;
+}
+function fillBlock(row,block){
+ const body=row.querySelector('.block-body');body.replaceChildren();row.dataset.type=block.type;row.querySelector('.block-type').value=block.type;row.querySelector('.block-format').hidden=['code','raw','table','divider'].includes(block.type);
+ if(block.type==='divider'){body.appendChild(document.createElement('hr'));return}
+ if(block.type==='table'){body.appendChild(tableEditor(block.node||{}));return}
+ if(block.type==='code'||block.type==='raw'){const raw=make('textarea','block-raw');raw.rows=block.type==='code'?5:8;raw.value=block.type==='raw'?JSON.stringify(block.node||{type:'paragraph'},null,2):textContent(block.node||{});body.appendChild(raw);return}
+ const edit=make('div','block-edit '+block.type);edit.contentEditable='true';
+ if(block.type==='bullet'||block.type==='numbered'){
+  const items=(block.node?.content||[]);(items.length?items:[{content:[{type:'paragraph'}]}]).forEach(item=>{const line=make('div');const paragraph=(item.content||[]).find(child=>child.type==='paragraph')||{};line.innerHTML=inlineHtml(paragraph.content)||'<br>';edit.appendChild(line)});
+ }else if(block.type==='quote'){
+  const paragraph=(block.node?.content||[]).find(child=>child.type==='paragraph')||{};edit.innerHTML=inlineHtml(paragraph.content)||'<br>';
+ }else edit.innerHTML=inlineHtml(block.node?.content)||'<br>';
+ body.appendChild(edit);
+}
+function renderBlock(block){
+ const row=make('div','block-row');const select=make('select','block-type');TYPES.forEach(([value,label])=>{const option=make('option','',label);option.value=value;select.appendChild(option)});const body=make('div','block-body');row.append(blockFormat(row),select,body,blockControls(row));fillBlock(row,block);
+ select.onchange=()=>{const value=rowText(row);fillBlock(row,{type:select.value,node:valueNode(select.value,value)});queueSave()};return row;
+}
+function rowText(row){const edit=row.querySelector('.block-edit');const raw=row.querySelector('.block-raw');return raw?raw.value:(edit?edit.innerText:'')}
+function valueNode(type,value){const inline=value?[{type:'text',text:value}]:undefined;if(type.startsWith('heading'))return {type:'heading',attrs:{level:Number(type.slice(-1))},...(inline?{content:inline}:{})};if(type==='quote')return {type:'blockquote',content:[{type:'paragraph',...(inline?{content:inline}:{})}]};if(type==='code')return {type:'codeBlock',...(inline?{content:inline}:{})};if(type==='divider')return {type:'horizontalRule'};if(type==='table')return {type:'table'};if(type==='raw'){try{return JSON.parse(value)}catch{return {type:'paragraph',...(inline?{content:inline}:{})}}}return {type:'paragraph',...(inline?{content:inline}:{})}}
+function blockNode(row){
+ const type=row.dataset.type;
+ if(type==='divider')return {type:'horizontalRule'};
+ if(type==='raw'){try{return JSON.parse(row.querySelector('.block-raw').value)}catch{return {type:'paragraph',content:[{type:'text',text:row.querySelector('.block-raw').value}]}}}
+ if(type==='code'){const value=row.querySelector('.block-raw').value;return {type:'codeBlock',...(value?{content:[{type:'text',text:value}]}:{})}}
+ if(type==='table'){const rows=Array.from(row.querySelectorAll('.block-table tr')).map(tr=>({type:'tableRow',content:Array.from(tr.cells).map(cell=>({type:cell.dataset.cellType||'tableCell',content:[{type:'paragraph',...(domInline(cell).length?{content:domInline(cell)}:{})}]}))}));return {type:'table',content:rows}}
+ const edit=row.querySelector('.block-edit');
+ if(type==='bullet'||type==='numbered'){const source=edit.children.length?Array.from(edit.children):[edit];return {type:type==='bullet'?'bulletList':'orderedList',content:source.map(item=>({type:'listItem',content:[{type:'paragraph',...(domInline(item).length?{content:domInline(item)}:{})}]}))}}
+ const content=domInline(edit);if(type==='quote')return {type:'blockquote',content:[{type:'paragraph',...(content.length?{content}:{})}]};if(type.startsWith('heading'))return {type:'heading',attrs:{level:Number(type.slice(-1))},...(content.length?{content}:{})};return {type:'paragraph',...(content.length?{content}:{})};
+}
+function renderBlocks(doc){blockList.replaceChildren();(doc.content||[]).forEach(node=>blockList.appendChild(renderBlock(nodeBlock(node))));if(!blockList.children.length)blockList.appendChild(renderBlock({type:'paragraph',node:{type:'paragraph'}}))}
+function blocksDoc(){return {type:'doc',content:Array.from(blockList.children).map(blockNode)}}
+function inlineMarkdown(nodes){return (nodes||[]).map(node=>{if(node.type==='hardBreak')return '  \n';if(node.type!=='text')return inlineMarkdown(node.content);let value=node.text||'';(node.marks||[]).forEach(mark=>{if(mark.type==='bold')value='**'+value+'**';if(mark.type==='italic')value='*'+value+'*';if(mark.type==='strike')value='~~'+value+'~~';if(mark.type==='code')value='`'+value+'`';if(mark.type==='link')value='['+value+']('+((mark.attrs||{}).href||'')+')'});return value}).join('')}
+function docMarkdown(doc){
+ function nodeMd(node){if(node.type==='paragraph')return inlineMarkdown(node.content);if(node.type==='heading')return '#'.repeat(Number((node.attrs||{}).level||2))+' '+inlineMarkdown(node.content);if(node.type==='horizontalRule')return '---';if(node.type==='codeBlock')return '```\n'+textContent(node)+'\n```';if(node.type==='blockquote')return (node.content||[]).map(nodeMd).join('\n').split('\n').map(line=>'> '+line).join('\n');if(node.type==='bulletList'||node.type==='orderedList')return (node.content||[]).map((item,index)=>(node.type==='bulletList'?'- ':(index+1)+'. ')+(item.content||[]).map(nodeMd).join(' ')).join('\n');if(node.type==='table')return (node.content||[]).map((row,index)=>{const line='| '+(row.content||[]).map(cell=>textContent(cell).replace(/\|/g,'\\|')).join(' | ')+' |';return index===0?line+'\n| '+(row.content||[]).map(()=> '---').join(' | ')+' |':line}).join('\n');return textContent(node)}
+ return (doc.content||[]).map(nodeMd).join('\n\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+function inlineFromMarkdown(value){
+ const nodes=[],pattern=/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;let at=0,match;
+ function text(value,marks){if(value)nodes.push({type:'text',text:value,...(marks?{marks}: {})})}
+ while((match=pattern.exec(value))){text(value.slice(at,match.index));const token=match[0];if(token.startsWith('**'))text(token.slice(2,-2),[{type:'bold'}]);else if(token.startsWith('*'))text(token.slice(1,-1),[{type:'italic'}]);else if(token.startsWith('`'))text(token.slice(1,-1),[{type:'code'}]);else{const link=token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);text(link[1],[{type:'link',attrs:{href:link[2]}}])}at=pattern.lastIndex}
+ text(value.slice(at));return nodes;
+}
+function markdownDoc(value){
+ const lines=String(value||'').replace(/\r\n/g,'\n').split('\n'),nodes=[];let i=0;
+ while(i<lines.length){const line=lines[i];if(!line.trim()){i++;continue}if(/^```/.test(line)){const body=[];i++;while(i<lines.length&&!/^```/.test(lines[i]))body.push(lines[i++]);if(i<lines.length)i++;nodes.push({type:'codeBlock',...(body.length?{content:[{type:'text',text:body.join('\n')}]}:{})});continue}const heading=line.match(/^(#{1,3})\s+(.*)$/);if(heading){nodes.push({type:'heading',attrs:{level:heading[1].length},content:inlineFromMarkdown(heading[2])});i++;continue}if(/^\s*>\s?/.test(line)){const body=[];while(i<lines.length&&/^\s*>\s?/.test(lines[i]))body.push(lines[i++].replace(/^\s*>\s?/,''));nodes.push({type:'blockquote',content:[{type:'paragraph',content:inlineFromMarkdown(body.join(' '))}]});continue}if(/^\s*[-*+]\s+/.test(line)||/^\s*\d+[.)]\s+/.test(line)){const ordered=/^\s*\d/.test(line),items=[];const matcher=ordered?/^\s*\d+[.)]\s+/:/^\s*[-*+]\s+/;while(i<lines.length&&matcher.test(lines[i]))items.push({type:'listItem',content:[{type:'paragraph',content:inlineFromMarkdown(lines[i++].replace(matcher,''))}]});nodes.push({type:ordered?'orderedList':'bulletList',content:items});continue}if(/^\s*\|.*\|\s*$/.test(line)){const tableLines=[];while(i<lines.length&&/^\s*\|.*\|\s*$/.test(lines[i]))tableLines.push(lines[i++]);const rows=tableLines.filter((row,index)=>index!==1||!/^\s*\|?\s*:?-+/.test(row)).map((row,index)=>({type:'tableRow',content:row.trim().replace(/^\||\|$/g,'').split('|').map(value=>({type:index===0?'tableHeader':'tableCell',content:[{type:'paragraph',content:inlineFromMarkdown(value.trim())}]}))}));nodes.push({type:'table',content:rows});continue}if(/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)){nodes.push({type:'horizontalRule'});i++;continue}const paragraph=[];while(i<lines.length&&lines[i].trim()&&!/^(#{1,3}\s|```|\s*>\s?|\s*[-*+]\s+|\s*\d+[.)]\s+|\s*\|.*\|\s*$|\s*(-{3,}|\*{3,}|_{3,})\s*$)/.test(lines[i]))paragraph.push(lines[i++]);nodes.push({type:'paragraph',content:inlineFromMarkdown(paragraph.join(' '))})}
+ return {type:'doc',content:nodes.length?nodes:[{type:'paragraph'}]};
+}
+function readMode(){if(state.mode==='rich')state.doc=editor.getJSON();else if(state.mode==='block')state.doc=blocksDoc();else state.doc=markdownDoc(markdown.value)}
+function setMode(mode){
+ if(mode!==state.mode)readMode();state.mode=mode;el.hidden=mode!=='rich';blockEditor.hidden=mode!=='block';markdown.hidden=mode!=='markdown';
+ switching=true;if(mode==='rich')editor.commands.setContent(state.doc,{emitUpdate:false});if(mode==='block')renderBlocks(state.doc);if(mode==='markdown')markdown.value=docMarkdown(state.doc);switching=false;
+ document.querySelectorAll('[data-mode]').forEach(button=>{button.classList.toggle('active',button.dataset.mode===mode);button.setAttribute('aria-pressed',button.dataset.mode===mode?'true':'false')});document.querySelectorAll('[data-rich-tool]').forEach(button=>button.hidden=mode!=='rich');
+}
+async function save(){clearTimeout(timer);readMode();status.textContent='Saving…';const markdownValue=state.mode==='markdown'?markdown.value:docMarkdown(state.doc);const res=await fetch(saveUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title.value,content_json:JSON.stringify(state.doc),markdown:markdownValue,version,description:meta('#meta-description'),category:meta('#meta-category'),author_label:meta('#meta-author'),tags:meta('#meta-tags'),visibility:meta('#meta-visibility')})});const out=await res.json();if(res.status===409){status.textContent='Newer version exists — reload';return false}if(res.ok){version=out.version;document.body.dataset.version=version;status.textContent='Saved';return true}status.textContent=out.error||'Save failed';return false}
+document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>setMode(button.dataset.mode));
+blockEditor.addEventListener('input',queueSave);markdown.addEventListener('input',queueSave);
+document.querySelector('#add-block').onclick=()=>{const added=renderBlock({type:'paragraph',node:{type:'paragraph'}});blockList.appendChild(added);added.querySelector('.block-edit').focus();queueSave()};
+setMode('rich');
+"""
+
+
+def editor_page(who, item):
+    tools = [("B", "bold"), ("I", "italic"), ("U", "underline"), ("H2", "h2"),
+             ("• List", "bullet"), ("1. List", "ordered"), ("❝", "quote"),
+             ("</>", "code"), ("Table", "table")]
+    next_status = "published" if item["status"] == "draft" else "draft"
+    status_button = "Publish" if item["status"] == "draft" else "Unpublish"
+    topbar = Div(
+        Span(f"Editing · {item['category']}", cls="status"),
+        Div(Span("Saved", id="save-status", cls="status"),
+            A("View", href=f"/skills/{item['id']}", cls="btn ghost sm"),
+            A("Download", href=f"/skills/{item['id']}/download", cls="btn ghost sm"),
+            Form(Input(type="hidden", name="status", value=next_status),
+                 Button(status_button, cls="btn sm"),
+                 method="post", action=f"/skills/{item['id']}/status", cls="inlineform"),
+            cls="pageactions"),
+        cls="topbar")
+    meta = Div(
+        Div(Label("Category"),
+            Select(*[Option(c, value=c, selected=(c == item["category"])) for c in CATEGORIES],
+                   id="meta-category", name="category"), cls="metafield"),
+        Div(Label("Author label"),
+            Input(id="meta-author", name="author_label", value=item.get("author_label") or "",
+                  placeholder="e.g. Predictive Labs"), cls="metafield"),
+        Div(Label("Tags (comma-separated)"),
+            Input(id="meta-tags", name="tags", value=item.get("tags") or "",
+                  placeholder="research, diligence"), cls="metafield"),
+        Div(Label("Visibility"),
+            Select(Option("Public", value="public", selected=(item["visibility"] == "public")),
+                   Option("Private", value="private", selected=(item["visibility"] == "private")),
+                   id="meta-visibility", name="visibility"), cls="metafield"),
+        Div(Label("Short description (shown on the card)"),
+            Textarea(item.get("description") or "", id="meta-description", name="description",
+                     placeholder="One line describing what this skill does."),
+            cls="metafield full"),
+        cls="metagrid")
+    body = Div(
+        Div(*[value for pair in [(A("My Skills", href="/mine"), Span("/"))] for value in pair],
+            Span(item["category"]),
+            Span(item["status"].title(), cls="pagebadge " + item["status"]),
+            Span(item["visibility"].title(), cls="pagebadge " + item["visibility"]),
+            cls="breadcrumbs"),
+        Input(value=item["title"], id="skill-title", cls="titleinput", aria_label="Skill title"),
+        meta,
+        Div(*[Button(label, type="button", data_cmd=cmd, data_rich_tool="true", cls="tool")
+              for label, cmd in tools],
+            Span(cls="toolbar-spacer"),
+            Button("Rich", type="button", data_mode="rich", aria_pressed="true", cls="tool mode active"),
+            Button("Blocks", type="button", data_mode="block", aria_pressed="false", cls="tool mode"),
+            Button("Markdown", type="button", data_mode="markdown", aria_pressed="false", cls="tool mode"),
+            cls="toolbar"),
+        Div(id="editor", cls="editor"),
+        Div(Button("＋ Add block", id="add-block", type="button", cls="btn ghost block-actions"),
+            Div(id="block-list", cls="block-list"), id="block-editor", cls="block-editor", hidden=True),
+        Textarea(item["markdown"], id="markdown", cls="markdown-editor", hidden=True, aria_label="Markdown editor"),
+        Script(item["content_json"], type="application/json", id="initial-content"),
+        Div(Form(Button("Delete skill", cls="btn ghost"),
+                 method="post", action=f"/skills/{item['id']}/trash",
+                 onsubmit="return confirm('Delete this skill?')"),
+            style="margin-top:44px"),
+        cls="editorwrap")
+    return Html(
+        head(item["title"] + " · FastSkills"),
+        Body(_sidebar(who, "mine"),
+             Main(topbar, body, cls="workspace"),
+             Script(EDITOR_JS, type="module"),
+             cls="shell",
+             data_version=str(item["version"]),
+             data_save_url=f"/skills/{item['id']}/save"))

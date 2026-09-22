@@ -1,0 +1,10 @@
+services:
+  fastskills:
+    build: .
+    ports:
+      - "5024:5024"
+    env_file: .env
+    volumes:
+      - fastskills-data:/app/data
+volumes:
+  fastskills-data:

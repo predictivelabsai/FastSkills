@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# FastSkills local data
+data/
+.playwright-mcp/
