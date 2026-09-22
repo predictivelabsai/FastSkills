@@ -2,6 +2,7 @@
 title: Sales Enablement
 description: When the user wants to create sales collateral, pitch decks, one-pagers, objection handling docs, or demo scripts.
 category: Marketing
+sublabel: Sales & Outbound
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Corporate Registry Investigation
 description: Use when users say "Companies House search", "investigate this UK company", "check officers/PSCs/charges", "registry snapshot", "group structure", "filing history", or need UK company profile, filings…
 category: Legal
+sublabel: Corporate & Governance
 author: LegalQuants
 tags: 
 license: Apache-2.0

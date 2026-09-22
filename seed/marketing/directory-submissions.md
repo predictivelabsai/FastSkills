@@ -2,6 +2,7 @@
 title: Directory Submissions
 description: When the user wants to submit their product to startup, SaaS, AI, agent, MCP, no-code, or review directories for backlinks, domain rating, and discovery.
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Ads
 description: When the user wants help with paid advertising campaigns on Google Ads, Meta (Facebook/Instagram), LinkedIn, Twitter/X, or other ad platforms.
 category: Marketing
+sublabel: Paid Ads
 author: Corey Haines
 tags: 
 license: MIT

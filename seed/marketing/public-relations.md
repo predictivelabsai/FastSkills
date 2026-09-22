@@ -2,6 +2,7 @@
 title: Public Relations
 description: When the user wants help with public relations, earned media, press coverage, journalist outreach, or media strategy (not pull requests).
 category: Marketing
+sublabel: Brand & PR
 author: Corey Haines
 tags: 
 license: MIT

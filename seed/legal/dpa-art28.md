@@ -2,6 +2,7 @@
 title: DPA Art28
 description: Use this skill when the user needs to review, draft, or redline a Data Processing Agreement (DPA / Auftragsverarbeitungsvertrag / AVV) under Art.
 category: Legal
+sublabel: Privacy & Data Protection
 author: LegalQuants
 tags: 
 license: Apache-2.0

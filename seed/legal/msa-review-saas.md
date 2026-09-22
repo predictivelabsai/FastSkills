@@ -2,6 +2,7 @@
 title: MSA Review SaaS
 description: Use when the user uploads or pastes a Software-as-a-Service Master Services Agreement (MSA), Master Subscription Agreement, SaaS Agreement, or Cloud Services Agreement and asks for review, redline, ri…
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

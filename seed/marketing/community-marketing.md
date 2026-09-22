@@ -2,6 +2,7 @@
 title: Community Marketing
 description: Build and leverage online communities to drive product growth and brand loyalty. Use when the user wants to create a community strategy, grow a Discord or Slack community, manage a forum or subreddit,…
 category: Marketing
+sublabel: Community & Influencer
 author: Corey Haines
 tags: 
 license: MIT

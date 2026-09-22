@@ -2,6 +2,7 @@
 title: Vendor Privacy Policy First Pass
 description: Use when the user has a vendor's published privacy policy (URL, PDF, or pasted text) and wants a fast triage assessment to decide whether deeper diligence is warranted.
 category: Legal
+sublabel: Privacy & Data Protection
 author: LegalQuants
 tags: 
 license: Apache-2.0

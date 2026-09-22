@@ -2,6 +2,7 @@
 title: AI SEO
 description: When the user wants to optimize content for AI search engines, get cited by LLMs, or appear in AI-generated answers.
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

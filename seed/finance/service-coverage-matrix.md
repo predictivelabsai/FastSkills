@@ -2,6 +2,7 @@
 title: Service Coverage Matrix
 description: Produce a family-office × service coverage matrix to surface white space and concentration across the whole book.
 category: Finance
+sublabel: Family Office
 author: Predictive Labs
 tags: coverage, family office, portfolio, analysis
 license: 

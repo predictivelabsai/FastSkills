@@ -2,6 +2,7 @@
 title: US State Privacy Navigator
 description: Cross-jurisdictional analysis engine for the US state consumer privacy law patchwork (CCPA/CPRA, VCDPA, CPA, CTDPA, UCPA, TDPSA, OCPA, FDBR, MCDPA, ICDPA, INCDPA, TIPA, DPDPA, NJDPA, NHDPA, NDPA, KCDP…
 category: Legal
+sublabel: Privacy & Data Protection
 author: LegalQuants
 tags: 
 license: MIT

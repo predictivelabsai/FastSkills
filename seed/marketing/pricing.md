@@ -2,6 +2,7 @@
 title: Pricing
 description: When the user wants help with pricing decisions, packaging, or monetization strategy.
 category: Marketing
+sublabel: Pricing & Offers
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Backtester
 description: Runs parameterized backtests with systematic variation of portfolios, intervals, and strategy parameters
 category: Trading
+sublabel: Backtesting
 author: Predictive Labs
 tags: 
 license: 

@@ -2,6 +2,7 @@
 title: Private Credit Underwriting
 description: Underwrite a property-backed or direct-lending private-credit deal — LTV, coverage, security, covenants and a risk-adjusted pricing view.
 category: Finance
+sublabel: Private Credit
 author: Predictive Labs
 tags: private credit, lending, underwriting, real estate
 license: 

@@ -2,6 +2,7 @@
 title: Video
 description: When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks.
 category: Marketing
+sublabel: Content
 author: Corey Haines
 tags: 
 license: MIT

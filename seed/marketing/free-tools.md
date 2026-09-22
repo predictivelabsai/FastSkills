@@ -2,6 +2,7 @@
 title: Free Tools
 description: When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

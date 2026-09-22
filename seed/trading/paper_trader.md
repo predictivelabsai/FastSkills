@@ -2,6 +2,7 @@
 title: Paper Trader
 description: Continuous paper trading agent using real Alpaca paper API with position tracking and P&L reporting
 category: Trading
+sublabel: Paper Trading
 author: Predictive Labs
 tags: 
 license: 

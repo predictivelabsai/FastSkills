@@ -2,6 +2,7 @@
 title: Alpatrade
 description: Run user-scoped AlpaTrade backtests, save optimized candidates, inspect runs, and start paper trading.
 category: Trading
+sublabel: Portfolio Management
 author: Predictive Labs
 tags: 
 license: 

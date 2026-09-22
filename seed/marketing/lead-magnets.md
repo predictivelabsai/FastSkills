@@ -2,6 +2,7 @@
 title: Lead Magnets
 description: When the user wants to create, plan, or optimize a lead magnet for email capture or lead generation.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: SMS
 description: When the user wants to plan, build, or optimize SMS or MMS marketing — including welcome flows, abandoned cart texts, post-purchase, win-back, promotional sends, or transactional/auth SMS.
 category: Marketing
+sublabel: Email & SMS
 author: Corey Haines
 tags: 
 license: MIT

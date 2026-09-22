@@ -2,6 +2,7 @@
 title: Copywriting
 description: When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages.
 category: Marketing
+sublabel: Content
 author: Corey Haines
 tags: 
 license: MIT

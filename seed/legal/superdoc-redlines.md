@@ -2,6 +2,7 @@
 title: Superdoc Redlines
 description: Use when you need to apply tracked changes and comments to DOCX files programmatically, merge multi-agent edits with conflict resolution, or produce native Word revisions from AI agent output.
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: RevOps
 description: When the user wants help with revenue operations, lead lifecycle management, or marketing-to-sales handoff processes.
 category: Marketing
+sublabel: Sales & Outbound
 author: Corey Haines
 tags: 
 license: MIT

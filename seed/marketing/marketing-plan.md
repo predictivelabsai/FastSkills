@@ -2,6 +2,7 @@
 title: Marketing Plan
 description: When the user needs a comprehensive marketing plan for a client, a company they advise, or their own product.
 category: Marketing
+sublabel: Strategy
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: ASO
 description: When the user wants to audit or optimize an App Store or Google Play listing. Also use when the user mentions 'ASO audit,' 'app store optimization,' 'optimize my app listing,' 'improve app visibility,…
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

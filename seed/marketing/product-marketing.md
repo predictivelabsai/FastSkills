@@ -2,6 +2,7 @@
 title: Product Marketing
 description: When the user wants to create or update their product marketing context document. Also use when the user mentions 'product context,' 'marketing context,' 'set up context,' 'positioning,' 'who is my ta…
 category: Marketing
+sublabel: Product Marketing
 author: Corey Haines
 tags: 
 license: MIT

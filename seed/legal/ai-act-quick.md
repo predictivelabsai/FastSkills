@@ -2,6 +2,7 @@
 title: AI Act Quick
 description: EU AI Act Quick Assessment — fast 15-25 minute triage for preliminary classification and compliance assessment.
 category: Legal
+sublabel: AI Governance
 author: LegalQuants
 tags: 
 license: Apache-2.0

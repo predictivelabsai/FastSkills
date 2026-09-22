@@ -2,6 +2,7 @@
 title: Analytics
 description: When the user wants to set up, improve, or audit analytics tracking and measurement.
 category: Marketing
+sublabel: Analytics
 author: Corey Haines
 tags: 
 license: MIT

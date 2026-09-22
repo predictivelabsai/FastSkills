@@ -2,6 +2,7 @@
 title: Text Provenance
 description: Use when you need to identify the likely source of a text passage, attribute text to documents in a RAG system, detect plagiarism, or match contract clauses to their origin.
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

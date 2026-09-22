@@ -2,6 +2,7 @@
 title: Alpaca Trading Backtest
 description: Execute deterministic, reproducible historical backtests from a start date, end date, and strategy concept using the Alpaca CLI plus agent-written workspace code.
 category: Trading
+sublabel: Backtesting
 author: Predictive Labs
 tags: 
 license: 

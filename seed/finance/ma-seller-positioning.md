@@ -2,6 +2,7 @@
 title: M&A Seller Positioning
 description: Shape the equity story and CIM narrative for a sell-side mandate — value drivers, growth thesis and defensible positioning.
 category: Finance
+sublabel: M&A
 author: Predictive Labs
 tags: m&a, sell-side, cim, positioning
 license: 

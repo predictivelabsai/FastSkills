@@ -2,6 +2,7 @@
 title: Redfern Schedule
 description: Use whenever the user is working on document production in international arbitration: drafting requests to produce, raising or replying to objections, or preparing the schedule for the tribunal to rul…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

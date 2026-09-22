@@ -2,6 +2,7 @@
 title: Statutory Analysis
 description: First-pass framework for reading, interpreting, and structuring statutory analysis of US federal, state, and local law. Produces draft analysis for attorney review — not legal advice.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

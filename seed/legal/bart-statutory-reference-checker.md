@@ -2,6 +2,7 @@
 title: BART Statutory Reference Checker
 description: Use when checking statutory citations in Singapore legal documents, verifying references against Singapore statutes, or auditing Word documents for citation accuracy.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

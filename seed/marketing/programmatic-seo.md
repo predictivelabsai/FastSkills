@@ -2,6 +2,7 @@
 title: Programmatic SEO
 description: When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions "programmatic SEO," "template pages," "pages at scale," "directory pages," "location p…
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

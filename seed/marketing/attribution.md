@@ -2,6 +2,7 @@
 title: Attribution
 description: When the user wants to figure out which marketing actually drives conversions and revenue, choose or interpret an attribution model, or reconcile conflicting numbers across tools.
 category: Marketing
+sublabel: Analytics
 author: Corey Haines
 tags: 
 license: MIT

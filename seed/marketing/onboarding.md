@@ -2,6 +2,7 @@
 title: Onboarding
 description: When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Contract Qa
 description: Use when the user has a contract loaded and asks a specific question about it — what a clause means, where something is addressed, whether a term is unusual, how a provision compares to standard pract…
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: Sector Taxonomy
 description: Map national industry classification codes (EMTAK for Estonia, NACE for Lithuania/Latvia) to PEHero's internal sector/sub_sector taxonomy and to named clinical/business "verticals" (dental, dermatolog…
 category: Finance
+sublabel: Private Equity
 author: Predictive Labs
 tags: 
 license: 

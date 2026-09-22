@@ -2,6 +2,7 @@
 title: Schema
 description: When the user wants to add, fix, or optimize schema markup and structured data on their site.
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

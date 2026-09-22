@@ -2,6 +2,7 @@
 title: Case File Analyzer
 description: Use when running structured, adversarial analysis across large case-file directories — extracts facts, claims, and legal views into XML metadata via a stateless R.A.L.P.H.
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

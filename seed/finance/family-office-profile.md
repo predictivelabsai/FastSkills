@@ -2,6 +2,7 @@
 title: Family Office Profile
 description: Build and maintain a structured single-family-office relationship profile — principals, advisers, jurisdictions, asset mix and pain points.
 category: Finance
+sublabel: Family Office
 author: Predictive Labs
 tags: family office, wealth, crm, onboarding
 license: 

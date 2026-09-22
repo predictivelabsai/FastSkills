@@ -2,6 +2,7 @@
 title: License Comply
 description: Use when auditing open-source dependency licenses in Python projects, generating compliance reports, or checking license risk in your codebase.
 category: Legal
+sublabel: IP & Licensing
 author: LegalQuants
 tags: 
 license: Apache-2.0

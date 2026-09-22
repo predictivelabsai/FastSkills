@@ -2,6 +2,7 @@
 title: UK Disclosure List Review
 description: Use when users say "review this disclosure list", "QC disclosure", "check privilege descriptions", "inspection objections", "missing custodians", "adverse documents", or need England and Wales disclos…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

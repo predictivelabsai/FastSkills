@@ -2,6 +2,7 @@
 title: Marketing Ideas
 description: When the user needs marketing ideas, inspiration, or strategies for their SaaS or software product.
 category: Marketing
+sublabel: Strategy
 author: Corey Haines
 tags: 
 license: MIT

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS skills(
   title TEXT NOT NULL,
   description TEXT DEFAULT '',
   category TEXT NOT NULL,
+  sub_label TEXT DEFAULT '',
   author_label TEXT DEFAULT '',
   owner_id TEXT NOT NULL,
   visibility TEXT DEFAULT 'public',
@@ -41,13 +42,34 @@ CREATE TABLE IF NOT EXISTS skills(
 CREATE TABLE IF NOT EXISTS skill_versions(
   id {PK}, skill_id INTEGER, version INTEGER,
   title TEXT, content_json TEXT, markdown TEXT, created_by TEXT, created_at TEXT);
+CREATE TABLE IF NOT EXISTS app_meta(key TEXT PRIMARY KEY, value TEXT);
 CREATE INDEX IF NOT EXISTS idx_skills_category ON skills(category, visibility, status);
 CREATE INDEX IF NOT EXISTS idx_skills_owner ON skills(owner_id, deleted_at)
 """
 
+# Columns added after the initial schema shipped; applied idempotently on init.
+_MIGRATIONS = [
+    "ALTER TABLE skills ADD COLUMN sub_label TEXT DEFAULT ''",
+]
+
 
 def init():
     init_schema(SCHEMA)
+    for ddl in _MIGRATIONS:
+        try:
+            execute(ddl)  # each runs in its own tx; a duplicate-column error is fine
+        except Exception:
+            pass
+
+
+def get_meta(key):
+    r = row("SELECT value FROM app_meta WHERE key=?", (key,))
+    return r["value"] if r else None
+
+
+def set_meta(key, value):
+    execute("INSERT INTO app_meta(key,value) VALUES(?,?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (key, value))
 
 
 # ── users ────────────────────────────────────────────────────────────────────
@@ -107,18 +129,29 @@ def visible_skill(who, sid):
     return item if can_view(who, item) else None
 
 
-def catalog(category=None, q=None, author=None):
+def catalog(category=None, q=None, author=None, sub=None):
     where = ["visibility='public'", "status='published'", "deleted_at IS NULL"]
     args = []
     if category and category in CATEGORIES:
         where.append("category=?"); args.append(category)
+    if sub:
+        where.append("sub_label=?"); args.append(sub)
     if author:
         where.append("author_label=?"); args.append(author)
     if q:
         where.append("(title LIKE ? OR description LIKE ? OR tags LIKE ? OR plain_text LIKE ?)")
         like = f"%{q}%"; args += [like, like, like, like]
     return rows("SELECT s.*,u.name owner_name FROM skills s LEFT JOIN users u ON u.id=s.owner_id "
-                f"WHERE {' AND '.join(where)} ORDER BY category,title", args)
+                f"WHERE {' AND '.join(where)} ORDER BY category,sub_label,title", args)
+
+
+def sublabels(category):
+    """Sub-labels present in a category (public+published), with counts."""
+    return rows(
+        "SELECT sub_label, count(*) n FROM skills "
+        "WHERE category=? AND sub_label<>'' AND visibility='public' "
+        "AND status='published' AND deleted_at IS NULL "
+        "GROUP BY sub_label ORDER BY sub_label", (category,))
 
 
 def category_counts():
@@ -156,7 +189,7 @@ def create_skill(who, title="Untitled skill", category="Finance"):
 
 
 def save_skill(who, sid, *, title, content_json, markdown, version,
-               description=None, category=None, author_label=None,
+               description=None, category=None, sub_label=None, author_label=None,
                tags=None, visibility=None):
     current = skill(sid)
     if not current or not can_edit(who, current):
@@ -177,6 +210,8 @@ def save_skill(who, sid, *, title, content_json, markdown, version,
         fields["description"] = description
     if category in CATEGORIES:
         fields["category"] = category
+    if sub_label is not None:
+        fields["sub_label"] = sub_label
     if author_label is not None:
         fields["author_label"] = author_label
     if tags is not None:
@@ -283,22 +318,22 @@ def seed_bulk(owner_id, owner_name, entries):
                 if not existing["seeded"]:
                     continue
                 s.execute(
-                    "UPDATE skills SET title=?,description=?,category=?,author_label=?,tags=?,"
-                    "content_json=?,markdown=?,plain_text=?,source_url=?,license=?,updated_at=? "
+                    "UPDATE skills SET title=?,description=?,category=?,sub_label=?,author_label=?,"
+                    "tags=?,content_json=?,markdown=?,plain_text=?,source_url=?,license=?,updated_at=? "
                     "WHERE id=?",
                     (entry["title"], entry["description"], entry["category"],
-                     entry["author_label"], entry["tags"], content_json, entry["markdown"],
-                     text, entry.get("source_url", ""), entry.get("license", ""), ts,
-                     existing["id"]))
+                     entry.get("sub_label", ""), entry["author_label"], entry["tags"],
+                     content_json, entry["markdown"], text, entry.get("source_url", ""),
+                     entry.get("license", ""), ts, existing["id"]))
             else:
                 s.execute(
-                    "INSERT INTO skills(slug,title,description,category,author_label,owner_id,"
-                    "visibility,status,tags,content_json,markdown,plain_text,source_url,license,"
-                    "seeded,created_by,updated_by,created_at,updated_at) "
-                    "VALUES(?,?,?,?,?,?,'public','published',?,?,?,?,?,?,1,?,?,?,?)",
+                    "INSERT INTO skills(slug,title,description,category,sub_label,author_label,"
+                    "owner_id,visibility,status,tags,content_json,markdown,plain_text,source_url,"
+                    "license,seeded,created_by,updated_by,created_at,updated_at) "
+                    "VALUES(?,?,?,?,?,?,?,'public','published',?,?,?,?,?,?,1,?,?,?,?)",
                     (entry["slug"], entry["title"], entry["description"], entry["category"],
-                     entry["author_label"], owner_id, entry["tags"], content_json,
-                     entry["markdown"], text, entry.get("source_url", ""),
+                     entry.get("sub_label", ""), entry["author_label"], owner_id, entry["tags"],
+                     content_json, entry["markdown"], text, entry.get("source_url", ""),
                      entry.get("license", ""), owner_id, owner_id, ts, ts))
             n += 1
     return n

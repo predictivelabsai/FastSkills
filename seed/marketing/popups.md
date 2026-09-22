@@ -2,6 +2,7 @@
 title: Popups
 description: When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

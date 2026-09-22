@@ -2,6 +2,7 @@
 title: Site Architecture
 description: When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking.
 category: Marketing
+sublabel: SEO
 author: Corey Haines
 tags: 
 license: MIT

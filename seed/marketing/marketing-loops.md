@@ -2,6 +2,7 @@
 title: Marketing Loops
 description: When the user wants to set up a recurring, self-running marketing workflow — a repeatable loop an AI agent runs on a cadence (weekly, daily, on a trigger) rather than a one-off task.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

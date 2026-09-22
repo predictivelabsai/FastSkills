@@ -2,6 +2,7 @@
 title: Cross-Sell Recommender
 description: Generate explainable service-gap and cross-sell recommendations for a family-office relationship, with every recommendation traceable to a rule.
 category: Finance
+sublabel: Investor CRM
 author: Predictive Labs
 tags: cross-sell, family office, recommendations, revenue
 license: 

@@ -2,6 +2,7 @@
 title: Competitors
 description: When the user wants to create competitor comparison or alternative pages for SEO and sales enablement.
 category: Marketing
+sublabel: Research
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Adversarial QC
 description: Adversarial quality control for AI deliverables. Run structured parallel verification using one or two models before delivering reports, plans, analyses, scripts, or any substantive work.
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

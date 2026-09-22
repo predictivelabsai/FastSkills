@@ -2,6 +2,7 @@
 title: Reporter
 description: Read-only reporting agent that queries DB for trading performance metrics in summary, detail, and ranking modes
 category: Trading
+sublabel: Reporting
 author: Predictive Labs
 tags: 
 license: 

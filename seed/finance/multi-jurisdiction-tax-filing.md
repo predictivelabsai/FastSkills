@@ -2,6 +2,7 @@
 title: Multi-Jurisdiction Tax Filing
 description: Track legal-entity filing obligations, deadlines and FATCA/CRS/W-8 readiness across multiple jurisdictions for a family-office structure.
 category: Finance
+sublabel: Tax & Compliance
 author: Predictive Labs
 tags: tax, compliance, family office, FATCA, CRS
 license: 

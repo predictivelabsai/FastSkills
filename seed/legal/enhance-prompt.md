@@ -2,6 +2,7 @@
 title: Enhance Prompt
 description: Use when the user has typed a short or vague prompt and the system is configured to expand prompts before submission, or when the user explicitly invokes "Enhance Prompt" or asks the system to "improv…
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

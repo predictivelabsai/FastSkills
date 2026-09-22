@@ -2,6 +2,7 @@
 title: Collating Reviewer Feedback
 description: Use when users say "collate comments", "combine reviewer markups", "compile tracked changes", "make a resolution checklist", or have multiple DOCX drafts, Word comments, redlines, partner/client marku…
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

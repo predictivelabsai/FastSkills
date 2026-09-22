@@ -2,6 +2,7 @@
 title: Ad Creative
 description: When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform.
 category: Marketing
+sublabel: Paid Ads
 author: Corey Haines
 tags: 
 license: MIT

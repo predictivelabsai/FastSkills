@@ -11,7 +11,7 @@ api = FastAPI(title="FastSkills API", version=VERSION,
 
 def _public(item):
     return {k: item[k] for k in (
-        "id", "slug", "title", "description", "category", "author_label",
+        "id", "slug", "title", "description", "category", "sub_label", "author_label",
         "tags", "source_url", "license", "version", "updated_at")}
 
 

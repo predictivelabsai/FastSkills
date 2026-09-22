@@ -2,6 +2,7 @@
 title: NIST AI RMF
 description: Apply the NIST AI Risk Management Framework (NIST AI 100-1 + the NIST AI 600-1 Generative AI Profile) to a specific AI system, governance question, or impact assessment.
 category: Legal
+sublabel: AI Governance
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: Reconciler
 description: Reconciliation agent that compares DB positions and P&L against actual Alpaca holdings
 category: Trading
+sublabel: Reconciliation
 author: Predictive Labs
 tags: 
 license: 

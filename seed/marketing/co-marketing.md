@@ -2,6 +2,7 @@
 title: Co Marketing
 description: When the user wants to find co-marketing partners, plan joint campaigns, or brainstorm partnership opportunities.
 category: Marketing
+sublabel: Strategy
 author: Corey Haines
 tags: 
 license: MIT

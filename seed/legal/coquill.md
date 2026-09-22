@@ -2,6 +2,7 @@
 title: Coquill
 description: Document assembly tool. Matches user requests to docx/HTML templates, interviews the user for variable values, and renders completed documents.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

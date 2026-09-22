@@ -2,6 +2,7 @@
 title: Privacy Notice EU
 description: Draft GDPR/DSGVO-compliant privacy notices as .docx for any EU/EEA jurisdiction and audience.
 category: Legal
+sublabel: Privacy & Data Protection
 author: LegalQuants
 tags: 
 license: Apache-2.0

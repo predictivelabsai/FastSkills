@@ -2,6 +2,7 @@
 title: Paywalls
 description: When the user wants to create or optimize in-app paywalls, upgrade screens, upsell modals, or feature gates.
 category: Marketing
+sublabel: Pricing & Offers
 author: Corey Haines
 tags: 
 license: MIT

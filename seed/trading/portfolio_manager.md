@@ -2,6 +2,7 @@
 title: Portfolio Manager
 description: Orchestrator agent that coordinates backtesting, paper trading, and validation workflows
 category: Trading
+sublabel: Portfolio Management
 author: Predictive Labs
 tags: 
 license: 

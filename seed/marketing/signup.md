@@ -2,6 +2,7 @@
 title: Signup
 description: When the user wants to optimize signup, registration, account creation, or trial activation flows.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

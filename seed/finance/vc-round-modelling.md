@@ -2,6 +2,7 @@
 title: VC Round & Dilution Modelling
 description: Model a venture financing round — pre/post-money, option pool, SAFE conversions and founder/investor dilution across the cap table.
 category: Finance
+sublabel: Venture Capital
 author: Predictive Labs
 tags: venture capital, cap table, dilution, modelling
 license: 

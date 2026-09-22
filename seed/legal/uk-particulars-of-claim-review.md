@@ -2,6 +2,7 @@
 title: UK Particulars Of Claim Review
 description: Use when users say "review these Particulars of Claim", "check this PoC", "pleading gaps", "CPR 16", "PD16", "limitation issue", or need England and Wales pleadings checked for elements, material fact…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

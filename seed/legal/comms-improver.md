@@ -2,6 +2,7 @@
 title: Comms Improver
 description: Use when the user has a piece of legal-jargon-heavy text and wants it rewritten in plain language for a specified non-legal audience.
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

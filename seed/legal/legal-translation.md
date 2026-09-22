@@ -2,6 +2,7 @@
 title: Legal Translation
 description: Expert-level legal document translation — understands law, not just language. Use whenever a user wants to translate any legal document or legal text between any languages.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

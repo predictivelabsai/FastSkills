@@ -2,6 +2,7 @@
 title: Launch
 description: When the user wants to plan a product launch, feature announcement, or release strategy.
 category: Marketing
+sublabel: Product Marketing
 author: Corey Haines
 tags: 
 license: MIT

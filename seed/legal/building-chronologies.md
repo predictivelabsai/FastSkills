@@ -2,6 +2,7 @@
 title: Building Chronologies
 description: Use when users say "build a chronology", "make a timeline", "what happened when", "chronology from disclosure", "source the key events", or need legal documents, correspondence, pleadings, witness evi…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

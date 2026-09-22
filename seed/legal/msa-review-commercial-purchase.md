@@ -2,6 +2,7 @@
 title: MSA Review Commercial Purchase
 description: Use when the user uploads or pastes a Master Purchase Agreement, Master Supply Agreement, Master Goods Agreement, or commercial purchase MSA covering the procurement of physical goods, equipment, comp…
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

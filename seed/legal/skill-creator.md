@@ -2,6 +2,7 @@
 title: Skill Creator
 description: Use when the user wants to create a new LQ.AI skill, turn a chat into a reusable skill, improve an existing skill, or asks "how do I build a skill that does X." Conducts a focused conversation to elic…
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

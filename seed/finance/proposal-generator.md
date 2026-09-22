@@ -2,6 +2,7 @@
 title: Proposal Generator
 description: Draft tailored proposal text for a family-office service recommendation, grounded in the relationship profile and the specific gap being addressed.
 category: Finance
+sublabel: Investor CRM
 author: Predictive Labs
 tags: proposals, outreach, family office, writing
 license: 

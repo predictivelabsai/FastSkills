@@ -2,6 +2,7 @@
 title: Foreign Law Research
 description: Structured workflow for researching foreign law questions across Chinese, English, and local-language resources.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: MIT

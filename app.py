@@ -50,13 +50,16 @@ def render_markdown(text):
 
 # ── catalog ──────────────────────────────────────────────────────────────────
 @rt("/")
-def get(session, q: str = "", category: str = ""):
+def get(session, q: str = "", category: str = "", sub: str = ""):
     identity = who(session)
     category = category if category in db.CATEGORIES else None
-    items = db.catalog(category, q.strip() or None)
+    sub = sub.strip() or None
+    items = db.catalog(category, q.strip() or None, sub=sub)
     counts = db.category_counts()
     total = sum(counts.values())
-    return views.catalog_page(identity, items, counts, category, q.strip(), total)
+    sublabels = db.sublabels(category) if category else []
+    return views.catalog_page(identity, items, counts, category, q.strip(), total,
+                              sublabels=sublabels, active_sub=sub)
 
 
 @rt("/mine")
@@ -131,6 +134,7 @@ async def post(request, session, sid: int):
             version=int(body.get("version", 0)),
             description=body.get("description"),
             category=body.get("category"),
+            sub_label=body.get("sub_label"),
             author_label=body.get("author_label"),
             tags=body.get("tags"),
             visibility=body.get("visibility"))

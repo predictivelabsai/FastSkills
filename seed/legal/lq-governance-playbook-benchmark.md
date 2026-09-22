@@ -2,6 +2,7 @@
 title: Lq Governance Playbook Benchmark
 description: Use when benchmarking a board-level governance document against the LQ Governance Playbook — a Delegation of Authority policy, committee charter, related party transaction framework, or board terms of…
 category: Legal
+sublabel: Corporate & Governance
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: Image
 description: When the user wants to create, generate, edit, or optimize images for marketing — blog heroes, social graphics, product mockups, profile banners, listing visuals, or brand assets.
 category: Marketing
+sublabel: Content
 author: Corey Haines
 tags: 
 license: MIT

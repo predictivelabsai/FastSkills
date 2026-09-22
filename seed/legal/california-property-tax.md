@@ -2,6 +2,7 @@
 title: California Property Tax
 description: California property tax research workflow using BOE Property Tax Rules (especially 462.* change in ownership, including 462.180 legal entities) and BOE published Property Tax Annotations (PTLG, common…
 category: Legal
+sublabel: Tax
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -61,6 +61,7 @@ def _entries():
             "title": title,
             "description": meta.get("description", "")[:400],
             "category": category,
+            "sub_label": (meta.get("sublabel") or meta.get("sub_label") or "").strip(),
             "author_label": meta.get("author", ""),
             "tags": meta.get("tags", ""),
             "markdown": body.strip(),
@@ -68,6 +69,16 @@ def _entries():
             "license": meta.get("license", ""),
         })
     return entries
+
+
+def _fingerprint(entries):
+    import hashlib
+    h = hashlib.sha256()
+    for e in sorted(entries, key=lambda e: e["slug"]):
+        h.update(("|".join((e["slug"], e["title"], e["description"], e["category"],
+                            e["sub_label"], e["author_label"], e["tags"],
+                            e["markdown"])) + "\n").encode("utf-8"))
+    return h.hexdigest()
 
 
 def run(force=None):
@@ -82,9 +93,14 @@ def run(force=None):
     entries = _entries()
     if not entries:
         return 0
-    if not force and db.count_seeded() >= len(entries):
-        return 0  # already seeded — skip the whole DB round-trip on boot
-    return db.seed_bulk(SEED_OWNER, SEED_OWNER_NAME, entries)
+    fp = _fingerprint(entries)
+    # Re-seed when the seed content has changed (new skills, edited labels, …),
+    # not merely when the row count matches; skip fast when nothing changed.
+    if not force and db.count_seeded() >= len(entries) and db.get_meta("seed_fingerprint") == fp:
+        return 0
+    n = db.seed_bulk(SEED_OWNER, SEED_OWNER_NAME, entries)
+    db.set_meta("seed_fingerprint", fp)
+    return n
 
 
 if __name__ == "__main__":

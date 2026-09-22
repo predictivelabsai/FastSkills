@@ -2,6 +2,7 @@
 title: Validator
 description: Independent validation agent that cross-checks trades against market data with self-correction loop (max n=10)
 category: Trading
+sublabel: Validation
 author: Predictive Labs
 tags: 
 license: 

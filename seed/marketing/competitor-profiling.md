@@ -2,6 +2,7 @@
 title: Competitor Profiling
 description: When the user wants to research, profile, or analyze competitors from their URLs. Also use when the user mentions 'competitor profile,' 'competitor research,' 'competitor analysis,' 'profile this comp…
 category: Marketing
+sublabel: Research
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: PE Deal Screening
 description: Screen a private-equity opportunity against a fund's mandate and return a structured go/no-go with the key diligence questions to pursue.
 category: Finance
+sublabel: Private Equity
 author: Predictive Labs
 tags: private equity, deal sourcing, screening, diligence
 license: 

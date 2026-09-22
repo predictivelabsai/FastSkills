@@ -2,6 +2,7 @@
 title: SGCite
 description: Use when verifying Singapore court citations in legal submissions, checking for hallucinated cases in AI-generated text, or validating citations against eLitigation.
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

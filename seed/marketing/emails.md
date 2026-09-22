@@ -2,6 +2,7 @@
 title: Emails
 description: When the user wants to create or optimize an email sequence, drip campaign, automated email flow, or lifecycle email program.
 category: Marketing
+sublabel: Email & SMS
 author: Corey Haines
 tags: 
 license: MIT

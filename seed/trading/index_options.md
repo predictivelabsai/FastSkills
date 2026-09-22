@@ -2,6 +2,7 @@
 title: Index Options
 description: Discovers and paper trades Alpaca index-option contracts with expiry-aware risk controls
 category: Trading
+sublabel: Options
 author: Predictive Labs
 tags: 
 license: 

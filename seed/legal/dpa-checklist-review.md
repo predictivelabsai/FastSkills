@@ -2,6 +2,7 @@
 title: DPA Checklist Review
 description: Use when the user provides a Data Processing Agreement, Data Processing Addendum, or HIPAA Business Associate Agreement and asks whether it contains the terms required under the applicable data-protec…
 category: Legal
+sublabel: Privacy & Data Protection
 author: LegalQuants
 tags: 
 license: Apache-2.0

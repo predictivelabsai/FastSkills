@@ -2,6 +2,7 @@
 title: Classifyccp
 description: Classifies the treatment of Competition Compliance Programmes (CCPs) in competition law enforcement documents.
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: MIT (see LICENSE)

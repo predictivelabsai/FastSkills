@@ -2,6 +2,7 @@
 title: Influencer Marketing
 description: When the user wants to run influencer, creator, or ambassador partnerships to promote their product — finding and vetting partners, structuring deals, briefing creators, disclosure compliance, and mea…
 category: Marketing
+sublabel: Community & Influencer
 author: Corey Haines
 tags: 
 license: MIT

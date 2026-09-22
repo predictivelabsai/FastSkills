@@ -2,6 +2,7 @@
 title: Vibe Legal Batch Redliner
 description: Use when you need to batch redline multiple contracts against a negotiation playbook, apply tracked changes to Word documents programmatically, or run contract review workflows with AI assistance.
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

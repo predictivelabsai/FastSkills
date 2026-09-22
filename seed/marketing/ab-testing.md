@@ -2,6 +2,7 @@
 title: A/B Testing
 description: When the user wants to plan, design, or implement an A/B test or experiment, or build a growth experimentation program.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: IPO Readiness Assessment
 description: Assess a company's readiness for a public listing across financials, governance, equity story and process — with a gap list and timeline.
 category: Finance
+sublabel: IPO & ECM
 author: Predictive Labs
 tags: ipo, ecm, public markets, readiness
 license: 

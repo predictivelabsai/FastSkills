@@ -2,6 +2,7 @@
 title: Local First Legal Workspace
 description: Use when users say "is this legal AI app local-first", "what leaves the machine", "BYOK privacy", "audit network calls", "where are documents stored", or need a legal AI workspace reviewed for local s…
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

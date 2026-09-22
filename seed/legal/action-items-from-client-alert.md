@@ -2,6 +2,7 @@
 title: Action Items From Client Alert
 description: Use when the user provides a client alert, regulatory bulletin, law firm memo, or similar legal update and wants the time-sensitive action items, deadlines, and obligations extracted into a checklist…
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

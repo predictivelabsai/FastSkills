@@ -2,6 +2,7 @@
 title: UK Court Of Appeal Judicial Preference Check
 description: Use when users say "check this Court of Appeal skeleton", "judicial preference check", "CoA style", "is this too factual", "commercial vs black letter", or need England and Wales appellate drafts test…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

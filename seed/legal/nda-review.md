@@ -2,6 +2,7 @@
 title: NDA Review
 description: Use when reviewing one-way (unilateral) commercial NDAs, analyzing key clauses for risk, producing clause-by-clause issue logs with preferred redlines, fallbacks, and negotiation guidance.
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

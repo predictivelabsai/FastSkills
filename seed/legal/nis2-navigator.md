@@ -2,6 +2,7 @@
 title: NIS2 Navigator
 description: NIS2 Compliance Navigator — scope classification, Art. 21 gap analysis (0-4 maturity scoring), and compliance roadmap under EU Directive 2022/2555 with deep German BSIG-neu coverage and profiles for I…
 category: Legal
+sublabel: Regulatory & Compliance
 author: LegalQuants
 tags: 
 license: Apache-2.0

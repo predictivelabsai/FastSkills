@@ -2,6 +2,7 @@
 title: Referrals
 description: When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy.
 category: Marketing
+sublabel: Growth & CRO
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: Office Word Diff
 description: Use when you need to apply word-level tracked changes to Microsoft Word documents programmatically, preserve formatting through diffs, or integrate with Office.js for document transformation.
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

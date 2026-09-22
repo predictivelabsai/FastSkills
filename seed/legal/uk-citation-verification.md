@@ -2,6 +2,7 @@
 title: UK Citation Verification
 description: Use when users say "verify these UK citations", "check this skeleton for hallucinated cases", "BAILII/FCL check", "is this EWCA citation real", or need UK authorities, paragraph references, case names…
 category: Legal
+sublabel: Legal Research
 author: LegalQuants
 tags: 
 license: Apache-2.0

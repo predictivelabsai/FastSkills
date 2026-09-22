@@ -2,6 +2,7 @@
 title: Tax Law Assistant
 description: Citation-aware tax-law Q&A with provenance over ingested forms, legislation and treaties (RAG) — every answer cites its source.
 category: Finance
+sublabel: Tax & Compliance
 author: Predictive Labs
 tags: tax, research, RAG, compliance
 license: 

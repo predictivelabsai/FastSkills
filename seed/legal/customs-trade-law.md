@@ -2,6 +2,7 @@
 title: Customs Trade Law
 description: HTS classification, CROSS ruling research, CIT/CAFC case mapping for US trade law. Analyzes products, finds applicable rulings, and traces legal precedent.
 category: Legal
+sublabel: Regulatory & Compliance
 author: LegalQuants
 tags: 
 license: Apache-2.0

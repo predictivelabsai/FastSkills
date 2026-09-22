@@ -2,6 +2,7 @@
 title: Legal Claim Economics
 description: Use when users say "model claim economics", "litigation funding waterfall", "portfolio economics", "funder MOIC", "DBA/CFA economics", "Monte Carlo", "ATE/adverse costs", or need legal claim recoverie…
 category: Legal
+sublabel: Litigation
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: Prospecting
 description: When the user wants to find, qualify, and build a list of prospects to reach out to — across B2B SaaS, general B2B, or local small businesses.
 category: Marketing
+sublabel: Sales & Outbound
 author: Corey Haines
 tags: 
 license: MIT

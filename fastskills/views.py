@@ -28,6 +28,21 @@ PARTNERS = (
 
 CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d"}
 
+# Suggested sub-labels per category (see prompts/skill-labeller.md). Editable free
+# text — these only populate the editor's autocomplete.
+SUBLABELS = {
+    "Finance": ["Family Office", "Investor CRM", "Fund Management", "Private Equity",
+                "Venture Capital", "Private Credit", "M&A", "IPO & ECM", "Tax & Compliance"],
+    "Trading": ["Backtesting", "Paper Trading", "Options", "Portfolio Management",
+                "Validation", "Reconciliation", "Reporting"],
+    "Legal": ["Contracts", "Privacy & Data Protection", "Litigation", "Corporate & Governance",
+              "Regulatory & Compliance", "IP & Licensing", "AI Governance", "Legal Research",
+              "Document Review", "Tax"],
+    "Marketing": ["SEO", "Paid Ads", "Content", "Email & SMS", "Social", "Product Marketing",
+                  "Growth & CRO", "Sales & Outbound", "Analytics", "Brand & PR",
+                  "Pricing & Offers", "Community & Influencer", "Research", "Strategy"],
+}
+
 BASE_CSS = r"""
 :root{--accent:#7c3aed;--tint:#f5f3ff;--ink:#172033;--muted:#667085;--line:#e5e7eb;--panel:#f8fafc}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}a{color:inherit}
@@ -38,7 +53,8 @@ BASE_CSS = r"""
 .catwrap{max-width:1200px;margin:34px auto 0;padding:0 24px 70px}.catmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:var(--muted);font-size:14px;flex-wrap:wrap;gap:10px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .15s,transform .15s}.card:hover{box-shadow:0 14px 40px #312e8118;transform:translateY(-2px)}
-.cardtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}
+.cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
+.sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;color:var(--muted)}.author{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ink)}.avatar{width:22px;height:22px;border-radius:99px;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:800}
 .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.tag{font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:2px 9px}
@@ -104,6 +120,7 @@ def skill_card(item):
     author = item.get("author_label") or item.get("owner_name") or "Community"
     return A(
         Div(Span(item["category"], cls="catbadge", style=f"background:{color}"),
+            (Span(item["sub_label"], cls="sublabel") if item.get("sub_label") else None),
             (Span("Private", cls="pagebadge private") if item["visibility"] == "private" else None),
             cls="cardtop"),
         H3(item["title"]),
@@ -114,7 +131,8 @@ def skill_card(item):
         href=f"/skills/{item['id']}", cls="card")
 
 
-def catalog_page(who, items, counts, active_category=None, q="", total=0):
+def catalog_page(who, items, counts, active_category=None, q="", total=0,
+                 sublabels=(), active_sub=None):
     tabs = [A("All", Span(str(total), cls="count"),
               href="/" + (f"?q={quote(q)}" if q else ""),
               cls="tab" + ("" if active_category else " active"))]
@@ -122,9 +140,20 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0):
         params = f"?category={quote(c)}" + (f"&q={quote(q)}" if q else "")
         tabs.append(A(c, Span(str(counts.get(c, 0)), cls="count"), href="/" + params,
                       cls="tab" + (" active" if active_category == c else "")))
+    sub_row = None
+    if active_category and sublabels:
+        qs = f"&q={quote(q)}" if q else ""
+        chips = [A("All", href=f"/?category={quote(active_category)}{qs}",
+                   cls="subchip" + ("" if active_sub else " active"))]
+        for s in sublabels:
+            chips.append(A(s["sub_label"], Span(str(s["n"]), cls="count"),
+                           href=f"/?category={quote(active_category)}&sub={quote(s['sub_label'])}{qs}",
+                           cls="subchip" + (" active" if active_sub == s["sub_label"] else "")))
+        sub_row = Div(*chips, cls="sublabelrow")
     grid = (Div(*[skill_card(i) for i in items], cls="grid") if items
             else Div("No skills match your search yet.", cls="empty"))
-    heading = active_category or ("Results" if q else "All skills")
+    heading = (f"{active_category} · {active_sub}" if active_sub else active_category) \
+        or ("Results" if q else "All skills")
     return Html(
         head("FastSkills · The open skills library"),
         Body(
@@ -139,6 +168,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0):
                      method="get", action="/", cls="searchwrap"),
                 cls="hero"),
             Div(*tabs, cls="tabs"),
+            sub_row,
             Div(Div(Span(f"{len(items)} skill{'s' if len(items) != 1 else ''} · {heading}"),
                     (A("+ Add your skill", href="/skills/new", cls="btn ghost sm") if who
                      else Button("+ Add your skill", cls="btn ghost sm", onclick="authOpen('register')", type="button")),
@@ -171,7 +201,10 @@ def detail_page(who, item, body_html):
             public_nav(who),
             Div(
                 Div(Div(*[A("Browse", href="/"), Span("/"), Span(item["category"])], cls="breadcrumbs"),
-                    Span(item["category"], cls="catbadge", style=f"background:{color}"),
+                    Span(Span(item["category"], cls="catbadge", style=f"background:{color}"),
+                         (A(item["sub_label"], href=f"/?category={quote(item['category'])}&sub={quote(item['sub_label'])}",
+                            cls="sublabel", style="text-decoration:none;margin-left:8px") if item.get("sub_label") else None),
+                         style="display:inline-flex;align-items:center"),
                     H1(item["title"]),
                     (P(item["description"], style="color:var(--muted);font-size:17px;margin:0 0 6px") if item.get("description") else None),
                     Div(*[m for m in meta if m is not None], cls="detailmeta"),
@@ -243,7 +276,7 @@ document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>{const c=editor
  if(cmd==='bold')c.toggleBold().run(); if(cmd==='italic')c.toggleItalic().run(); if(cmd==='underline')c.toggleUnderline().run(); if(cmd==='h2')c.toggleHeading({level:2}).run(); if(cmd==='bullet')c.toggleBulletList().run(); if(cmd==='ordered')c.toggleOrderedList().run(); if(cmd==='quote')c.toggleBlockquote().run(); if(cmd==='code')c.toggleCodeBlock().run(); if(cmd==='table')c.insertTable({rows:3,cols:3,withHeaderRow:true}).run();});
 let timer,version=Number(document.body.dataset.version);
 const title=document.querySelector('#skill-title'); title.addEventListener('input',queueSave);
-['#meta-description','#meta-category','#meta-author','#meta-tags','#meta-visibility'].forEach(sel=>{const node=document.querySelector(sel);if(node)node.addEventListener('input',queueSave)});
+['#meta-description','#meta-category','#meta-sublabel','#meta-author','#meta-tags','#meta-visibility'].forEach(sel=>{const node=document.querySelector(sel);if(node)node.addEventListener('input',queueSave)});
 function meta(sel){const node=document.querySelector(sel);return node?node.value:''}
 function queueSave(){status.textContent='Unsaved changes';clearTimeout(timer);timer=setTimeout(save,700)}
 
@@ -349,7 +382,7 @@ function setMode(mode){
  switching=true;if(mode==='rich')editor.commands.setContent(state.doc,{emitUpdate:false});if(mode==='block')renderBlocks(state.doc);if(mode==='markdown')markdown.value=docMarkdown(state.doc);switching=false;
  document.querySelectorAll('[data-mode]').forEach(button=>{button.classList.toggle('active',button.dataset.mode===mode);button.setAttribute('aria-pressed',button.dataset.mode===mode?'true':'false')});document.querySelectorAll('[data-rich-tool]').forEach(button=>button.hidden=mode!=='rich');
 }
-async function save(){clearTimeout(timer);readMode();status.textContent='Saving…';const markdownValue=state.mode==='markdown'?markdown.value:docMarkdown(state.doc);const res=await fetch(saveUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title.value,content_json:JSON.stringify(state.doc),markdown:markdownValue,version,description:meta('#meta-description'),category:meta('#meta-category'),author_label:meta('#meta-author'),tags:meta('#meta-tags'),visibility:meta('#meta-visibility')})});const out=await res.json();if(res.status===409){status.textContent='Newer version exists — reload';return false}if(res.ok){version=out.version;document.body.dataset.version=version;status.textContent='Saved';return true}status.textContent=out.error||'Save failed';return false}
+async function save(){clearTimeout(timer);readMode();status.textContent='Saving…';const markdownValue=state.mode==='markdown'?markdown.value:docMarkdown(state.doc);const res=await fetch(saveUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title.value,content_json:JSON.stringify(state.doc),markdown:markdownValue,version,description:meta('#meta-description'),category:meta('#meta-category'),sub_label:meta('#meta-sublabel'),author_label:meta('#meta-author'),tags:meta('#meta-tags'),visibility:meta('#meta-visibility')})});const out=await res.json();if(res.status===409){status.textContent='Newer version exists — reload';return false}if(res.ok){version=out.version;document.body.dataset.version=version;status.textContent='Saved';return true}status.textContent=out.error||'Save failed';return false}
 document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>setMode(button.dataset.mode));
 blockEditor.addEventListener('input',queueSave);markdown.addEventListener('input',queueSave);
 document.querySelector('#add-block').onclick=()=>{const added=renderBlock({type:'paragraph',node:{type:'paragraph'}});blockList.appendChild(added);added.querySelector('.block-edit').focus();queueSave()};
@@ -377,6 +410,11 @@ def editor_page(who, item):
         Div(Label("Category"),
             Select(*[Option(c, value=c, selected=(c == item["category"])) for c in CATEGORIES],
                    id="meta-category", name="category"), cls="metafield"),
+        Div(Label("Sub-label"),
+            Input(id="meta-sublabel", name="sub_label", value=item.get("sub_label") or "",
+                  placeholder="e.g. Family Office", list="sublabel-options"),
+            Datalist(*[Option(s) for s in SUBLABELS.get(item["category"], [])], id="sublabel-options"),
+            cls="metafield"),
         Div(Label("Author label"),
             Input(id="meta-author", name="author_label", value=item.get("author_label") or "",
                   placeholder="e.g. Predictive Labs"), cls="metafield"),

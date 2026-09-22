@@ -2,6 +2,7 @@
 title: Customer Research
 description: When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research," "ICP research," "talk to customers," "analyze transcripts," "customer intervie…
 category: Marketing
+sublabel: Research
 author: Corey Haines
 tags: 
 license: MIT

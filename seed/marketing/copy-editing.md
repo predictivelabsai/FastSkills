@@ -2,6 +2,7 @@
 title: Copy Editing
 description: When the user wants to edit, review, or improve existing marketing copy, or refresh outdated content.
 category: Marketing
+sublabel: Content
 author: Corey Haines
 tags: 
 license: MIT

@@ -2,6 +2,7 @@
 title: M&A Buyer Sourcing
 description: Build and prioritise a buyer/acquirer long list for a sell-side M&A mandate, with fit rationale and outreach angle for each name.
 category: Finance
+sublabel: M&A
 author: Predictive Labs
 tags: m&a, buy-side, sourcing, deal origination
 license: 

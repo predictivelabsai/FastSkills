@@ -2,6 +2,7 @@
 title: Outreach Pipeline Monitor
 description: Roll up next-action urgency across the investor-outreach funnel and surface the consultation calendar so nothing goes cold.
 category: Finance
+sublabel: Investor CRM
 author: Predictive Labs
 tags: pipeline, outreach, fund management, prioritization
 license: 

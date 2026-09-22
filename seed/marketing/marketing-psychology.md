@@ -2,6 +2,7 @@
 title: Marketing Psychology
 description: When the user wants to apply psychological principles, mental models, or behavioral science to marketing.
 category: Marketing
+sublabel: Strategy
 author: Corey Haines
 tags: 
 license: MIT

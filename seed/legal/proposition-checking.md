@@ -2,6 +2,7 @@
 title: Proposition Checking
 description: Use when users say "does this authority support the point", "check propositions", "fact-check this argument", "verify record support", or need cited cases, statutes, exhibits, transcripts, emails, or…
 category: Legal
+sublabel: Document Review
 author: LegalQuants
 tags: 
 license: Apache-2.0

@@ -2,6 +2,7 @@
 title: Redlines
 description: Use when you need to generate tracked changes in Word documents from diff output, apply redlines from AI agents to DOCX files, or convert text diffs into native Word revisions.
 category: Legal
+sublabel: Contracts
 author: LegalQuants
 tags: 
 license: Apache-2.0

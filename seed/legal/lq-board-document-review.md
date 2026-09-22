@@ -2,6 +2,7 @@
 title: Lq Board Document Review
 description: Use when reviewing board-level governance documents — Delegation of Authority policies, charters, board resolutions, related party transaction policies, or committee terms of reference.
 category: Legal
+sublabel: Corporate & Governance
 author: LegalQuants
 tags: 
 license: Apache-2.0
