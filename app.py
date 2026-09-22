@@ -180,6 +180,48 @@ def post(session, sid: int):
     return RedirectResponse("/mine", status_code=303)
 
 
+@rt("/skills/{sid:int}/clone")
+def post(session, sid: int):
+    identity = who(session)
+    if not identity:
+        return RedirectResponse(f"/skills/{sid}?auth=required", status_code=303)
+    new_id = db.clone_skill(identity, sid)
+    if not new_id:
+        return Response("Skill not found", status_code=404)
+    return RedirectResponse(f"/skills/{new_id}/edit", status_code=303)
+
+
+@rt("/skills/{sid:int}/versions")
+def get(session, sid: int):
+    identity = who(session)
+    item = db.visible_skill(identity, sid)
+    if not item:
+        return Response("Skill not found", status_code=404)
+    return views.versions_page(identity, item, db.versions(sid), db.can_edit(identity, item))
+
+
+@rt("/skills/{sid:int}/versions/{vid:int}")
+def get(session, sid: int, vid: int):
+    identity = who(session)
+    item = db.visible_skill(identity, sid)
+    if not item:
+        return Response("Skill not found", status_code=404)
+    snap = db.version_snapshot(sid, vid)
+    if not snap:
+        return Response("Version not found", status_code=404)
+    return views.snapshot_page(identity, item, snap, render_markdown(snap["markdown"]),
+                               db.can_edit(identity, item))
+
+
+@rt("/skills/{sid:int}/versions/{vid:int}/restore")
+def post(session, sid: int, vid: int):
+    identity = guard(session)
+    if isinstance(identity, RedirectResponse):
+        return identity
+    db.restore_version(identity, sid, vid)
+    return RedirectResponse(f"/skills/{sid}/edit", status_code=303)
+
+
 # ── local accounts (email/password) ──────────────────────────────────────────
 def _on_local_login(session, account):
     establish_identity(session, account["email"], account.get("name") or "")

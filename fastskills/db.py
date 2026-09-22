@@ -50,6 +50,8 @@ CREATE INDEX IF NOT EXISTS idx_skills_owner ON skills(owner_id, deleted_at)
 # Columns added after the initial schema shipped; applied idempotently on init.
 _MIGRATIONS = [
     "ALTER TABLE skills ADD COLUMN sub_label TEXT DEFAULT ''",
+    "ALTER TABLE skills ADD COLUMN forked_from INTEGER",
+    "ALTER TABLE skills ADD COLUMN forked_from_title TEXT DEFAULT ''",
 ]
 
 
@@ -257,6 +259,58 @@ def trash(who, sid):
         execute("UPDATE skills SET deleted_at=? WHERE id=?", (now(), sid))
         return True
     return False
+
+
+# ── clone / fork ─────────────────────────────────────────────────────────────
+def clone_skill(who, source_id):
+    """Fork any viewable skill into a fresh private draft owned by `who`.
+    Returns the new skill id, or None if the source isn't viewable."""
+    src = skill(source_id)
+    if not can_view(who, src):
+        return None
+    base = _slugify((src["title"] or "skill") + "-copy")
+    slug = _unique_slug(who["sub"], base)
+    ts = now()
+    return insert(
+        "INSERT INTO skills(slug,title,description,category,sub_label,author_label,owner_id,"
+        "visibility,status,tags,content_json,markdown,plain_text,source_url,license,seeded,"
+        "forked_from,forked_from_title,created_by,updated_by,created_at,updated_at) "
+        "VALUES(?,?,?,?,?,?,?,'private','draft',?,?,?,?,?,?,0,?,?,?,?,?,?)",
+        (slug, src["title"], src["description"], src["category"], src["sub_label"],
+         src["author_label"], who["sub"], src["tags"], src["content_json"], src["markdown"],
+         src["plain_text"], src["source_url"], src["license"], source_id, src["title"],
+         who["sub"], who["sub"], ts, ts))
+
+
+# ── version history ──────────────────────────────────────────────────────────
+def versions(sid):
+    """History newest-first: the live row as the current version, then each
+    prior snapshot recorded on save."""
+    cur = skill(sid)
+    if not cur:
+        return []
+    history = [{"version": cur["version"], "title": cur["title"],
+                "created_at": cur["updated_at"], "created_by": cur["updated_by"],
+                "current": True, "version_id": None}]
+    for r in rows("SELECT id,version,title,created_at,created_by FROM skill_versions "
+                  "WHERE skill_id=? ORDER BY version DESC", (sid,)):
+        history.append({**r, "current": False, "version_id": r["id"]})
+    return history
+
+
+def version_snapshot(sid, version_id):
+    return row("SELECT * FROM skill_versions WHERE id=? AND skill_id=?", (version_id, sid))
+
+
+def restore_version(who, sid, version_id):
+    cur = skill(sid)
+    if not can_edit(who, cur):
+        return None
+    snap = version_snapshot(sid, version_id)
+    if not snap:
+        return None
+    return save_skill(who, sid, title=snap["title"], content_json=snap["content_json"],
+                      markdown=snap["markdown"], version=cur["version"])
 
 
 # ── seeding (idempotent upsert keyed on owner+slug) ──────────────────────────

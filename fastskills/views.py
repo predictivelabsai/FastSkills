@@ -10,6 +10,7 @@ from . import account_auth
 
 ACCENT = "#7c3aed"
 TINT = "#f5f3ff"
+REPO_URL = "https://github.com/predictivelabsai/FastSkills"
 FAVICON = "data:image/svg+xml," + quote(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
     '<rect width="64" height="64" rx="16" fill="#7c3aed"/>'
@@ -52,7 +53,9 @@ BASE_CSS = r"""
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:900px;margin:26px auto 0;padding:0 24px}.tab{border:1px solid var(--line);background:#fff;border-radius:99px;padding:9px 16px;font-weight:650;font-size:14px;text-decoration:none;color:var(--ink);display:inline-flex;gap:7px;align-items:center}.tab .count{color:var(--muted);font-size:12px}.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.tab.active .count{color:#ffffffcc}
 .catwrap{max-width:1200px;margin:34px auto 0;padding:0 24px 70px}.catmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:var(--muted);font-size:14px;flex-wrap:wrap;gap:10px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .15s,transform .15s}.card:hover{box-shadow:0 14px 40px #312e8118;transform:translateY(-2px)}
+.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .15s,transform .15s}.card:hover{box-shadow:0 14px 40px #312e8118;transform:translateY(-2px)}
+.card .stretch{text-decoration:none;color:inherit}.card .stretch::after{content:"";position:absolute;inset:0;z-index:0}
+.cardclone{position:relative;z-index:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer}.cardclone:hover{background:var(--tint);border-color:var(--accent)}.cardclone-form{position:relative;z-index:1;margin:0}
 .cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
 .sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
@@ -63,7 +66,8 @@ BASE_CSS = r"""
 .features{background:var(--panel);padding:70px 24px;margin-top:20px}.featuregrid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px}.feature b{color:var(--accent)}.feature h2{font-size:19px;margin:8px 0}.feature p{color:var(--muted);line-height:1.6;margin:0}
 .pricing,.partners{max-width:1200px;margin:auto;padding:70px 24px}.pricing h2,.partners h2{font-size:32px;margin:10px 0}.pricing>p,.partners>p{max-width:720px;color:var(--muted);line-height:1.65}.pricinggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}.pricingcard{border:1px solid var(--line);border-radius:17px;padding:22px}.pricingprice{font-size:34px;font-weight:800;margin:10px 0}.partnergrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:26px}.partner{min-width:0;border:1px solid var(--line);border-radius:17px;padding:18px;text-decoration:none}.partner img{width:40px;height:40px;object-fit:contain}.partner small{display:block;margin-top:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:11px}.partner h3{margin:6px 0;font-size:16px}.partner p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
 /* detail */
-.detail{max-width:840px;margin:0 auto;padding:40px 24px 80px}.detailhead{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.detailhead h1{font-size:38px;letter-spacing:-.03em;margin:14px 0 10px}.detailmeta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}.detailactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.detail{max-width:840px;margin:0 auto;padding:40px 24px 80px}.detailhead{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.detailhead h1{font-size:38px;letter-spacing:-.03em;margin:14px 0 10px}.detailmeta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}.detailactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.detailactions .inlineform{margin:0}.prov{font-size:13px;color:var(--muted);margin:10px 0 0}.prov a{color:var(--accent);font-weight:600}
+.vtable{width:100%;border-collapse:collapse;margin-top:10px}.vtable th,.vtable td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px}.vtable th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.vrow-current{background:var(--tint)}.vbadge{font-size:11px;font-weight:800;color:var(--accent);background:#fff;border:1px solid var(--accent);border-radius:99px;padding:2px 8px}.vactions{display:flex;gap:8px}
 .prose{font-size:16px;line-height:1.72}.prose h1,.prose h2,.prose h3{line-height:1.25;margin-top:1.6em}.prose h1{font-size:28px}.prose h2{font-size:23px}.prose h3{font-size:19px}.prose pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}.prose code{background:var(--panel);border-radius:5px;padding:1px 5px;font-size:.9em}.prose pre code{background:none;padding:0}.prose table{border-collapse:collapse;width:100%}.prose td,.prose th{border:1px solid var(--line);padding:7px 10px}.prose blockquote{border-left:3px solid var(--accent);margin:1em 0;padding-left:14px;color:var(--muted)}.prose img{max-width:100%}
 /* editor shell */
 .shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{background:#f8fafc;border-right:1px solid var(--line);padding:18px;overflow:auto}.sidehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.side-user{font-size:12px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:12px}.sideitem{display:block;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px;color:var(--ink)}.sideitem:hover,.sideitem.active{background:var(--tint);color:var(--accent)}.sidelabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 4px;padding:0 10px}
@@ -114,21 +118,26 @@ def public_nav(who):
     return Nav(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"), right, cls="nav")
 
 
-def skill_card(item):
+def skill_card(item, who=None):
     color = CAT_COLOR.get(item["category"], ACCENT)
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()][:3]
     author = item.get("author_label") or item.get("owner_name") or "Community"
-    return A(
+    clone = (Form(Button("⑂ Clone", type="submit", cls="cardclone"), method="post",
+                  action=f"/skills/{item['id']}/clone", cls="inlineform cardclone-form")
+             if who else
+             Button("⑂ Clone", type="button", cls="cardclone", title="Sign in to clone",
+                    onclick="authOpen('register')"))
+    return Div(
         Div(Span(item["category"], cls="catbadge", style=f"background:{color}"),
             (Span(item["sub_label"], cls="sublabel") if item.get("sub_label") else None),
             (Span("Private", cls="pagebadge private") if item["visibility"] == "private" else None),
             cls="cardtop"),
-        H3(item["title"]),
+        A(H3(item["title"]), href=f"/skills/{item['id']}", cls="stretch"),
         P((item.get("description") or (item.get("plain_text") or "")[:150]), cls="desc"),
         (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
-        Div(Div(Span(_initial(author), cls="avatar"), author, cls="author"),
+        Div(Div(Span(_initial(author), cls="avatar"), author, cls="author"), clone,
             cls="cardfoot"),
-        href=f"/skills/{item['id']}", cls="card")
+        cls="card")
 
 
 def catalog_page(who, items, counts, active_category=None, q="", total=0,
@@ -150,7 +159,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                            href=f"/?category={quote(active_category)}&sub={quote(s['sub_label'])}{qs}",
                            cls="subchip" + (" active" if active_sub == s["sub_label"] else "")))
         sub_row = Div(*chips, cls="sublabelrow")
-    grid = (Div(*[skill_card(i) for i in items], cls="grid") if items
+    grid = (Div(*[skill_card(i, who) for i in items], cls="grid") if items
             else Div("No skills match your search yet.", cls="empty"))
     heading = (f"{active_category} · {active_sub}" if active_sub else active_category) \
         or ("Results" if q else "All skills")
@@ -186,11 +195,20 @@ def detail_page(who, item, body_html):
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()]
     author = item.get("author_label") or item.get("owner_name") or "Community"
     editable = who and (item["owner_id"] == who["sub"])
-    actions = [A("Download SKILL.md", href=f"/skills/{item['id']}/download", cls="btn ghost")]
+    clone_btn = (Form(Button("⑂ Clone", cls="btn"), method="post",
+                      action=f"/skills/{item['id']}/clone", cls="inlineform")
+                 if who else
+                 Button("⑂ Clone", cls="btn", type="button", onclick="authOpen('register')"))
+    actions = [clone_btn,
+               A(f"History · v{item['version']}", href=f"/skills/{item['id']}/versions", cls="btn ghost"),
+               A("Download SKILL.md", href=f"/skills/{item['id']}/download", cls="btn ghost")]
     if item.get("source_url"):
         actions.append(A("View source", href=item["source_url"], target="_blank", rel="noopener", cls="btn ghost"))
+    elif item.get("seeded"):
+        actions.append(A("View in GitHub", href=f"{REPO_URL}/tree/main/seed/{item['category'].lower()}",
+                         target="_blank", rel="noopener", cls="btn ghost"))
     if editable:
-        actions.append(A("Edit", href=f"/skills/{item['id']}/edit", cls="btn"))
+        actions.append(A("Edit", href=f"/skills/{item['id']}/edit", cls="btn ghost"))
     meta = [Span(_initial(author), cls="avatar"), B(author),
             Span("·"), Span(item["category"]),
             (Span("·") if item.get("license") else None),
@@ -208,6 +226,11 @@ def detail_page(who, item, body_html):
                     H1(item["title"]),
                     (P(item["description"], style="color:var(--muted);font-size:17px;margin:0 0 6px") if item.get("description") else None),
                     Div(*[m for m in meta if m is not None], cls="detailmeta"),
+                    (P("⑂ Forked from ", A(item["forked_from_title"] or "the original",
+                                           href=f"/skills/{item['forked_from']}"), cls="prov")
+                     if item.get("forked_from") else None),
+                    (P("Library skill — the default version is maintained in GitHub; edits you make live in your own clone.",
+                       cls="prov") if item.get("seeded") else None),
                     (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
                     Div(*actions, cls="detailactions"),
                     cls="detailhead"),
@@ -218,6 +241,80 @@ def detail_page(who, item, body_html):
                    cls="footer"),
             account_auth.auth_modal("FastSkills"),
             Script(account_auth.AUTH_JS)))
+
+
+def _fmt(ts):
+    if not ts:
+        return ""
+    try:
+        return datetime.fromisoformat(ts.replace("Z", "+00:00")).strftime("%d %b %Y, %H:%M UTC")
+    except (ValueError, AttributeError):
+        return ts
+
+
+def versions_page(who, item, history, can_edit):
+    rows_html = []
+    for h in history:
+        vlabel = Span(f"v{h['version']}",
+                      cls="vbadge") if h["current"] else f"v{h['version']}"
+        if h["current"]:
+            actions = [A("Edit", href=f"/skills/{item['id']}/edit", cls="btn ghost sm")] if can_edit else []
+        else:
+            actions = [A("View", href=f"/skills/{item['id']}/versions/{h['version_id']}", cls="btn ghost sm")]
+            if can_edit:
+                actions.append(Form(Button("Restore", cls="btn ghost sm"), method="post",
+                                    action=f"/skills/{item['id']}/versions/{h['version_id']}/restore",
+                                    cls="inlineform"))
+        rows_html.append(Tr(
+            Td(vlabel, " ", Span("current", style="color:var(--muted);font-size:12px") if h["current"] else ""),
+            Td(h["title"]),
+            Td(_fmt(h["created_at"])),
+            Td(Div(*actions, cls="vactions")),
+            cls="vrow-current" if h["current"] else ""))
+    note = (P("The default version of this library skill is maintained in GitHub. "
+              "Versions below are database edits; clone it to keep your own versioned copy.",
+              cls="prov") if item.get("seeded") else
+            P("Every save creates a new version. You can view or restore any earlier one.",
+              cls="prov"))
+    return Html(
+        head(f"History · {item['title']} · FastSkills"),
+        Body(
+            public_nav(who),
+            Div(
+                Div(*[A("Browse", href="/"), Span("/"),
+                      A(item["title"], href=f"/skills/{item['id']}"), Span("/"), Span("History")],
+                    cls="breadcrumbs"),
+                H1("Version history"),
+                note,
+                Table(Thead(Tr(Th("Version"), Th("Title"), Th("When"), Th("Actions"))),
+                      Tbody(*rows_html), cls="vtable"),
+                cls="detail"),
+            account_auth.auth_modal("FastSkills"), Script(account_auth.AUTH_JS)))
+
+
+def snapshot_page(who, item, snap, body_html, can_edit):
+    restore = (Form(Button("Restore this version", cls="btn"), method="post",
+                    action=f"/skills/{item['id']}/versions/{snap['id']}/restore", cls="inlineform")
+               if can_edit else None)
+    return Html(
+        head(f"v{snap['version']} · {item['title']} · FastSkills"),
+        Body(
+            public_nav(who),
+            Div(
+                Div(*[A("Browse", href="/"), Span("/"),
+                      A(item["title"], href=f"/skills/{item['id']}"), Span("/"),
+                      A("History", href=f"/skills/{item['id']}/versions"), Span("/"),
+                      Span(f"v{snap['version']}")], cls="breadcrumbs"),
+                Div(Span(f"Version {snap['version']}", cls="vbadge"),
+                    Span(f"  saved {_fmt(snap['created_at'])}", cls="prov"),
+                    style="display:flex;align-items:center;gap:10px;margin:10px 0"),
+                H1(snap["title"]),
+                Div(*[e for e in [restore,
+                                  A("Back to history", href=f"/skills/{item['id']}/versions", cls="btn ghost")]
+                      if e is not None], cls="detailactions"),
+                Div(NotStr(body_html), cls="prose", style="margin-top:24px"),
+                cls="detail"),
+            account_auth.auth_modal("FastSkills"), Script(account_auth.AUTH_JS)))
 
 
 def _sidebar(who, active=""):
@@ -238,7 +335,7 @@ def _sidebar(who, active=""):
 
 
 def mine_page(who, items):
-    cards = (Div(*[skill_card(i) for i in items], cls="grid") if items
+    cards = (Div(*[skill_card(i, who) for i in items], cls="grid") if items
              else Div(P("You haven't created any skills yet."),
                       A("Create your first skill", href="/skills/new", cls="btn"), cls="empty"))
     return Html(head("My Skills · FastSkills"),
@@ -400,6 +497,7 @@ def editor_page(who, item):
         Span(f"Editing · {item['category']}", cls="status"),
         Div(Span("Saved", id="save-status", cls="status"),
             A("View", href=f"/skills/{item['id']}", cls="btn ghost sm"),
+            A(f"History · v{item['version']}", href=f"/skills/{item['id']}/versions", cls="btn ghost sm"),
             A("Download", href=f"/skills/{item['id']}/download", cls="btn ghost sm"),
             Form(Input(type="hidden", name="status", value=next_status),
                  Button(status_button, cls="btn sm"),
