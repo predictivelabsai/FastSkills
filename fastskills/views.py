@@ -7,6 +7,7 @@ from fasthtml.common import *
 from .version import RELEASE_DATE, VERSION
 from .db import CATEGORIES
 from . import account_auth
+from .logos import ANTHROPIC_SVG, OPENAI_SVG, GROK_SVG
 
 ACCENT = "#7c3aed"
 TINT = "#f5f3ff"
@@ -50,6 +51,7 @@ BASE_CSS = r"""
 .nav{height:68px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:auto;padding:0 24px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800}.mark{width:34px;height:34px;background:var(--accent);color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:800}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{text-decoration:none;font-weight:600;color:var(--ink)}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:var(--accent);color:#fff;padding:11px 17px;font-weight:700;text-decoration:none;cursor:pointer}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:8px 13px;font-size:13px}
 .hero{max-width:1000px;margin:auto;padding:66px 24px 24px;text-align:center}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.17em;text-transform:uppercase}.hero h1{font-size:clamp(38px,5.4vw,60px);line-height:1.04;letter-spacing:-.05em;margin:16px 0}.hero p{font-size:19px;line-height:1.6;color:var(--muted);max-width:660px;margin:0 auto}
 .searchwrap{max-width:640px;margin:30px auto 0}.searchbar{display:flex;gap:10px}.searchbar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font:inherit;font-size:15px}.searchbar input:focus{outline:2px solid color-mix(in srgb,var(--accent) 22%,white);border-color:var(--accent)}
+.workswith{display:flex;align-items:center;justify-content:center;gap:14px 24px;flex-wrap:wrap;margin:30px auto 0}.ww-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.ww-item{display:inline-flex;align-items:center;gap:8px;color:#3f4654;font-weight:650;font-size:14px}.ww-item svg{height:20px;width:auto;display:block}.ww-item svg path{fill:currentColor}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:900px;margin:26px auto 0;padding:0 24px}.tab{border:1px solid var(--line);background:#fff;border-radius:99px;padding:9px 16px;font-weight:650;font-size:14px;text-decoration:none;color:var(--ink);display:inline-flex;gap:7px;align-items:center}.tab .count{color:var(--muted);font-size:12px}.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.tab.active .count{color:#ffffffcc}
 .catwrap{max-width:1200px;margin:34px auto 0;padding:0 24px 70px}.catmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:var(--muted);font-size:14px;flex-wrap:wrap;gap:10px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -85,7 +87,7 @@ BASE_CSS = r"""
 """
 
 
-def head(title, description="An open, searchable catalog of Claude skills for Finance, Trading, Legal and Marketing."):
+def head(title, description="An open, searchable catalog of reusable skills for Finance, Trading, Legal and Marketing."):
     return Head(
         Title(title), Meta(charset="utf-8"),
         Meta(name="viewport", content="width=device-width,initial-scale=1"),
@@ -170,11 +172,16 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
             Section(
                 Span("Open skills library", cls="eyebrow"),
                 H1("Find the skill for the job."),
-                P("A searchable catalog of Claude skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
+                P("A searchable catalog of reusable skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
                 Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
                          Button("Search", cls="btn"), cls="searchbar"),
                      (Input(type="hidden", name="category", value=active_category) if active_category else None),
                      method="get", action="/", cls="searchwrap"),
+                Div(Span("Works with", cls="ww-label"),
+                    Span(NotStr(ANTHROPIC_SVG), "Anthropic", cls="ww-item"),
+                    Span(NotStr(OPENAI_SVG), "ChatGPT", cls="ww-item"),
+                    Span(NotStr(GROK_SVG), "xAI / Grok", cls="ww-item"),
+                    cls="workswith"),
                 cls="hero"),
             Div(*tabs, cls="tabs"),
             sub_row,
