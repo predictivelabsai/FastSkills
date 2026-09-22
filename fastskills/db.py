@@ -303,5 +303,6 @@ def seed_bulk(owner_id, owner_name, entries):
             n += 1
     return n
 
-
-init()
+# NOTE: init() is intentionally NOT called at import time. Importing this module
+# must never touch the database (a slow/unreachable Postgres would block the web
+# server from binding its port). Startup runs init() in a background thread.

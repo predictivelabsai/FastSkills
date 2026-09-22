@@ -10,6 +10,8 @@ os.environ.setdefault("FASTSKILLS_DB", "data/test-fastskills.sqlite")
 
 from fastskills import db, seed, mdconvert  # noqa: E402
 
+db.init()  # create schema/tables (no longer done at import)
+
 
 def _who(email="tester@example.com"):
     who = {"sub": email, "email": email, "name": "Tester"}

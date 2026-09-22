@@ -74,6 +74,7 @@ def run(force=None):
     """Load seed/ into the DB. Idempotent and fast on reboot: if the catalog is
     already fully seeded it returns immediately without touching the DB. Set
     FASTSKILLS_FORCE_SEED=1 (or pass force=True) to re-upsert every entry."""
+    db.init()  # ensure schema/tables exist (idempotent)
     if not SEED_DIR.is_dir():
         return 0
     if force is None:

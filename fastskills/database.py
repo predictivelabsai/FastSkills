@@ -41,8 +41,11 @@ if IS_PG:
     def _translate(sql: str) -> str:
         return sql.replace("?", "%s")
 
+    _CONNECT_TIMEOUT = int(os.getenv("DB_CONNECT_TIMEOUT", "10"))
+
     def _connect():
-        conn = psycopg.connect(_dsn(), autocommit=False, row_factory=dict_row)
+        conn = psycopg.connect(_dsn(), autocommit=False, row_factory=dict_row,
+                               connect_timeout=_CONNECT_TIMEOUT)
         conn.execute(f"SET search_path TO {DB_SCHEMA}, public")
         return conn
 else:
