@@ -59,7 +59,8 @@ def get(session, q: str = "", category: str = "", sub: str = ""):
     total = sum(counts.values())
     sublabels = db.sublabels(category) if category else []
     return views.catalog_page(identity, items, counts, category, q.strip(), total,
-                              sublabels=sublabels, active_sub=sub)
+                              sublabels=sublabels, active_sub=sub,
+                              fav_ids=db.favourite_ids(identity))
 
 
 @rt("/mine")
@@ -67,12 +68,32 @@ def get(session):
     identity = guard(session)
     if isinstance(identity, RedirectResponse):
         return identity
-    return views.mine_page(identity, db.mine(identity))
+    return views.mine_page(identity, db.mine(identity), db.favourite_ids(identity))
 
 
 @rt("/docs")
 def get(session):
     return views.docs_page(who(session))
+
+
+@rt("/favourites")
+def get(session, category: str = ""):
+    identity = guard(session)
+    if isinstance(identity, RedirectResponse):
+        return identity
+    category = category if category in db.CATEGORIES else None
+    items = db.favourites(identity, category)
+    return views.favourites_page(identity, items, db.favourite_counts(identity), category)
+
+
+@rt("/skills/{sid:int}/favourite")
+def post(request, session, sid: int):
+    identity = who(session)
+    if not identity:
+        return RedirectResponse(f"/skills/{sid}?auth=required", status_code=303)
+    db.toggle_favourite(identity, sid)
+    dest = request.headers.get("referer") or f"/skills/{sid}"
+    return RedirectResponse(dest, status_code=303)
 
 
 @rt("/skills/new")
@@ -90,7 +111,8 @@ def get(session, sid: int):
     item = db.visible_skill(identity, sid)
     if not item:
         return Response("Skill not found", status_code=404)
-    return views.detail_page(identity, item, render_markdown(item["markdown"]))
+    return views.detail_page(identity, item, render_markdown(item["markdown"]),
+                             faved=db.is_favourite(identity, sid))
 
 
 @rt("/skills/{sid:int}/download")

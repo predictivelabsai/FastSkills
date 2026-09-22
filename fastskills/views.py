@@ -58,7 +58,8 @@ BASE_CSS = r"""
 .card{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .15s,transform .15s}.card:hover{box-shadow:0 14px 40px #312e8118;transform:translateY(-2px)}
 .card .stretch{text-decoration:none;color:inherit}.card .stretch::after{content:"";position:absolute;inset:0;z-index:0}
 .cardclone{position:relative;z-index:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer}.cardclone:hover{background:var(--tint);border-color:var(--accent)}.cardclone-form{position:relative;z-index:1;margin:0}
-.cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
+.cardfav-wrap{position:absolute;top:9px;right:12px;z-index:1}.cardfav-wrap form{margin:0}.cardfav{border:0;background:transparent;font-size:20px;line-height:1;color:#c7ccd6;cursor:pointer;padding:2px}.cardfav:hover{color:#f59e0b}.cardfav.on{color:#f59e0b}
+.cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-right:26px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
 .sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;color:var(--muted)}.author{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ink)}.avatar{width:22px;height:22px;border-radius:99px;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:800}
@@ -68,7 +69,7 @@ BASE_CSS = r"""
 .features{background:var(--panel);padding:70px 24px;margin-top:20px}.featuregrid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px}.feature b{color:var(--accent)}.feature h2{font-size:19px;margin:8px 0}.feature p{color:var(--muted);line-height:1.6;margin:0}
 .pricing,.partners{max-width:1200px;margin:auto;padding:70px 24px}.pricing h2,.partners h2{font-size:32px;margin:10px 0}.pricing>p,.partners>p{max-width:720px;color:var(--muted);line-height:1.65}.pricinggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}.pricingcard{border:1px solid var(--line);border-radius:17px;padding:22px}.pricingprice{font-size:34px;font-weight:800;margin:10px 0}.partnergrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:26px}.partner{min-width:0;border:1px solid var(--line);border-radius:17px;padding:18px;text-decoration:none}.partner img{width:40px;height:40px;object-fit:contain}.partner small{display:block;margin-top:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:11px}.partner h3{margin:6px 0;font-size:16px}.partner p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
 /* detail */
-.detail{max-width:840px;margin:0 auto;padding:40px 24px 80px}.detailhead{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.detailhead h1{font-size:38px;letter-spacing:-.03em;margin:14px 0 10px}.detailmeta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}.detailactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.detailactions .inlineform{margin:0}.prov{font-size:13px;color:var(--muted);margin:10px 0 0}.prov a{color:var(--accent);font-weight:600}
+.detail{max-width:840px;margin:0 auto;padding:40px 24px 80px}.detailhead{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.detailhead h1{font-size:38px;letter-spacing:-.03em;margin:14px 0 10px}.detailmeta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px}.detailactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.detailactions .inlineform{margin:0}.btn.fav-on{color:#b45309;border-color:#f4c77b}.prov{font-size:13px;color:var(--muted);margin:10px 0 0}.prov a{color:var(--accent);font-weight:600}
 .vtable{width:100%;border-collapse:collapse;margin-top:10px}.vtable th,.vtable td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px}.vtable th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.vrow-current{background:var(--tint)}.vbadge{font-size:11px;font-weight:800;color:var(--accent);background:#fff;border:1px solid var(--accent);border-radius:99px;padding:2px 8px}.vactions{display:flex;gap:8px}
 .prose{font-size:16px;line-height:1.72}.prose h1,.prose h2,.prose h3{line-height:1.25;margin-top:1.6em}.prose h1{font-size:28px}.prose h2{font-size:23px}.prose h3{font-size:19px}.prose pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}.prose code{background:var(--panel);border-radius:5px;padding:1px 5px;font-size:.9em}.prose pre code{background:none;padding:0}.prose table{border-collapse:collapse;width:100%}.prose td,.prose th{border:1px solid var(--line);padding:7px 10px}.prose blockquote{border-left:3px solid var(--accent);margin:1em 0;padding-left:14px;color:var(--muted)}.prose img{max-width:100%}
 /* editor shell */
@@ -148,7 +149,7 @@ def site_footer():
         cls="footer")
 
 
-def skill_card(item, who=None):
+def skill_card(item, who=None, fav_ids=None):
     color = CAT_COLOR.get(item["category"], ACCENT)
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()][:3]
     author = item.get("author_label") or item.get("owner_name") or "Community"
@@ -157,7 +158,16 @@ def skill_card(item, who=None):
              if who else
              Button("⑂ Clone", type="button", cls="cardclone", title="Sign in to clone",
                     onclick="authOpen('login')"))
+    faved = bool(fav_ids and item["id"] in fav_ids)
+    fav_inner = (Form(Button("★" if faved else "☆", type="submit",
+                             cls="cardfav" + (" on" if faved else ""),
+                             title="Remove bookmark" if faved else "Bookmark"),
+                      method="post", action=f"/skills/{item['id']}/favourite", cls="inlineform")
+                 if who else
+                 Button("☆", type="button", cls="cardfav", title="Sign in to bookmark",
+                        onclick="authOpen('login')"))
     return Div(
+        Div(fav_inner, cls="cardfav-wrap"),
         Div(Span(item["category"], cls="catbadge", style=f"background:{color}"),
             (Span(item["sub_label"], cls="sublabel") if item.get("sub_label") else None),
             (Span("Private", cls="pagebadge private") if item["visibility"] == "private" else None),
@@ -171,7 +181,7 @@ def skill_card(item, who=None):
 
 
 def catalog_page(who, items, counts, active_category=None, q="", total=0,
-                 sublabels=(), active_sub=None):
+                 sublabels=(), active_sub=None, fav_ids=None):
     tabs = [A("All", Span(str(total), cls="count"),
               href="/" + (f"?q={quote(q)}" if q else ""),
               cls="tab" + ("" if active_category else " active"))]
@@ -189,7 +199,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                            href=f"/?category={quote(active_category)}&sub={quote(s['sub_label'])}{qs}",
                            cls="subchip" + (" active" if active_sub == s["sub_label"] else "")))
         sub_row = Div(*chips, cls="sublabelrow")
-    grid = (Div(*[skill_card(i, who) for i in items], cls="grid") if items
+    grid = (Div(*[skill_card(i, who, fav_ids) for i in items], cls="grid") if items
             else Div("No skills match your search yet.", cls="empty"))
     heading = (f"{active_category} · {active_sub}" if active_sub else active_category) \
         or ("Results" if q else "All skills")
@@ -226,7 +236,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
             Script(account_auth.AUTH_JS)))
 
 
-def detail_page(who, item, body_html):
+def detail_page(who, item, body_html, faved=False):
     color = CAT_COLOR.get(item["category"], ACCENT)
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()]
     author = item.get("author_label") or item.get("owner_name") or "Community"
@@ -235,7 +245,13 @@ def detail_page(who, item, body_html):
                       action=f"/skills/{item['id']}/clone", cls="inlineform")
                  if who else
                  Button("⑂ Clone", cls="btn", type="button", onclick="authOpen('login')"))
-    actions = [clone_btn,
+    fav_btn = (Form(Button(("★ Bookmarked" if faved else "☆ Bookmark"),
+                           cls="btn ghost" + (" fav-on" if faved else "")),
+                    method="post", action=f"/skills/{item['id']}/favourite", cls="inlineform")
+               if who else
+               Button("☆ Bookmark", type="button", cls="btn ghost",
+                      onclick="authOpen('login')"))
+    actions = [clone_btn, fav_btn,
                A(f"History · v{item['version']}", href=f"/skills/{item['id']}/versions", cls="btn ghost"),
                A("Download SKILL.md", href=f"/skills/{item['id']}/download", cls="btn ghost")]
     if item.get("source_url"):
@@ -598,6 +614,7 @@ def _sidebar(who, active=""):
             A("＋", href="/skills/new", title="New skill"), cls="sidehead"),
         Div(f"{who.get('name') or who['email']}", cls="side-user"),
         item("Browse all", "/", "browse"),
+        item("★ Favourites", "/favourites", "favourites"),
         item("My Skills", "/mine", "mine"),
         item("New Skill", "/skills/new", "new"),
         Div("Categories", cls="sidelabel"), *cat_links,
@@ -606,8 +623,33 @@ def _sidebar(who, active=""):
         cls="sidebar")
 
 
-def mine_page(who, items):
-    cards = (Div(*[skill_card(i, who) for i in items], cls="grid") if items
+def favourites_page(who, items, counts, category=None):
+    total = sum(counts.values())
+    fav_ids = {i["id"] for i in items}
+    tabs = [A("All", Span(str(total), cls="count"), href="/favourites",
+              cls="tab" + ("" if category else " active"))]
+    for c in CATEGORIES:
+        n = counts.get(c, 0)
+        if n or category == c:
+            tabs.append(A(c, Span(str(n), cls="count"), href=f"/favourites?category={quote(c)}",
+                          cls="tab" + (" active" if category == c else "")))
+    cards = (Div(*[skill_card(i, who, fav_ids) for i in items], cls="grid") if items else
+             Div(P("No bookmarks yet."),
+                 P("Browse the catalog and tap the ☆ on any skill to save it here.", cls="prov"),
+                 A("Browse skills", href="/", cls="btn", style="margin-top:12px"), cls="empty"))
+    return Html(head("Favourites · FastSkills"),
+                Body(_sidebar(who, "favourites"),
+                     Main(Div(H1("Favourites", style="margin:6px 0 4px"),
+                              P("Skills you've bookmarked.", cls="prov"),
+                              Div(*tabs, cls="tabs", style="justify-content:flex-start;margin-top:16px"),
+                              Div(cards, style="margin-top:20px"),
+                              cls="catwrap", style="margin-top:26px"),
+                          cls="workspace"),
+                     cls="shell"))
+
+
+def mine_page(who, items, fav_ids=None):
+    cards = (Div(*[skill_card(i, who, fav_ids) for i in items], cls="grid") if items
              else Div(P("You haven't created any skills yet."),
                       A("Create your first skill", href="/skills/new", cls="btn"), cls="empty"))
     return Html(head("My Skills · FastSkills"),

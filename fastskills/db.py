@@ -43,6 +43,10 @@ CREATE TABLE IF NOT EXISTS skill_versions(
   id {PK}, skill_id INTEGER, version INTEGER,
   title TEXT, content_json TEXT, markdown TEXT, created_by TEXT, created_at TEXT);
 CREATE TABLE IF NOT EXISTS app_meta(key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE IF NOT EXISTS favourites(
+  user_id TEXT NOT NULL, skill_id INTEGER NOT NULL, created_at TEXT,
+  PRIMARY KEY(user_id, skill_id));
+CREATE INDEX IF NOT EXISTS idx_favourites_user ON favourites(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_skills_category ON skills(category, visibility, status);
 CREATE INDEX IF NOT EXISTS idx_skills_owner ON skills(owner_id, deleted_at)
 """
@@ -174,6 +178,55 @@ def mine(who):
     return rows("SELECT s.*,u.name owner_name FROM skills s LEFT JOIN users u ON u.id=s.owner_id "
                 "WHERE s.owner_id=? AND s.deleted_at IS NULL ORDER BY s.updated_at DESC",
                 (who["sub"],))
+
+
+# ── favourites / bookmarks ───────────────────────────────────────────────────
+def favourite_ids(who):
+    if not who:
+        return set()
+    return {r["skill_id"] for r in
+            rows("SELECT skill_id FROM favourites WHERE user_id=?", (who["sub"],))}
+
+
+def is_favourite(who, sid):
+    if not who:
+        return False
+    return bool(row("SELECT 1 FROM favourites WHERE user_id=? AND skill_id=?", (who["sub"], sid)))
+
+
+def toggle_favourite(who, sid):
+    """Add or remove a bookmark; returns the new state (True = favourited)."""
+    if not who or not can_view(who, skill(sid)):
+        return False
+    if is_favourite(who, sid):
+        execute("DELETE FROM favourites WHERE user_id=? AND skill_id=?", (who["sub"], sid))
+        return False
+    execute("INSERT INTO favourites(user_id,skill_id,created_at) VALUES(?,?,?) "
+            "ON CONFLICT(user_id,skill_id) DO NOTHING", (who["sub"], sid, now()))
+    return True
+
+
+def _fav_visible():
+    return "((s.visibility='public' AND s.status='published') OR s.owner_id=?)"
+
+
+def favourites(who, category=None):
+    where = ["f.user_id=?", "s.deleted_at IS NULL", _fav_visible()]
+    args = [who["sub"], who["sub"]]
+    if category in CATEGORIES:
+        where.append("s.category=?"); args.append(category)
+    return rows(
+        "SELECT s.*,u.name owner_name FROM favourites f JOIN skills s ON s.id=f.skill_id "
+        "LEFT JOIN users u ON u.id=s.owner_id "
+        f"WHERE {' AND '.join(where)} ORDER BY f.created_at DESC", args)
+
+
+def favourite_counts(who):
+    found = rows(
+        "SELECT s.category, count(*) n FROM favourites f JOIN skills s ON s.id=f.skill_id "
+        f"WHERE f.user_id=? AND s.deleted_at IS NULL AND {_fav_visible()} GROUP BY s.category",
+        (who["sub"], who["sub"]))
+    return {r["category"]: r["n"] for r in found}
 
 
 # ── writes ───────────────────────────────────────────────────────────────────
