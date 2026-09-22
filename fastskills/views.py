@@ -128,7 +128,7 @@ def skill_card(item, who=None):
                   action=f"/skills/{item['id']}/clone", cls="inlineform cardclone-form")
              if who else
              Button("⑂ Clone", type="button", cls="cardclone", title="Sign in to clone",
-                    onclick="authOpen('register')"))
+                    onclick="authOpen('login')"))
     return Div(
         Div(Span(item["category"], cls="catbadge", style=f"background:{color}"),
             (Span(item["sub_label"], cls="sublabel") if item.get("sub_label") else None),
@@ -208,7 +208,7 @@ def detail_page(who, item, body_html):
     clone_btn = (Form(Button("⑂ Clone", cls="btn"), method="post",
                       action=f"/skills/{item['id']}/clone", cls="inlineform")
                  if who else
-                 Button("⑂ Clone", cls="btn", type="button", onclick="authOpen('register')"))
+                 Button("⑂ Clone", cls="btn", type="button", onclick="authOpen('login')"))
     actions = [clone_btn,
                A(f"History · v{item['version']}", href=f"/skills/{item['id']}/versions", cls="btn ghost"),
                A("Download SKILL.md", href=f"/skills/{item['id']}/download", cls="btn ghost")]
