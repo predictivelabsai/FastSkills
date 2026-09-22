@@ -70,6 +70,11 @@ def get(session):
     return views.mine_page(identity, db.mine(identity))
 
 
+@rt("/docs")
+def get(session):
+    return views.docs_page(who(session))
+
+
 @rt("/skills/new")
 def get(session):
     identity = guard(session)

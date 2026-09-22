@@ -64,7 +64,7 @@ BASE_CSS = r"""
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;color:var(--muted)}.author{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ink)}.avatar{width:22px;height:22px;border-radius:99px;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:800}
 .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.tag{font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:2px 9px}
 .empty{padding:60px 24px;text-align:center;color:var(--muted)}
-.footer{max-width:1200px;margin:auto;padding:36px 24px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line)}.footer a{text-decoration:none}
+.footer{max-width:1200px;margin:auto;padding:30px 24px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:14px 24px;flex-wrap:wrap;border-top:1px solid var(--line);font-size:14px}.footer a{text-decoration:none;color:var(--muted)}.footer a:hover{color:var(--accent)}.foot-right{display:flex;gap:20px;flex-wrap:wrap}.foot-right a{font-weight:600}
 .features{background:var(--panel);padding:70px 24px;margin-top:20px}.featuregrid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px}.feature b{color:var(--accent)}.feature h2{font-size:19px;margin:8px 0}.feature p{color:var(--muted);line-height:1.6;margin:0}
 .pricing,.partners{max-width:1200px;margin:auto;padding:70px 24px}.pricing h2,.partners h2{font-size:32px;margin:10px 0}.pricing>p,.partners>p{max-width:720px;color:var(--muted);line-height:1.65}.pricinggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}.pricingcard{border:1px solid var(--line);border-radius:17px;padding:22px}.pricingprice{font-size:34px;font-weight:800;margin:10px 0}.partnergrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:26px}.partner{min-width:0;border:1px solid var(--line);border-radius:17px;padding:18px;text-decoration:none}.partner img{width:40px;height:40px;object-fit:contain}.partner small{display:block;margin-top:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:11px}.partner h3{margin:6px 0;font-size:16px}.partner p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
 /* detail */
@@ -82,6 +82,14 @@ BASE_CSS = r"""
 .block-editor{min-height:400px}.block-actions{margin-bottom:10px}.block-list{display:flex;flex-direction:column;gap:7px}.block-row{display:grid;grid-template-columns:auto 122px minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px;border:1px solid transparent;border-radius:10px}.block-row:hover{border-color:var(--line);background:#f8fafc}.block-format{display:flex;gap:2px;padding-top:4px}.block-format button{width:25px;height:25px;border:1px solid var(--line);border-radius:5px;background:#fff;cursor:pointer;font-size:11px}.block-type{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:7px;font:inherit;font-size:12px}.block-body{min-width:0}.block-edit,.block-raw{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 10px;font:inherit;line-height:1.5;outline:0}.block-edit.heading1{font-size:26px;font-weight:800}.block-edit.heading2{font-size:21px;font-weight:750}.block-edit.heading3{font-size:18px;font-weight:700}.block-edit.quote{border-left:4px solid var(--accent);color:var(--muted);font-style:italic}.block-raw{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}.block-controls{display:flex;gap:2px}.block-control{border:0;background:transparent;color:var(--muted);border-radius:5px;padding:5px;cursor:pointer}.block-control:hover{background:var(--tint);color:var(--accent)}.block-table{border-collapse:collapse;width:100%;font-size:13px}.block-table td,.block-table th{border:1px solid var(--line);padding:7px;min-width:75px}.block-table th{background:var(--tint)}.block-table-tools{display:flex;gap:5px;margin-top:5px}
 .breadcrumbs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-bottom:12px}.breadcrumbs a{text-decoration:none}.pagebadge{border-radius:99px;background:#fff7ed;color:#9a3412;font-size:10px;font-weight:800;padding:2px 7px;text-transform:uppercase}.pagebadge.published{background:#ecfdf3;color:#027a48}.pagebadge.public{background:#eef2ff;color:#3730a3}.pagebadge.private{background:#f3f4f6;color:#374151}
 .release{display:block;padding:14px 10px 0;color:var(--muted);font-size:10px}
+.docs{max-width:1180px;margin:0 auto;padding:36px 24px 90px;display:grid;grid-template-columns:236px minmax(0,1fr);gap:52px}
+.toc{position:sticky;top:88px;align-self:start;max-height:calc(100vh - 110px);overflow:auto}.toc h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;padding:0 10px}.toc a{display:block;padding:6px 10px;border-radius:8px;text-decoration:none;color:var(--muted);font-size:13.5px;border-left:2px solid transparent;line-height:1.35}.toc a:hover{color:var(--ink);background:var(--panel)}.toc a.active{color:var(--accent);border-left-color:var(--accent);background:var(--tint);font-weight:650}
+.doc-body{min-width:0}.doc-body h1{font-size:40px;letter-spacing:-.03em;margin:0 0 10px}.doc-lead{font-size:18px;color:var(--muted);line-height:1.6;margin:0 0 6px}
+.doc-section{scroll-margin-top:88px;padding:30px 0;border-top:1px solid var(--line)}.doc-section h2{font-size:25px;letter-spacing:-.02em;margin:0 0 14px}.doc-section h3{font-size:17px;margin:24px 0 8px}.doc-section p,.doc-section li{line-height:1.72;color:var(--ink);font-size:15.5px}.doc-section p{margin:11px 0}.doc-section ul,.doc-section ol{padding-left:22px;margin:11px 0}.doc-section li{margin:5px 0}.doc-section a{color:var(--accent);font-weight:600;text-decoration:none}.doc-section a:hover{text-decoration:underline}
+.doc-section code{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.88em}.doc-section pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px;overflow:auto;margin:14px 0}.doc-section pre code{background:none;border:0;padding:0;font-size:13px;line-height:1.6}
+.doc-section table{border-collapse:collapse;width:100%;margin:14px 0;display:block;overflow-x:auto}.doc-section th,.doc-section td{border:1px solid var(--line);padding:9px 11px;text-align:left;font-size:14px;vertical-align:top}.doc-section th{background:var(--panel);font-weight:700}
+.callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--tint);border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14.5px;line-height:1.6}
+@media(max-width:860px){.docs{grid-template-columns:1fr;gap:0}.toc{display:none}}
 @media(max-width:960px){.grid,.featuregrid,.partnergrid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.grid,.featuregrid,.partnergrid,.pricinggrid,.metagrid{grid-template-columns:1fr}.shell{grid-template-columns:1fr}.sidebar{display:none}.editorwrap{padding:28px 18px}}
 """
@@ -106,6 +114,7 @@ def public_nav(who):
     if who:
         right = Div(
             A("Browse", href="/"),
+            A("Docs", href="/docs"),
             A("My Skills", href="/mine"),
             A("New Skill", href="/skills/new", cls="btn sm"),
             Span(_initial(who.get("name") or who["email"]), cls="avatar", title=who.get("name")),
@@ -114,10 +123,29 @@ def public_nav(who):
     else:
         right = Div(
             A("Browse", href="/"),
+            A("Docs", href="/docs"),
             Button("Sign in", cls="btn ghost sm", onclick="authOpen('login')", type="button"),
             Button("Add a skill", cls="btn sm", onclick="authOpen('register')", type="button"),
             cls="navlinks")
     return Nav(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"), right, cls="nav")
+
+
+LINKEDIN_URL = "https://www.linkedin.com/company/predictive-labs-ltd"
+PREDICTIVELABS_URL = "https://predictivelabs.ai"
+
+
+def site_footer():
+    return Footer(
+        Div("© ", str(datetime.now().year), " ",
+            A("Predictive Labs Ltd", href=PREDICTIVELABS_URL, target="_blank", rel="noopener"),
+            " · Part of the open-source ",
+            A("FastSME", href="https://fastsme.com", target="_blank", rel="noopener"), " suite.",
+            cls="foot-left"),
+        Div(A("GitHub", href=REPO_URL, target="_blank", rel="noopener"),
+            A("LinkedIn", href=LINKEDIN_URL, target="_blank", rel="noopener"),
+            A("predictivelabs.ai", href=PREDICTIVELABS_URL, target="_blank", rel="noopener"),
+            cls="foot-right"),
+        cls="footer")
 
 
 def skill_card(item, who=None):
@@ -193,9 +221,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                      else Button("+ Add your skill", cls="btn ghost sm", onclick="authOpen('register')", type="button")),
                     cls="catmeta"),
                 grid, cls="catwrap"),
-            Footer(Span("FastSkills is part of the open-source FastSME suite."),
-                   A("Discover freedom with open source →", href="https://fastsme.com"),
-                   cls="footer"),
+            site_footer(),
             account_auth.auth_modal("FastSkills"),
             Script(account_auth.AUTH_JS)))
 
@@ -246,9 +272,7 @@ def detail_page(who, item, body_html):
                     cls="detailhead"),
                 Div(NotStr(body_html), cls="prose"),
                 cls="detail"),
-            Footer(Span("FastSkills is part of the open-source FastSME suite."),
-                   A("Discover freedom with open source →", href="https://fastsme.com"),
-                   cls="footer"),
+            site_footer(),
             account_auth.auth_modal("FastSkills"),
             Script(account_auth.AUTH_JS)))
 
@@ -299,6 +323,7 @@ def versions_page(who, item, history, can_edit):
                 Table(Thead(Tr(Th("Version"), Th("Title"), Th("When"), Th("Actions"))),
                       Tbody(*rows_html), cls="vtable"),
                 cls="detail"),
+            site_footer(),
             account_auth.auth_modal("FastSkills"), Script(account_auth.AUTH_JS)))
 
 
@@ -324,7 +349,244 @@ def snapshot_page(who, item, snap, body_html, can_edit):
                       if e is not None], cls="detailactions"),
                 Div(NotStr(body_html), cls="prose", style="margin-top:24px"),
                 cls="detail"),
+            site_footer(),
             account_auth.auth_modal("FastSkills"), Script(account_auth.AUTH_JS)))
+
+
+DOCS_JS = r"""
+const _tl=[...document.querySelectorAll('.toc a')];
+const _tm=new Map(_tl.map(a=>[a.getAttribute('href').slice(1),a]));
+const _io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){_tl.forEach(l=>l.classList.remove('active'));const a=_tm.get(e.target.id);if(a)a.classList.add('active')}})},{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('.doc-section').forEach(s=>_io.observe(s));
+"""
+
+
+def _skill_example():
+    return ("---\n"
+            "title: NDA Review\n"
+            "description: Review a one-way NDA and produce a clause-by-clause issue log.\n"
+            "category: Legal\n"
+            "sublabel: Contracts\n"
+            "author: Your Name\n"
+            "tags: nda, contracts, review\n"
+            "license: MIT\n"
+            "---\n\n"
+            "# NDA Review\n\n"
+            "## When to use\n"
+            "- Reviewing a one-way commercial NDA before signature.\n\n"
+            "## Steps\n"
+            "1. Identify the parties, term, and definition of Confidential Information.\n"
+            "2. Flag one-sided or unusual clauses with a preferred redline.\n"
+            "3. Output an issue log: clause, risk, recommendation.\n")
+
+
+def docs_page(who):
+    sections = [
+        ("overview", "Overview", [
+            P("FastSkills is an open, searchable catalog of reusable ", B("skills"),
+              " for AI assistants — packaged instructions that teach a model how to perform "
+              "a specific task well. Every skill is a plain Markdown file you can read, "
+              "download, clone and version. The library is organised into four domains — ",
+              B("Finance, Trading, Legal and Marketing"), " — each with a second level of "
+              "sub-labels for quick navigation."),
+            P("Skills follow the open ", B("SKILL.md"), " format, so a skill you find here "
+              "works with any assistant that supports it — including Claude, ChatGPT and Grok."),
+            Div("New here? Jump to ", A("Using a skill", href="#use"),
+                " to put one to work in a couple of minutes, or ", A("Creating & editing", href="#editor"),
+                " to publish your own.", cls="callout"),
+        ]),
+        ("what-is-a-skill", "What is a skill?", [
+            P("A skill is a self-contained set of instructions that gives an assistant "
+              "specialised, repeatable expertise for one job — a legal review checklist, a "
+              "deal-screening procedure, an SEO audit, a backtesting workflow. Instead of "
+              "re-explaining the same process every time, you hand the model a skill and it "
+              "follows a consistent, auditable procedure."),
+            P("Concretely, a skill is a folder whose entry point is a ", Code("SKILL.md"),
+              " file. That file carries a little metadata plus the instructions themselves. "
+              "A skill can also bundle supporting files:"),
+            Pre(Code("my-skill/\n"
+                     "├── SKILL.md        # required: metadata + instructions\n"
+                     "├── references/     # optional: background material\n"
+                     "├── scripts/        # optional: helper code\n"
+                     "└── assets/         # optional: templates, examples")),
+            P("On FastSkills, the ", Code("SKILL.md"), " body is the part you read on a "
+              "skill's page and download; larger skills link out to their full source."),
+        ]),
+        ("skill-format", "The SKILL.md format", [
+            P("A ", Code("SKILL.md"), " file starts with a YAML ", B("frontmatter"),
+              " block (between ", Code("---"), " lines) and is followed by the instructions "
+              "in Markdown. FastSkills reads these frontmatter fields:"),
+            Table(
+                Thead(Tr(Th("Field"), Th("Purpose"))),
+                Tbody(
+                    Tr(Td(Code("title")), Td("Display name of the skill.")),
+                    Tr(Td(Code("description")), Td("One line shown on the catalog card and used for search.")),
+                    Tr(Td(Code("category")), Td("One of Finance, Trading, Legal, Marketing.")),
+                    Tr(Td(Code("sublabel")), Td("The second-level label within the category (e.g. Contracts).")),
+                    Tr(Td(Code("author")), Td("Attribution shown on the card and detail page.")),
+                    Tr(Td(Code("tags")), Td("Comma-separated keywords for search and filtering.")),
+                    Tr(Td(Code("license")), Td("Licence the skill is shared under (e.g. MIT).")),
+                    Tr(Td(Code("source")), Td("Optional link to the upstream repository or original.")),
+                )),
+            H3("A minimal example"),
+            Pre(Code(_skill_example())),
+            P("A good body answers three questions: ", B("when to use"), " the skill, the ",
+              B("steps"), " to follow, and the ", B("output"), " it should produce. Keep it "
+              "specific and action-oriented — the clearer the procedure, the more reliably a "
+              "model follows it."),
+        ]),
+        ("how-it-works", "How skills load", [
+            P("Skills are designed to stay out of the way until they're needed, through "
+              "progressive disclosure:"),
+            Ul(Li(B("Discovery"), " — an assistant first sees only each skill's name and "
+                  "description, enough to know when it might be relevant."),
+               Li(B("Activation"), " — when a task matches, it reads the full ", Code("SKILL.md"),
+                  " instructions into context."),
+               Li(B("Execution"), " — it follows the steps, loading any referenced files or "
+                  "running bundled scripts only if the task calls for them.")),
+            P("Because full instructions load only on demand, an assistant can keep many "
+              "skills available while spending very little context on the ones it isn't using."),
+        ]),
+        ("categories", "Categories & sub-labels", [
+            P("Every skill sits in one of four categories, each split into sub-labels so you "
+              "can drill down quickly. Pick a category tab on the home page, then a sub-label "
+              "chip to narrow further."),
+            Table(
+                Thead(Tr(Th("Category"), Th("Sub-labels"))),
+                Tbody(*[Tr(Td(B(c)), Td(", ".join(SUBLABELS[c]))) for c in CATEGORIES])),
+            P("Sub-labels are assigned with a documented taxonomy and labelling prompt kept in "
+              "the repository, so classification stays consistent as the library grows. When "
+              "you author a skill, the editor suggests the sub-labels for its category."),
+        ]),
+        ("browse", "Browsing & searching", [
+            P("The home page is the catalog. You can:"),
+            Ul(Li("Search titles, descriptions, tags and content from the search bar."),
+               Li("Filter by category (the tabs) and then by sub-label (the chips)."),
+               Li("Open any card to read the full skill, or use the clone button to fork it.")),
+            P("Filters are just URL parameters, so links are shareable — for example ",
+              Code("/?category=Finance&sub=Family%20Office"), " or ", Code("/?q=backtest"), "."),
+        ]),
+        ("use", "Using a skill", [
+            P("Open a skill and choose ", B("Download SKILL.md"), " to get the file. From there "
+              "it works with any assistant that reads the format:"),
+            Ul(Li(B("Claude / Claude Code"), " — place the skill in your skills directory (or a "
+                  "project), and Claude loads it when a task matches its description."),
+               Li(B("ChatGPT"), " — add the instructions to a Project or a Custom GPT so they "
+                  "apply to that workspace."),
+               Li(B("Grok"), " — paste the instructions into your custom/system instructions.")),
+            P("However you load it, the pattern is the same: the metadata tells the assistant "
+              "when the skill is relevant, and the body tells it exactly what to do. Nothing on "
+              "FastSkills is provider-specific — the same skill is portable across tools."),
+            Div("Tip: keep skills small and focused. One clear job per skill beats a sprawling "
+                "document — it activates more reliably and is easier to maintain.", cls="callout"),
+        ]),
+        ("clone", "Cloning a skill", [
+            P("Every skill — on its detail page and on each catalog card — has a ", B("⑂ Clone"),
+              " button, like a fork on a code host. Cloning:"),
+            Ul(Li("Creates a private draft that ", B("you own"), ", pre-populated with the "
+                  "original's title, content, category, sub-label and tags."),
+               Li("Opens it straight in the editor so you can adapt it."),
+               Li("Records where it came from — the clone shows a “forked from” link back to "
+                  "the original, preserving attribution.")),
+            P("If you're signed out, the clone button opens the sign-in dialog first; once "
+              "you're in, clone again and your copy is created."),
+        ]),
+        ("versioning", "Versioning", [
+            P("FastSkills keeps two kinds of version:"),
+            Ul(Li(B("Default (library) versions"), " live in GitHub. The catalog's built-in "
+                  "skills are seeded from the repository, so their canonical history is the "
+                  "commit history — library skills carry a badge and a “View in GitHub” link."),
+               Li(B("Your versions"), " live in the database. Every time you save a skill you "
+                  "own, a new version is recorded.")),
+            P("Open ", B("History"), " on any skill to see the full list of versions with "
+              "timestamps. You can view any earlier version read-only, and — on skills you own "
+              "— restore one, which brings it back as the current version while keeping the "
+              "prior state in the history."),
+        ]),
+        ("editor", "Creating & editing", [
+            P("Use ", B("New Skill"), " to start from scratch, or clone an existing one. The "
+              "editor gives you three interchangeable writing surfaces for the body:"),
+            Ul(Li(B("Rich"), " — a formatted editor for prose, lists, tables and code."),
+               Li(B("Blocks"), " — a block-by-block view for restructuring."),
+               Li(B("Markdown"), " — raw Markdown, if you prefer to write it directly."))
+            ,
+            P("Alongside the body you set the metadata — category, sub-label (with "
+              "suggestions), author label, tags, a short description and visibility. Changes "
+              "autosave as you type, and each save creates a version. When it's ready, ",
+              B("Publish"), " it; you can always move it back to draft."),
+        ]),
+        ("visibility", "Public & private", [
+            P("Every skill has an owner and a visibility setting:"),
+            Ul(Li(B("Public"), " (the default) — listed in the catalog for everyone once "
+                  "published."),
+               Li(B("Private"), " — visible only to you; useful for drafts or internal skills.")),
+            P("Your skills — public and private, drafts included — live under ", B("My Skills"),
+              ". Author attribution (the name on the card) is separate from ownership, so you "
+              "can credit an original author while owning your own copy."),
+        ]),
+        ("contribute", "Contributing", [
+            P("There are two ways to add to FastSkills:"),
+            Ul(Li("Create a skill in the app and publish it public — it appears in the catalog "
+                  "immediately, owned by you."),
+               Li("Contribute a library skill via the repository: add a ", Code("SKILL.md"),
+                  " under the ", Code("seed/"), " tree and open a pull request. Library skills "
+                  "are re-applied on deploy, so an approved change lands automatically.")),
+            P("The catalog and the repository stay in sync: library skills are the default "
+              "versions in GitHub; anyone can clone them into their own editable copy."),
+        ]),
+        ("api", "API reference", [
+            P("A read-only JSON API is available for the public catalog:"),
+            Table(
+                Thead(Tr(Th("Endpoint"), Th("Returns"))),
+                Tbody(
+                    Tr(Td(Code("GET /api/skills")), Td("List public skills; filter with "
+                        + "?category=, ?sub=, ?q=, ?author=.")),
+                    Tr(Td(Code("GET /api/categories")), Td("The categories with skill counts.")),
+                    Tr(Td(Code("GET /api/skills/{id}")), Td("One skill, including its markdown "
+                        + "and content.")),
+                )),
+            P("Interactive docs live at ", A("/api/docs", href="/api/docs"), "."),
+        ]),
+        ("selfhost", "Self-hosting", [
+            P("FastSkills is open source. It's a single FastHTML application backed by SQLite "
+              "or PostgreSQL, packaged as a small Docker image. You can run your own private "
+              "catalog for a team, seeded from your own ", Code("seed/"), " tree."),
+            P("See the ", A("repository", href=REPO_URL, target="_blank", rel="noopener"),
+              " for setup, configuration and deployment instructions."),
+        ]),
+        ("faq", "FAQ", [
+            H3("Do I need an account to browse?"),
+            P("No — browsing, searching and downloading are open. You need an account only to "
+              "clone, create or edit skills."),
+            H3("Which assistants does a skill work with?"),
+            P("Any that support the SKILL.md format, including Claude, ChatGPT and Grok. The "
+              "content is provider-neutral."),
+            H3("Who can edit a library skill?"),
+            P("Library (default) skills are maintained in GitHub. To make your own changes, "
+              "clone one — your edits become a versioned copy you own in the database."),
+            H3("How are sub-labels decided?"),
+            P("From a fixed per-category taxonomy and a labelling prompt kept in the "
+              "repository, so classification is consistent and reproducible."),
+        ]),
+    ]
+    toc = Nav(H4("On this page"),
+              *[A(title, href=f"#{sid}") for sid, title, _ in sections], cls="toc")
+    body = Div(
+        H1("Documentation"),
+        P("Everything you need to find, use, create and share skills on FastSkills.",
+          cls="doc-lead"),
+        *[Section(H2(title), *content, id=sid, cls="doc-section")
+          for sid, title, content in sections],
+        cls="doc-body")
+    return Html(
+        head("Documentation · FastSkills",
+             "How to find, use, create and share AI skills on FastSkills."),
+        Body(
+            public_nav(who),
+            Div(toc, body, cls="docs"),
+            site_footer(),
+            account_auth.auth_modal("FastSkills"),
+            Script(account_auth.AUTH_JS), Script(DOCS_JS)))
 
 
 def _sidebar(who, active=""):
