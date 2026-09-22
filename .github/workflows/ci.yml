@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fastskills
+          POSTGRES_PASSWORD: fastskills
+          POSTGRES_DB: fastskills
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fastskills"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Unit tests (SQLite)
+        env:
+          DB_TYPE: sqlite
+          FASTSKILLS_DB: /tmp/ci-fastskills.sqlite
+        run: pytest -q tests/
+
+      - name: PostgreSQL integration (schema + seed)
+        env:
+          DB_TYPE: postgresql
+          DATABASE_URL: postgresql://fastskills:fastskills@localhost:5432/fastskills
+          DB_SCHEMA: fast_skills
+        run: |
+          python -c "from fastskills import db, seed; db.init(); n=seed.run(); assert n>0, 'no skills seeded'; print('pg seeded', n)"
+
+      - name: Import check
+        env:
+          DB_TYPE: sqlite
+          FASTSKILLS_DB: /tmp/ci-import.sqlite
+        run: python -c "import app; print('import OK')"
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify deployment
+        env:
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          test -n "$COOLIFY_WEBHOOK_URL"
+          test -n "$COOLIFY_TOKEN"
+          curl --fail --show-error --silent --retry 3 \
+            "$COOLIFY_WEBHOOK_URL" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN"
