@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os, re, secrets
+import os, re, secrets, threading
 from urllib.parse import quote
 
 import markdown as _md
@@ -12,14 +12,21 @@ from fastskills import account_auth, db, seed, views
 from fastskills.api import api
 from fastskills.version import RELEASE_DATE, VERSION
 
-app, rt = fast_app(secret_key=os.getenv("FASTSKILLS_SECRET", secrets.token_hex(32)))
+app, rt = fast_app(secret_key=os.getenv("FASTSKILLS_SECRET") or secrets.token_hex(32))
 app.mount("/api", api)
 
-# Seed the catalog from the committed seed/ tree (idempotent).
-try:
-    seed.run()
-except Exception as exc:  # never let seeding block startup
-    print(f"[seed] skipped: {exc}")
+# Seed the catalog from the committed seed/ tree in the background so the server
+# binds its port (and /health responds) immediately — seeding a remote Postgres
+# can take a little while on first boot and must never block startup.
+def _seed_background():
+    try:
+        n = seed.run()
+        print(f"[seed] loaded {n} skill(s)")
+    except Exception as exc:
+        print(f"[seed] skipped: {exc}")
+
+
+threading.Thread(target=_seed_background, name="seed", daemon=True).start()
 
 
 def who(session):

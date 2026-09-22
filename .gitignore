@@ -220,3 +220,5 @@ __marimo__/
 # FastSkills local data
 data/
 .playwright-mcp/
+
+.sesskey

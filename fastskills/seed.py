@@ -46,21 +46,17 @@ def _slugify(value):
     return re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-") or "skill"
 
 
-def run():
-    if not SEED_DIR.is_dir():
-        return 0
-    db.provision({"sub": SEED_OWNER, "email": SEED_OWNER, "name": SEED_OWNER_NAME})
-    loaded = 0
+def _entries():
+    entries = []
     for path in sorted(SEED_DIR.rglob("*.md")):
         meta, body = _parse(path.read_text(encoding="utf-8"))
         category = (meta.get("category") or "").title()
         if category not in db.CATEGORIES:
-            # fall back to the parent folder name
-            category = path.parent.name.title()
+            category = path.parent.name.title()  # fall back to the folder name
         if category not in db.CATEGORIES:
             continue
         title = meta.get("title") or meta.get("name") or path.stem.replace("-", " ").title()
-        entry = {
+        entries.append({
             "slug": _slugify(meta.get("slug") or path.stem),
             "title": title,
             "description": meta.get("description", "")[:400],
@@ -70,10 +66,24 @@ def run():
             "markdown": body.strip(),
             "source_url": meta.get("source", ""),
             "license": meta.get("license", ""),
-        }
-        db.upsert_seed(SEED_OWNER, entry)
-        loaded += 1
-    return loaded
+        })
+    return entries
+
+
+def run(force=None):
+    """Load seed/ into the DB. Idempotent and fast on reboot: if the catalog is
+    already fully seeded it returns immediately without touching the DB. Set
+    FASTSKILLS_FORCE_SEED=1 (or pass force=True) to re-upsert every entry."""
+    if not SEED_DIR.is_dir():
+        return 0
+    if force is None:
+        force = os.getenv("FASTSKILLS_FORCE_SEED", "").lower() in ("1", "true", "yes")
+    entries = _entries()
+    if not entries:
+        return 0
+    if not force and db.count_seeded() >= len(entries):
+        return 0  # already seeded — skip the whole DB round-trip on boot
+    return db.seed_bulk(SEED_OWNER, SEED_OWNER_NAME, entries)
 
 
 if __name__ == "__main__":

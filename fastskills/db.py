@@ -253,4 +253,55 @@ def upsert_seed(owner_id, entry):
          entry.get("source_url", ""), entry.get("license", ""), owner_id, owner_id, ts, ts))
 
 
+def count_seeded():
+    r = row("SELECT count(*) n FROM skills WHERE seeded=1 AND deleted_at IS NULL")
+    return (r["n"] if r else 0) or 0
+
+
+def seed_bulk(owner_id, owner_name, entries):
+    """Upsert all seed entries over a SINGLE connection/transaction.
+
+    Per-query connections make remote-Postgres seeding of 100+ rows very slow;
+    doing it in one transaction keeps startup fast. A skill a user has taken
+    over (seeded=0) is never clobbered.
+    """
+    ts = now()
+    n = 0
+    with tx() as s:
+        s.execute(
+            "INSERT INTO users(id,email,name,created_at) VALUES(?,?,?,?) "
+            "ON CONFLICT(id) DO UPDATE SET email=excluded.email,name=excluded.name",
+            (owner_id, owner_id, owner_name or owner_id.split("@")[0], ts))
+        for entry in entries:
+            doc = markdown_to_doc(entry["markdown"])
+            content_json = json.dumps(doc)
+            text = plain_text(doc)
+            existing = s.fetchone(
+                "SELECT id,seeded FROM skills WHERE owner_id=? AND slug=?",
+                (owner_id, entry["slug"]))
+            if existing:
+                if not existing["seeded"]:
+                    continue
+                s.execute(
+                    "UPDATE skills SET title=?,description=?,category=?,author_label=?,tags=?,"
+                    "content_json=?,markdown=?,plain_text=?,source_url=?,license=?,updated_at=? "
+                    "WHERE id=?",
+                    (entry["title"], entry["description"], entry["category"],
+                     entry["author_label"], entry["tags"], content_json, entry["markdown"],
+                     text, entry.get("source_url", ""), entry.get("license", ""), ts,
+                     existing["id"]))
+            else:
+                s.execute(
+                    "INSERT INTO skills(slug,title,description,category,author_label,owner_id,"
+                    "visibility,status,tags,content_json,markdown,plain_text,source_url,license,"
+                    "seeded,created_by,updated_by,created_at,updated_at) "
+                    "VALUES(?,?,?,?,?,?,'public','published',?,?,?,?,?,?,1,?,?,?,?)",
+                    (entry["slug"], entry["title"], entry["description"], entry["category"],
+                     entry["author_label"], owner_id, entry["tags"], content_json,
+                     entry["markdown"], text, entry.get("source_url", ""),
+                     entry.get("license", ""), owner_id, owner_id, ts, ts))
+            n += 1
+    return n
+
+
 init()
