@@ -34,8 +34,9 @@ category's fixed list below. Sub-labels give the catalog a navigable second leve
 - **Private Credit** — direct lending, ABL, credit screening/memos, covenants, debt structuring, default/recovery, portfolio monitoring.
 - **Real Estate** — property income and asset work: rent rolls, leases, T-12/opex, capex, tenant churn, title/zoning, physical/environmental condition.
 - **M&A** — buy-side and sell-side M&A: buyer sourcing, seller positioning, teasers, CIMs, LOIs.
-- **IPO & ECM** — public-listing readiness, equity capital markets.
-- **Diligence** — due-diligence execution: QoE / financial normalization, data-room audits, document review.
+- **IPO & ECM** — public-listing readiness, equity capital markets, investor-relations publishing/compliance, press releases.
+- **Public Markets** — listed-equity research, institutional-ownership / 13F analysis, filing analysis.
+- **Diligence** — due-diligence execution: QoE / financial normalization, data-room audits, document/contract/legal/operational review.
 - **Tax & Compliance** — tax law, filings, FATCA/CRS, multi-jurisdiction obligations.
 
 ### Trading
