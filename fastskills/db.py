@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from .database import rows, row, execute, insert, tx, init_schema
 from .mdconvert import markdown_to_doc, plain_text
 
-CATEGORIES = ("Finance", "Trading", "Legal", "Marketing")
+CATEGORIES = ("Finance", "Trading", "Legal", "Marketing", "Design", "Productivity")
 
 
 def now() -> str:

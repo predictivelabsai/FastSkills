@@ -28,7 +28,8 @@ PARTNERS = (
     ("Consistente", "https://consistente.tech/", "https://consistente.tech/static/favicon.svg", "Enterprise AI delivery across financial services, healthcare, the public sector and technology."),
 )
 
-CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d"}
+CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d",
+             "Design": "#9333ea", "Productivity": "#0891b2"}
 
 # Suggested sub-labels per category (see prompts/skill-labeller.md). Editable free
 # text — these only populate the editor's autocomplete.
@@ -41,9 +42,12 @@ SUBLABELS = {
     "Legal": ["Contracts", "Privacy & Data Protection", "Litigation", "Corporate & Governance",
               "Regulatory & Compliance", "IP & Licensing", "AI Governance", "Legal Research",
               "Document Review", "Tax"],
-    "Marketing": ["SEO", "Paid Ads", "Content", "Email & SMS", "Social", "Product Marketing",
-                  "Growth & CRO", "Sales & Outbound", "Analytics", "Brand & PR",
-                  "Pricing & Offers", "Community & Influencer", "Research", "Strategy"],
+    "Marketing": ["SEO", "Local SEO", "Paid Ads", "Content", "Email & SMS", "Social",
+                  "Product Marketing", "Growth & CRO", "Sales & Outbound", "GTM", "Affiliate",
+                  "Analytics", "Brand & PR", "Pricing & Offers", "Community & Influencer",
+                  "Research", "Strategy"],
+    "Design": ["Design Engineering", "Animation", "UI", "Prototyping"],
+    "Productivity": ["Obsidian", "Notes", "Automation", "Knowledge Management"],
 }
 
 BASE_CSS = r"""
@@ -110,7 +114,7 @@ BASE_CSS = r"""
 """
 
 
-def head(title, description="An open, searchable catalog of reusable skills for Finance, Trading, Legal and Marketing."):
+def head(title, description="An open, searchable catalog of reusable skills for finance, marketing, legal, trading, design and productivity."):
     return Head(
         Title(title), Meta(charset="utf-8"),
         Meta(name="viewport", content="width=device-width,initial-scale=1"),
@@ -311,7 +315,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                 Div(
                     Span("Open skills library", cls="eyebrow"),
                     H1("Find the skill for the job."),
-                    P("A searchable catalog of reusable skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
+                    P("A searchable catalog of reusable skills for finance, marketing, legal, trading, design and productivity — contribute your own, keep it private or share it public."),
                     Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
                              Button("Search", cls="btn"), cls="searchbar"),
                          (Input(type="hidden", name="category", value=active_category) if active_category else None),
@@ -523,9 +527,9 @@ def docs_page(who):
             P("FastSkills is an open, searchable catalog of reusable ", B("skills"),
               " for AI assistants — packaged instructions that teach a model how to perform "
               "a specific task well. Every skill is a plain Markdown file you can read, "
-              "download, clone and version. The library is organised into four domains — ",
-              B("Finance, Trading, Legal and Marketing"), " — each with a second level of "
-              "sub-labels for quick navigation."),
+              "download, clone and version. The library spans domains like ",
+              B("Finance, Trading, Legal, Marketing, Design and Productivity"),
+              " — each with a second level of sub-labels for quick navigation."),
             P("Skills follow the open ", B("SKILL.md"), " format, so a skill you find here "
               "works with any assistant that supports it — including Claude, ChatGPT and Grok."),
             Div("New here? Jump to ", A("Using a skill", href="#use"),
