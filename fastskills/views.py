@@ -5,7 +5,7 @@ from urllib.parse import quote
 from fasthtml.common import *
 
 from .version import RELEASE_DATE, VERSION
-from .db import CATEGORIES
+from .db import CATEGORIES, favourite_total
 from . import account_auth
 from .logos import ANTHROPIC_SVG, OPENAI_SVG, GROK_SVG
 
@@ -73,7 +73,7 @@ BASE_CSS = r"""
 .vtable{width:100%;border-collapse:collapse;margin-top:10px}.vtable th,.vtable td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px}.vtable th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.vrow-current{background:var(--tint)}.vbadge{font-size:11px;font-weight:800;color:var(--accent);background:#fff;border:1px solid var(--accent);border-radius:99px;padding:2px 8px}.vactions{display:flex;gap:8px}
 .prose{font-size:16px;line-height:1.72}.prose h1,.prose h2,.prose h3{line-height:1.25;margin-top:1.6em}.prose h1{font-size:28px}.prose h2{font-size:23px}.prose h3{font-size:19px}.prose pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}.prose code{background:var(--panel);border-radius:5px;padding:1px 5px;font-size:.9em}.prose pre code{background:none;padding:0}.prose table{border-collapse:collapse;width:100%}.prose td,.prose th{border:1px solid var(--line);padding:7px 10px}.prose blockquote{border-left:3px solid var(--accent);margin:1em 0;padding-left:14px;color:var(--muted)}.prose img{max-width:100%}
 /* editor shell */
-.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{background:#f8fafc;border-right:1px solid var(--line);padding:18px;overflow:auto}.sidehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.side-user{font-size:12px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:12px}.sideitem{display:block;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px;color:var(--ink)}.sideitem:hover,.sideitem.active{background:var(--tint);color:var(--accent)}.sidelabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 4px;padding:0 10px}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{background:#f8fafc;border-right:1px solid var(--line);padding:18px;overflow:auto}.sidehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.side-user{font-size:12px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:12px}.sideitem{display:block;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px;color:var(--ink)}.sideitem:hover,.sideitem.active{background:var(--tint);color:var(--accent)}.sideitem-flex{display:flex;align-items:center;justify-content:space-between;gap:8px}.side-count{background:var(--accent);color:#fff;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:700;line-height:1.5}.sidelabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 4px;padding:0 10px}
 .workspace{overflow:auto}.topbar{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 22px;position:sticky;top:0;background:#fffc;backdrop-filter:blur(10px);z-index:3}.status{font-size:12px;color:var(--muted)}.pageactions{display:flex;gap:8px;align-items:center;margin-left:auto}.inlineform{display:inline-flex;margin:0}
 .editorwrap{max-width:880px;margin:auto;padding:40px 42px 70px}.titleinput{border:0;width:100%;font-size:38px;font-weight:800;letter-spacing:-.03em;outline:0;color:var(--ink)}
 .metagrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0 8px}.metafield label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px}.metafield input,.metafield select,.metafield textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit}.metafield.full{grid-column:1/-1}.metafield textarea{min-height:56px;resize:vertical}
@@ -606,6 +606,8 @@ def docs_page(who):
 
 
 def _sidebar(who, active=""):
+    _fav_n = favourite_total(who)
+
     def item(label, href, key):
         return A(label, href=href, cls="sideitem" + (" active" if key == active else ""))
     cat_links = [A(c, href=f"/?category={quote(c)}", cls="sideitem") for c in CATEGORIES]
@@ -614,7 +616,10 @@ def _sidebar(who, active=""):
             A("＋", href="/skills/new", title="New skill"), cls="sidehead"),
         Div(f"{who.get('name') or who['email']}", cls="side-user"),
         item("Browse all", "/", "browse"),
-        item("★ Favourites", "/favourites", "favourites"),
+        A("★ Favourites",
+          (Span(str(_fav_n), cls="side-count") if _fav_n else None),
+          href="/favourites",
+          cls="sideitem sideitem-flex" + (" active" if active == "favourites" else "")),
         item("My Skills", "/mine", "mine"),
         item("New Skill", "/skills/new", "new"),
         Div("Categories", cls="sidelabel"), *cat_links,

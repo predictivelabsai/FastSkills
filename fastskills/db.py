@@ -229,6 +229,15 @@ def favourite_counts(who):
     return {r["category"]: r["n"] for r in found}
 
 
+def favourite_total(who):
+    if not who:
+        return 0
+    r = row("SELECT count(*) n FROM favourites f JOIN skills s ON s.id=f.skill_id "
+            f"WHERE f.user_id=? AND s.deleted_at IS NULL AND {_fav_visible()}",
+            (who["sub"], who["sub"]))
+    return (r["n"] if r else 0) or 0
+
+
 # ── writes ───────────────────────────────────────────────────────────────────
 def create_skill(who, title="Untitled skill", category="Finance"):
     if category not in CATEGORIES:
