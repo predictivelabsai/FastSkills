@@ -1,6 +1,6 @@
 ---
 title: Paper Trader
-description: Continuous paper trading agent using real Alpaca paper API with position tracking and P&L reporting
+description: Simulates a strategy forward in a paper account, tracking positions, exits, and running P&L over a chosen window
 category: Trading
 sublabel: Paper Trading
 author: Predictive Labs
@@ -9,81 +9,33 @@ license:
 source: 
 ---
 
-# Paper Trader Agent
+# Paper Trader
 
-## Role
+Takes validated strategy parameters and simulates them forward as paper trades, tracking open positions, exit signals, and running P&L over a chosen window.
 
-The Paper Trader agent executes real paper trades via the Alpaca paper trading API. It runs continuously for a configurable duration, applying validated strategy parameters from the Backtester.
+*For research and education only. This is not investment advice; you run any real or paper trades yourself through your own brokerage or paper-trading account.*
 
-## Responsibilities
+## When to use
+- You have backtested parameters and want to forward-test them without real capital.
+- You want to track positions and P&L as a strategy plays out over days or weeks.
+- You want a per-trade log and periodic P&L updates you can review.
 
-1. **Receive trading parameters** from Portfolio Manager (validated by Backtester/Validator)
-2. **Execute trades** via Alpaca paper API (real orders, real fills, market hours)
-3. **Track positions** and monitor for exit signals (TP, SL, hold period)
-4. **Log trades** to the `trades` DB table
-5. **Report** daily P&L and position updates to Portfolio Manager
+## What to provide
+- Strategy rules and the validated parameters (dip threshold, take-profit, stop-loss, hold days, capital per trade).
+- Universe or ticker list, and the window to run over plus how often to check for signals.
+- Any risk limits (max position size, overnight-hold rules).
+- Which paper-trading or market-data account you will use yourself for quotes and fills.
 
-## Trading Logic
+## How to work through it
+1. Confirm the parameters and window, and restate the entry and exit rules.
+2. On each check, evaluate entries: e.g. buy when a name dips the threshold from its recent high, sized within the position limit.
+3. For each open position, check exits every interval: take-profit hit, stop-loss hit, or hold period expired.
+4. Track each fill, side, quantity, and price, and maintain running realized and unrealized P&L.
+5. Enforce risk limits such as position-size caps and any overnight-hold rules for small accounts.
+6. Report periodic trade updates and a final summary: total trades, wins/losses, total P&L, and open positions.
 
-Uses the same buy-the-dip logic as `tasks/cli_trader.py`:
-
-1. **Entry**: Buy when stock dips `dip_threshold%` from recent 20-period high
-2. **Exit conditions** (checked each poll):
-   - Take profit: unrealized P&L >= `take_profit_threshold%`
-   - Stop loss: unrealized P&L <= `-stop_loss_threshold%`
-   - Hold period expired: days held >= `hold_days`
-3. **PDT protection**: Mandatory overnight hold if account equity < $25k
-4. **Position sizing**: `capital_per_trade` capped at 5% of buying power
-
-## Input (paper_trade_start payload)
-
-```json
-{
-  "strategy": "buy_the_dip",
-  "symbols": ["AAPL", "MSFT", "NVDA"],
-  "params": {
-    "dip_threshold": 5.0,
-    "take_profit_threshold": 1.5,
-    "stop_loss_threshold": 0.5,
-    "hold_days": 2,
-    "capital_per_trade": 1000.0
-  },
-  "duration_seconds": 604800,
-  "poll_interval_seconds": 300
-}
-```
-
-## Output (paper_trade_result payload)
-
-```json
-{
-  "session_id": "uuid",
-  "duration_actual": "6d 23h 45m",
-  "total_trades": 12,
-  "winning_trades": 8,
-  "losing_trades": 4,
-  "total_pnl": 245.50,
-  "daily_pnl": [...],
-  "final_positions": [...]
-}
-```
-
-## Trade Updates (sent periodically)
-
-```json
-{
-  "type": "trade_update",
-  "symbol": "AAPL",
-  "side": "buy",
-  "qty": 5,
-  "price": 185.50,
-  "timestamp": "2025-01-15T10:30:00Z"
-}
-```
-
-## Safety
-
-- Only market orders (no limit/stop orders to avoid stale orders)
-- Position size capped at 5% of buying power
-- PDT protection enforced for accounts under $25k
-- All orders logged to DB and local JSONL fallback
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading (e.g. trades, per-parameter results, P&L, metrics).
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows/trades), and generate them when asked.
+- Never invent figures or fills. If a required input is missing, list exactly what you need and ask for it first.

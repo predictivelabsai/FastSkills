@@ -1,6 +1,6 @@
 ---
 title: Reporter
-description: Read-only reporting agent that queries DB for trading performance metrics in summary, detail, and ranking modes
+description: Summarizes trading-run performance in three modes: recent-run summary, single-run deep dive, and top-strategy ranking
 category: Trading
 sublabel: Reporting
 author: Predictive Labs
@@ -9,45 +9,31 @@ license:
 source: 
 ---
 
-# Reporter Agent
+# Reporter
 
-## Role
+Turns your backtest and paper-trading records into readable performance summaries, in three modes: an overview of recent runs, a deep dive on one run, and a ranking of top strategies.
 
-The Reporter agent is a read-only agent that queries the DB for trading performance metrics. It supports three modes: summary (list recent runs), detail (single run deep dive), and top strategies (rank by performance).
+*For research and education only. This is not investment advice; you execute any real trades yourself through your own broker.*
 
-## Responsibilities
+## When to use
+- You want a quick overview of your recent runs and their key metrics.
+- You want a full performance breakdown of one specific run.
+- You want strategies ranked by average performance to compare approaches.
 
-1. **Summary mode**: List recent runs with key metrics (P&L, return, Sharpe, trades)
-2. **Detail mode**: Full performance report for a single run (supports prefix matching on run_id)
-3. **Top strategies mode**: Rank strategy slugs by average annualized return
+## What to provide
+- Your run records or trade history (with run IDs, strategy names, dates, and per-trade rows).
+- Which mode you want: overview, single-run detail, or top-strategy ranking.
+- Any filters: run type (backtest vs paper), a run ID, a strategy prefix, or a row limit.
 
-## Modes
+## How to work through it
+1. Confirm the mode and any filters before compiling.
+2. Overview mode: list recent runs with key metrics — total P&L, total and annualized return, Sharpe, and trade count.
+3. Detail mode: for one run, add final capital, max drawdown, win rate, and winning/losing trade counts.
+4. Top-strategy mode: group by strategy and rank by average annualized return, showing average Sharpe, return, win rate, drawdown, and P&L.
+5. Compute all metrics only from the provided rows; note any run with missing data rather than filling gaps.
 
-### Summary
-
-List recent runs with key metrics. For backtests, metrics come from `backtest_summaries` (is_best=true). For paper runs, metrics are aggregated from the `trades` table.
-
-**Parameters**:
-- `trade_type`: Filter by mode (`backtest` or `paper`). Omit for all.
-- `limit`: Max rows (default 10)
-
-**Output fields**: run_id, mode, strategy, strategy_slug, status, initial_capital, total_pnl, total_return, annualized_return, sharpe_ratio, total_trades, data_start, data_end, run_date
-
-### Detail
-
-Full performance report for a single run. Supports prefix matching on run_id (e.g. `5acc08ba` matches the full UUID).
-
-**Parameters**:
-- `run_id`: Full or prefix UUID
-
-**Output fields**: All summary fields plus final_capital, max_drawdown, win_rate, winning_trades, losing_trades
-
-### Top Strategies
-
-Rank strategy slugs by average annualized return across all backtest runs.
-
-**Parameters**:
-- `strategy`: Optional prefix filter (e.g. `btd` for buy-the-dip only)
-- `limit`: Max rows (default 20)
-
-**Output fields**: strategy_slug, avg_sharpe, avg_return, avg_ann_return, avg_win_rate, avg_drawdown, total_trades, total_runs, avg_pnl
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading (e.g. trades, per-parameter results, P&L, metrics).
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows/trades), and generate them when asked.
+- Never invent figures or fills. If a required input is missing, list exactly what you need and ask for it first.

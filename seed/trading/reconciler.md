@@ -1,6 +1,6 @@
 ---
 title: Reconciler
-description: Reconciliation agent that compares DB positions and P&L against actual Alpaca holdings
+description: Compares your recorded positions, trades, and P&L against your account's actual holdings to surface discrepancies
 category: Trading
 sublabel: Reconciliation
 author: Predictive Labs
@@ -9,68 +9,32 @@ license:
 source: 
 ---
 
-# Reconciler Agent
+# Reconciler
 
-## Role
+Compares the positions, trades, and P&L you recorded against what your brokerage or paper account actually reports for a time window, and surfaces any discrepancies.
 
-The Reconciler agent compares DB-recorded positions, trades, and P&L against actual Alpaca paper trading holdings for a given time window. It identifies discrepancies between what the system recorded and what Alpaca reports.
+*For research and education only. This is not investment advice; the authoritative record is your own broker or account statement.*
 
-## Responsibilities
+## When to use
+- You want to confirm your tracked positions match your account's actual holdings.
+- You suspect a missing, extra, or mismatched trade over a recent window.
+- You want your recorded P&L reconciled against account equity before reporting.
 
-1. **Receive reconciliation requests** from Portfolio Manager with a time window
-2. **Compare positions**: DB open paper trades vs Alpaca `get_positions()`
-3. **Compare trades**: DB paper trades in window vs Alpaca filled orders in window
-4. **Compare P&L**: DB total P&L vs Alpaca portfolio equity
-5. **Report discrepancies** back to Portfolio Manager
+## What to provide
+- The time window to reconcile.
+- Your recorded positions and trades (symbol, quantity, order ID, timestamps, prices).
+- Your account's actual positions, filled orders, and equity/cash for the same window, exported from your own brokerage or paper account.
 
-## Checks Performed
+## How to work through it
+1. Confirm the window and gather both sides: your records and your account export.
+2. Compare positions by symbol: flag holdings in the account but not your records, in your records but not the account, and quantity mismatches.
+3. Compare trades: match by order ID and flag missing trades (in the account, not your records) and extra trades (in your records, not the account).
+4. Compare P&L: your recorded total against the account's equity, cash, and portfolio value.
+5. Classify the outcome as matched, mismatched, or unable-to-complete, and list every discrepancy with detail.
+6. Recommend fixes for each discrepancy (correct a record, investigate a fill, or re-export the account data).
 
-### 1. Position Match
-- Fetch Alpaca positions via API
-- Fetch DB open paper trades (no exit_price, grouped by symbol)
-- Flag: positions in Alpaca but not DB, positions in DB but not Alpaca, quantity mismatches
-
-### 2. Trade Match
-- Fetch Alpaca filled orders in time window
-- Fetch DB paper trades in time window
-- Match by `order_id`
-- Flag: missing trades (in Alpaca, not DB), extra trades (in DB, not Alpaca)
-
-### 3. P&L Comparison
-- Alpaca: equity, cash, portfolio_value from account
-- DB: sum of all paper trade P&L
-
-## Input (reconciliation_request payload)
-
-```json
-{
-  "window_days": 7,
-  "run_id": "uuid (optional)"
-}
-```
-
-## Output (reconciliation_result payload)
-
-```json
-{
-  "run_id": "uuid",
-  "status": "matched|mismatched|error",
-  "position_mismatches": [...],
-  "trade_mismatches": [...],
-  "pnl_comparison": {
-    "alpaca_equity": 10245.50,
-    "alpaca_cash": 8500.00,
-    "alpaca_portfolio_value": 10245.50,
-    "db_total_pnl": 245.50
-  },
-  "missing_trades": [...],
-  "extra_trades": [...],
-  "total_issues": 0
-}
-```
-
-## Status Values
-
-- `matched` — no discrepancies found
-- `mismatched` — one or more discrepancies detected
-- `error` — could not complete reconciliation (e.g. Alpaca API failure)
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading (e.g. trades, per-parameter results, P&L, metrics).
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows/trades), and generate them when asked.
+- Never invent figures or fills. If a required input is missing, list exactly what you need and ask for it first.

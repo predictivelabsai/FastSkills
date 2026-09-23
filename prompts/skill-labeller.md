@@ -31,9 +31,11 @@ category's fixed list below. Sub-labels give the catalog a navigable second leve
 - **Fund Management** — fund operations and administration not covered by a more specific label.
 - **Private Equity** — PE deal sourcing, screening, diligence, sector mapping.
 - **Venture Capital** — venture sourcing, cap-table/round/dilution modelling, VC portfolio.
-- **Private Credit** — direct lending, property-backed / bridge / development loan underwriting.
-- **M&A** — buy-side and sell-side M&A: buyer sourcing, seller positioning, CIMs.
+- **Private Credit** — direct lending, ABL, credit screening/memos, covenants, debt structuring, default/recovery, portfolio monitoring.
+- **Real Estate** — property income and asset work: rent rolls, leases, T-12/opex, capex, tenant churn, title/zoning, physical/environmental condition.
+- **M&A** — buy-side and sell-side M&A: buyer sourcing, seller positioning, teasers, CIMs, LOIs.
 - **IPO & ECM** — public-listing readiness, equity capital markets.
+- **Diligence** — due-diligence execution: QoE / financial normalization, data-room audits, document review.
 - **Tax & Compliance** — tax law, filings, FATCA/CRS, multi-jurisdiction obligations.
 
 ### Trading

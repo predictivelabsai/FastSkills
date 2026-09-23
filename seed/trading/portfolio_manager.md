@@ -1,6 +1,6 @@
 ---
 title: Portfolio Manager
-description: Orchestrator agent that coordinates backtesting, paper trading, and validation workflows
+description: Coordinates the full research loop across backtesting, validation, paper trading, and reporting into one consolidated view
 category: Trading
 sublabel: Portfolio Management
 author: Predictive Labs
@@ -9,60 +9,33 @@ license:
 source: 
 ---
 
-# Portfolio Manager Agent
+# Portfolio Manager
 
-## Role
+Coordinates the end-to-end research loop: backtest a strategy, validate the results, forward-test the best parameters as paper trades, then consolidate everything into a single report.
 
-The Portfolio Manager (PM) is the orchestrator of the multi-agent system. It dispatches work to the Backtester, Paper Trader, and Validator agents, tracks overall portfolio state, and generates consolidated reports.
+*For research and education only. This is not investment advice; you execute any real trades yourself through your own broker.*
 
-## Responsibilities
+## When to use
+- You want to run a full strategy study from idea to consolidated results in one pass.
+- You need the stages (backtest, validation, paper test, reporting) sequenced and tracked together.
+- You want one report that ties best configuration, validation status, and paper results together.
 
-1. **Initialize** all agents and the message bus at session start
-2. **Dispatch backtest requests** with parameter variations to the Backtester
-3. **Route validation requests** to the Validator after backtest or paper trading completes
-4. **Start paper trading** with validated parameters when backtests pass validation
-5. **Monitor agent status** and handle errors/timeouts
-6. **Track state**: run IDs, agent statuses, iteration counts, portfolio metrics
-7. **Generate final reports** consolidating BT results, PT results, and validation status
+## What to provide
+- Strategy concept or rules, and the universe or ticker list.
+- Date range and interval for backtesting, and the window for any paper forward-test.
+- Initial capital, position sizing, and risk limits.
+- The metric to optimize, and which paper/market-data account you will use yourself for any forward test.
 
-## Workflow
+## How to work through it
+1. Confirm scope: strategy, universe, date range, capital, risk limits, and objective.
+2. Run the parameter sweep (backtest) and collect the best-ranked configurations.
+3. Validate the best results — cross-check prices, P&L math, and trading-hours logic — before proceeding.
+4. If validation passes, forward-test the validated parameters as paper trades over the chosen window.
+5. Track state throughout: best configuration, validation outcome, and paper-session progress; surface errors instead of hiding them.
+6. Consolidate backtest metrics, validation status, and paper results into one final report with clear recommendations.
 
-```
-1. Start Backtester -> run N parameterized backtests
-2. Collect best BT results -> send to Validator
-3. If validation passes -> start Paper Trader with validated params
-4. Paper Trader runs for configured duration
-5. Periodically send PT trades to Validator
-6. Validator self-corrects up to 10 iterations
-7. Generate final report
-```
-
-## State Tracked
-
-- `run_id`: Current orchestration run identifier
-- `agent_statuses`: Dict of agent_name -> status (idle/running/error)
-- `backtest_results`: List of completed backtest run summaries
-- `best_config`: Best-performing backtest configuration
-- `validation_results`: Latest validation outcomes
-- `paper_trade_session`: Active paper trading session info
-- `iteration_count`: Current validation iteration count
-
-## Message Types Sent
-
-- `backtest_request` -> Backtester
-- `validation_request` -> Validator
-- `paper_trade_start` -> Paper Trader
-
-## Message Types Received
-
-- `backtest_result` <- Backtester
-- `validation_result` <- Validator
-- `trade_update` <- Paper Trader
-- `paper_trade_result` <- Paper Trader
-- `error` <- Any agent
-
-## Error Handling
-
-- If an agent errors, PM logs the error and attempts to restart or skip
-- If Validator fails after 10 iterations, PM generates an escalation report
-- PM never crashes silently — all errors are logged and reported
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading (e.g. trades, per-parameter results, P&L, metrics).
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows/trades), and generate them when asked.
+- Never invent figures or fills. If a required input is missing, list exactly what you need and ask for it first.

@@ -36,3 +36,10 @@ to the specific relationship rather than a generic template.
 ## Output
 
 Proposal copy (email or document form) plus a short internal note on the assumptions made.
+
+
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading.
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows), and generate them when asked.
+- Never invent figures. If a required input is missing, list exactly what you need and ask for it first.

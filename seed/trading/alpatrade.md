@@ -1,6 +1,6 @@
 ---
-title: Alpatrade
-description: Run user-scoped AlpaTrade backtests, save optimized candidates, inspect runs, and start paper trading.
+title: Trading Workbench
+description: End-to-end trading research: backtest a strategy, save the best candidates, inspect prior runs, and forward-test them as paper trades
 category: Trading
 sublabel: Portfolio Management
 author: Predictive Labs
@@ -9,50 +9,32 @@ license:
 source: 
 ---
 
-# AlpaTrade broker
+# Trading Workbench
 
-Use this skill only when the user asks to backtest, optimize, inspect a saved
-candidate, or start paper trading. The system message supplies a short-lived
-delegation token. The container supplies `ALPATRADE_API_URL` and
-`ALPATRADE_HERMES_API_KEY`.
+A single entry point for strategy research: backtest an idea, save the best-performing candidates, inspect past runs, and forward-test a chosen candidate as paper trades.
 
-Every request must use both headers shown in the system message and the exact
-internal base URL `http://api:5001`. Never use the public AlpaTrade domain and
-never call a route outside `/v2/hermes/`. Never request database credentials.
-Live trading is not supported.
+*For research and education only. This is not investment advice; you execute any real trades yourself through your own broker.*
 
-Use the terminal with `curl` exactly as shown. Do not use Python, heredocs,
-temporary files, package discovery, or OpenAPI downloads. Do not retry a failed
-command with a different execution method; report the broker error to the user.
-Never call `/v2/backtest`, `/v2/paper`, `/auth/*`, or create a test user as a
-fallback. A failed scoped request must remain failed.
+## When to use
+- You want to backtest and optimize a strategy, then keep the strongest configurations.
+- You want to revisit a saved candidate or an earlier run and review its metrics.
+- You want to forward-test a saved candidate as paper trades before considering live use.
 
-```bash
-curl -sS -X POST "$ALPATRADE_API_URL/v2/hermes/backtests" \
-  -H "Content-Type: application/json" \
-  -H "X-Hermes-Key: $ALPATRADE_HERMES_API_KEY" \
-  -H "X-Hermes-Delegation: <delegation-from-system-message>" \
-  -d '{"strategy":"buy_the_dip","symbols":"AAPL,MSFT","lookback":"3m","objective":{"maximize":"sharpe_ratio"}}'
-```
+## What to provide
+- Strategy concept or rules, and the universe or ticker list.
+- Lookback or date range and interval, and the metric to optimize (e.g. Sharpe).
+- For a paper forward-test, the duration and which paper/market-data account you will use yourself.
 
-The response immediately includes `job_id`, `run_id`, and `status: queued`.
-Tell the user the job was accepted and that they may leave the page. Do not wait
-or poll in the same turn. The worker writes the final result into the originating
-saved chat and creates `candidate_id` when the backtest finishes.
+## How to work through it
+1. Confirm the strategy, symbols, lookback, and objective before running anything.
+2. Backtest across the parameter space and rank the results by the chosen objective.
+3. Save the best configurations as named candidates, each with its metrics and settings recorded.
+4. On request, list saved candidates and inspect a prior run, summarizing its key metrics.
+5. To forward-test, take a chosen candidate and simulate it as paper trades over the requested duration, tracking positions and P&L.
+6. Never place live orders on the user's behalf; the user runs any real trades themselves through their own broker.
 
-Use `GET /v2/hermes/jobs` to answer requests such as "show my running jobs" and
-`GET /v2/hermes/jobs/<job_id>` for one job. Use the resulting `candidate_id` to
-start paper trading:
-
-```bash
-curl -sS -X POST "$ALPATRADE_API_URL/v2/hermes/candidates/<candidate_id>/paper" \
-  -H "Content-Type: application/json" \
-  -H "X-Hermes-Key: $ALPATRADE_HERMES_API_KEY" \
-  -H "X-Hermes-Delegation: <delegation-from-system-message>" \
-  -d '{"duration":"7d"}'
-```
-
-List saved candidates with `GET /v2/hermes/candidates` and inspect an owned run
-with `GET /v2/hermes/runs/<run_id>`. Summarize metrics and IDs for the user.
-Paper submission is also asynchronous: report its `job_id` immediately. Never
-wait for the paper duration inside a chat turn.
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading (e.g. trades, per-parameter results, P&L, metrics).
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows/trades), and generate them when asked.
+- Never invent figures or fills. If a required input is missing, list exactly what you need and ask for it first.

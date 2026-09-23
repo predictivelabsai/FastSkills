@@ -36,3 +36,10 @@ Model a priced round or SAFE conversion and show how ownership moves across the 
 
 A pre/post-money cap table, per-holder ownership and dilution, and a sensitivity view on
 valuation and pool size.
+
+
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading.
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows), and generate them when asked.
+- Never invent figures. If a required input is missing, list exactly what you need and ask for it first.

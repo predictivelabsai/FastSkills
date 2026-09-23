@@ -37,3 +37,10 @@ pursuing, and frame the diligence that would confirm or kill it.
 
 A go/no-go recommendation with mandate-fit check, thesis sketch, key risks and a prioritised
 diligence question list. See also [[sector-taxonomy]] for consistent sector mapping.
+
+
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading.
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows), and generate them when asked.
+- Never invent figures. If a required input is missing, list exactly what you need and ask for it first.

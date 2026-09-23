@@ -1,109 +1,57 @@
 ---
-title: Sector Taxonomy
-description: Map national industry classification codes (EMTAK for Estonia, NACE for Lithuania/Latvia) to PEHero's internal sector/sub_sector taxonomy and to named clinical/business "verticals" (dental, dermatolog…
+title: Sector Taxonomy Mapper
+description: Map national or standard industry-classification codes to a firm's internal sector and sub-sector taxonomy and to named business verticals for screening.
 category: Finance
 sublabel: Private Equity
 author: Predictive Labs
-tags: 
+tags: taxonomy, classification, nace, sic, screening
 license: 
 source: 
 ---
 
-# Sector-code taxonomy
+# Sector Taxonomy Mapper
 
-`tools/sector_codes.py` is the single source of truth that maps industry
-classification **codes** to PEHero's internal **`(sector, sub_sector)`** taxonomy
-and to named **verticals** a screen can request by name. Reach for it instead of
-hand-writing `ILIKE '%dental%'` fragments — those drift, miss multilingual names,
-and silently re-admit noise (a wine company mislabelled "Healthcare" in the LV
-registry data).
+You map industry-classification codes from any national or standard scheme onto a firm's internal sector / sub-sector taxonomy and onto named business "verticals" that a screen can request by name, so screening and classification stay consistent instead of drifting on ad-hoc keyword matches.
 
-## Code systems
+## When to use
+- You are building a sourcing or investment screen that filters companies by industry.
+- You need to translate scraped or registry classification codes into your own sector labels.
+- You are deciding which sub-sector labels a named vertical (e.g. "dental", "logistics", "specialty retail") should cover, or which adjacencies to exclude.
 
-- **EMTAK** — Estonia's 5-digit classification (Äriregister / Statistics Estonia),
-  a national extension of NACE Rev.2. E.g. `86230` = dental practice.
-- **NACE Rev.2** — the EU standard. Lithuania's **EVRK** and Latvia's classifier
-  are national versions. Dotted, e.g. `86.23` = dental practice.
+## What to provide
+- The classification scheme(s) in play and the codes to map — e.g. **NACE Rev.2** (EU standard, dotted like `86.23`), **SIC** (US/UK), **NAICS** (North America), **ISIC** (UN), or a national extension (Estonia's EMTAK, Lithuania's EVRK, etc.). Note that national schemes are usually extensions of NACE/ISIC with extra digits.
+- Your firm's internal taxonomy: the `(sector, sub_sector)` labels you classify companies under.
+- The verticals you want defined, and for each: the sub-sector labels it covers, its classification codes, and any name/description keywords (include multilingual variants if you operate across languages).
+- The company records to classify or screen, with whatever industry field they carry (a code column, or free-text sector/sub-sector text).
 
-The `companies` table stores a free-text `sub_sector` (not a code column), so the
-taxonomy resolves each vertical to three things: the internal **sub_sector labels**
-it wears, its **EMTAK/NACE codes**, and multilingual **name/description keywords**
-(ET/LT/LV/EN). Screens match on labels + keywords; the codes document provenance
-and feed the scrapers.
+## How to work through it
+1. **Establish the crosswalk.** For each vertical, resolve it to three things: the internal **sub-sector label(s)** it wears, its **classification codes**, and the **name/description keywords** that identify it. Codes document provenance; labels and keywords are what screens actually match on when records store free-text rather than codes.
+2. **Handle code granularity.** When a record carries a more specific code than your map knows, roll it up to the nearest known level (e.g. `86.221` → `86.22`). When a scheme is a national extension, strip the extra digits to reach the NACE/ISIC parent.
+3. **Disambiguate verticals that share a code.** Some verticals have no code of their own and sit under a broader one — separate them by keyword. Example: dermatology has no distinct code and sits under *specialist medical practice*; a dermatology screen must match on skin-related keywords (`dermatolog`, `skin`, and local-language equivalents), not on the sub-sector code alone.
+4. **Exclude adjacencies deliberately.** Decide which neighbouring categories must never count. In a human-healthcare screen, for instance, exclude veterinary (animal), pharmacy, medical-device wholesale, and spa/wellness noise unless explicitly requested.
+5. **Guard against dirty source data.** Registry or scraped data often over-tags companies with a generic sector label. Do not treat a bare generic label as membership — require a corroborating code or a name/description keyword before admitting a record.
+6. **Apply the screen** by matching on labels + keywords (and codes where present), then layer on any size, geography, or ownership filters.
 
-## Verticals (healthcare branch)
+Below is an **illustrative** vertical crosswalk (a healthcare branch) showing the method — replace the codes, labels, and keywords with your own scheme and taxonomy:
 
-| Vertical | Sub_sector label(s) | EMTAK | NACE | Clinical? |
-|---|---|---|---|---|
-| `dental` | Dental practice / Dental clinics | 86230 | 86.23 | ✅ |
-| `dermatology` | Specialist medical practice (＋ skin keywords) | 86220 | 86.22 | ✅ |
-| `general_medical` | General medical practice | 86210 | 86.21 | ✅ |
-| `specialist_medical` | Specialist medical practice | 86220 | 86.22 | ✅ |
-| `health_clinic` | Health care institutions / Ambulance & emergency | 86901 | 86.90 | ✅ |
-| `veterinary` | Veterinary clinics | 75001 | 75.00 | animal — excluded from human-health screens |
-| `pharmacy` | Pharmacy & medical materials | 47730/47740 | 47.73 | ❌ non-clinical |
-| `medical_devices` | Medical devices wholesale | 46462 | 46.46 | ❌ non-clinical |
-
-**Dermatology has no code of its own** — it sits under *specialist medical
-practice* (EMTAK 86220 / NACE 86.22), disambiguated by keyword (`dermatolog`,
-`skin`, `naha`, `odos`, `ādas`, …). That is why a dermatology screen must go
-through the taxonomy rather than a sub_sector match alone.
-
-## How to use it
-
-**Resolve a vertical or a code:**
-```python
-from tools.sector_codes import resolve_vertical, code_to_sector
-
-resolve_vertical("dermatology")   # Vertical(key='dermatology', label='Dermatology & skin clinics', …)
-resolve_vertical("skin")          # same — synonym/keyword resolution
-code_to_sector("86230")           # ('healthcare', 'Dental practice')   — EMTAK
-code_to_sector("86.22")           # ('healthcare', 'Specialist medical practice')  — NACE
-code_to_sector("86.221")          # rolls up to the nearest known NACE level
-```
-
-**Build a screen** — the main entry point. Pass vertical keys (or free-text names);
-get back a parameterised SQL fragment + params. By default it excludes veterinary,
-pharmacy, devices, wholesale and spa noise:
-```python
-from tools.sector_codes import build_screen_sql
-from db import fetch_all
-
-frag, p = build_screen_sql(["dental", "dermatology", "health_clinic"])
-rows = fetch_all(
-    f"""SELECT slug, name, country, sub_sector, revenue_ltm, ownership
-        FROM pehero.companies
-        WHERE sector = 'healthcare'
-          AND {frag}
-          AND revenue_ltm BETWEEN %(rmin)s AND %(rmax)s""",
-    {"rmin": 3_000_000, "rmax": 10_000_000, **p},
-)
-```
-Pass `exclude_non_clinical=False` to keep the adjacencies, or `sub_col`/`name_col`
-to target different columns.
-
-## Worked example
-
-`evals/run_screen_eval.py` uses this to screen Baltic health/dental/dermatology
-clinics with non-institutional ownership and €3–10M revenue:
-```python
-SCREEN_VERTICALS = ("dental", "dermatology", "general_medical",
-                    "specialist_medical", "health_clinic")
-tax_frag, tax_params = build_screen_sql(SCREEN_VERTICALS)
-```
-Run `python -m evals.run_screen_eval --no-llm` to see the deterministic universe.
+| Vertical | Sub-sector label(s) | Example NACE | Clinical? |
+|---|---|---|---|
+| dental | Dental practice / clinics | 86.23 | yes |
+| dermatology | Specialist medical practice (＋ skin keywords) | 86.22 | yes |
+| general medical | General medical practice | 86.21 | yes |
+| specialist medical | Specialist medical practice | 86.22 | yes |
+| health clinic | Health care institutions / emergency | 86.90 | yes |
+| veterinary | Veterinary clinics | 75.00 | animal — exclude from human-health screens |
+| pharmacy | Pharmacy & medical materials | 47.73 | no — non-clinical |
+| medical devices | Medical devices wholesale | 46.46 | no — non-clinical |
 
 ## Extending it
+- **New vertical:** add its sub-sector labels, its codes across each scheme you use, and its multilingual keywords; the crosswalk and screens pick it up automatically.
+- **Non-clinical / out-of-scope adjacency:** mark it excluded so screens drop it unless explicitly asked to keep it.
+- **Keep it aligned with your data sources:** when an upstream loader or registry gains a new code, mirror it in the crosswalk so classification stays consistent end to end.
 
-- **New vertical:** add a `Vertical(...)` to `VERTICALS` with its sub_sector
-  labels, EMTAK + NACE codes, and multilingual keywords. The `EMTAK`/`NACE`
-  lookup maps and `build_screen_sql` pick it up automatically.
-- **Non-clinical adjacency:** set `clinical=False` and, if it should never count
-  as care, add its key to `NON_HUMAN_HEALTH` so `build_screen_sql` excludes it.
-- **Keep it aligned with the scrapers:** `scripts/scrape_ee.py` (EMTAK map) and
-  `scripts/scrape_lv.py` (NACE map) are the upstream code sources — when they gain
-  a code, mirror it here so classification stays consistent end to end.
-- **Data caveat:** the LV loader tags many firms with the generic `sub_sector =
-  "Healthcare"`, including non-clinical ones. The taxonomy deliberately does **not**
-  treat that bare label as a clinic — LV rows qualify only when the company **name**
-  carries a clinic keyword (`klinik`, `slimnīc`, `dental`, …).
+## Presenting results
+- Present every result as one or more clear Markdown **tables** — one per section, each with a short heading.
+- Keep prose minimal; put the substance in the tables.
+- Offer the user a downloadable **PDF** (formatted) and **CSV** (the underlying rows), and generate them when asked.
+- Never invent figures. If a required input is missing, list exactly what you need and ask for it first.
