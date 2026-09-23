@@ -59,6 +59,9 @@ BASE_CSS = r"""
 .card .stretch{text-decoration:none;color:inherit}.card .stretch::after{content:"";position:absolute;inset:0;z-index:0}
 .cardclone{position:relative;z-index:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer}.cardclone:hover{background:var(--tint);border-color:var(--accent)}.cardclone-form{position:relative;z-index:1;margin:0}
 .cardfav-wrap{position:absolute;top:9px;right:12px;z-index:1}.cardfav-wrap form{margin:0}.cardfav{border:0;background:transparent;font-size:20px;line-height:1;color:#c7ccd6;cursor:pointer;padding:2px}.cardfav:hover{color:#f59e0b}.cardfav.on{color:#f59e0b}
+.cardactions{display:flex;align-items:center;gap:6px;position:relative;z-index:1}.carduse{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;cursor:pointer;display:inline-flex;align-items:center;color:#3f4654}.carduse:hover{background:var(--tint);border-color:var(--accent);color:var(--accent)}.carduse svg{height:15px;width:auto;display:block}.carduse svg path{fill:currentColor}
+.userow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0 4px}.uselabel{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.usebtn{display:inline-flex;align-items:center;gap:7px}.usebtn svg{height:16px;width:auto}.usebtn svg path{fill:currentColor}.usehelp{margin-top:12px;font-size:13px;color:var(--muted);max-width:640px}.usehelp summary{cursor:pointer;color:var(--accent);font-weight:600}.usehelp ul{margin:8px 0;padding-left:20px;line-height:1.65}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;box-shadow:0 12px 34px rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:3000}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-right:26px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
 .sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
@@ -134,6 +137,19 @@ def public_nav(who):
 LINKEDIN_URL = "https://www.linkedin.com/company/predictive-labs-ltd"
 PREDICTIVELABS_URL = "https://predictivelabs.ai"
 
+# One-click hand-off to assistants. Deep-link prefill is undocumented and may
+# change; a length guard + clipboard fallback keeps it robust for long skills.
+USE_JS = r"""
+async function _skillPrompt(id){const r=await fetch(`/skills/${id}/prompt`);if(!r.ok)throw new Error('x');return await r.text()}
+function _toast(m){let t=document.getElementById('fs-toast');if(!t){t=document.createElement('div');t.id='fs-toast';t.className='toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3800)}
+const _USE={chatgpt:{q:'https://chatgpt.com/?q=',home:'https://chatgpt.com/',name:'ChatGPT'},claude:{q:'https://claude.ai/new?q=',home:'https://claude.ai/new',name:'Claude'}};
+async function useSkill(id,provider,ev){if(ev){ev.preventDefault();ev.stopPropagation()}const b=_USE[provider];let p;try{p=await _skillPrompt(id)}catch(e){_toast('Could not load skill');return}
+ const url=b.q+encodeURIComponent(p);
+ if(url.length<7000){window.open(url,'_blank','noopener')}
+ else{try{await navigator.clipboard.writeText(p);_toast('Skill copied — paste it into '+b.name)}catch(e){_toast('Open the skill page to copy it')}window.open(b.home,'_blank','noopener')}}
+async function copyPrompt(id,ev){if(ev){ev.preventDefault();ev.stopPropagation()}try{const p=await _skillPrompt(id);await navigator.clipboard.writeText(p);_toast('Skill copied to clipboard')}catch(e){_toast('Copy failed')}}
+"""
+
 
 def site_footer():
     return Footer(
@@ -175,7 +191,12 @@ def skill_card(item, who=None, fav_ids=None):
         A(H3(item["title"]), href=f"/skills/{item['id']}", cls="stretch"),
         P((item.get("description") or (item.get("plain_text") or "")[:150]), cls="desc"),
         (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
-        Div(Div(Span(_initial(author), cls="avatar"), author, cls="author"), clone,
+        Div(Div(Span(_initial(author), cls="avatar"), author, cls="author"),
+            Div(Button(NotStr(OPENAI_SVG), type="button", cls="carduse",
+                       title="Open in ChatGPT", onclick=f"useSkill({item['id']},'chatgpt',event)"),
+                Button(NotStr(ANTHROPIC_SVG), type="button", cls="carduse",
+                       title="Open in Claude", onclick=f"useSkill({item['id']},'claude',event)"),
+                clone, cls="cardactions"),
             cls="cardfoot"),
         cls="card")
 
@@ -233,7 +254,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                 grid, cls="catwrap"),
             site_footer(),
             account_auth.auth_modal("FastSkills"),
-            Script(account_auth.AUTH_JS)))
+            Script(account_auth.AUTH_JS), Script(USE_JS)))
 
 
 def detail_page(who, item, body_html, faved=False):
@@ -285,12 +306,30 @@ def detail_page(who, item, body_html, faved=False):
                        cls="prov") if item.get("seeded") else None),
                     (Div(*[Span(t, cls="tag") for t in tags], cls="tagrow") if tags else None),
                     Div(*actions, cls="detailactions"),
+                    Div(Span("Use this skill", cls="uselabel"),
+                        Button(NotStr(OPENAI_SVG), "ChatGPT", type="button", cls="btn ghost usebtn",
+                               onclick=f"useSkill({item['id']},'chatgpt')"),
+                        Button(NotStr(ANTHROPIC_SVG), "Claude", type="button", cls="btn ghost usebtn",
+                               onclick=f"useSkill({item['id']},'claude')"),
+                        Button("Copy prompt", type="button", cls="btn ghost",
+                               onclick=f"copyPrompt({item['id']})"),
+                        A("Download .zip", href=f"/skills/{item['id']}/zip", cls="btn ghost"),
+                        cls="userow"),
+                    Details(Summary("How does this work?"),
+                            Ul(Li(B("ChatGPT"), " opens a new chat with the skill loaded. If it's "
+                                  "too long for a link, it's copied to your clipboard — just paste."),
+                               Li(B("Claude"), " works the same way. To install it permanently, "
+                                  "download the .zip and upload it under Claude → Settings → "
+                                  "Capabilities → Skills (Pro/Team/Enterprise)."),
+                               Li(B("Copy prompt"), " copies the skill so you can paste it into any "
+                                  "assistant, including Grok.")),
+                            cls="usehelp"),
                     cls="detailhead"),
                 Div(NotStr(body_html), cls="prose"),
                 cls="detail"),
             site_footer(),
             account_auth.auth_modal("FastSkills"),
-            Script(account_auth.AUTH_JS)))
+            Script(account_auth.AUTH_JS), Script(USE_JS)))
 
 
 def _fmt(ts):
@@ -650,6 +689,7 @@ def favourites_page(who, items, counts, category=None):
                               Div(cards, style="margin-top:20px"),
                               cls="catwrap", style="margin-top:26px"),
                           cls="workspace"),
+                     Script(USE_JS),
                      cls="shell"))
 
 
@@ -664,6 +704,7 @@ def mine_page(who, items, fav_ids=None):
                               H1("My Skills", style="margin:6px 0 20px"), cards,
                               cls="catwrap", style="margin-top:26px"),
                           cls="workspace"),
+                     Script(USE_JS),
                      cls="shell"))
 
 

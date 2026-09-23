@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os, re, secrets, threading
+import io, os, re, secrets, threading, zipfile
 from urllib.parse import quote
 
 import markdown as _md
@@ -115,24 +115,62 @@ def get(session, sid: int):
                              faved=db.is_favourite(identity, sid))
 
 
+def _safe_slug(item):
+    return re.sub(r"[^A-Za-z0-9._-]+", "-", item["slug"]).strip("-.") or "skill"
+
+
+def _skill_md_text(item):
+    """Full SKILL.md text (frontmatter + body), used by download and the zip."""
+    front = (f"---\ntitle: {item['title']}\ndescription: {item['description']}\n"
+             f"category: {item['category']}\nsublabel: {item.get('sub_label', '')}\n"
+             f"author: {item['author_label']}\ntags: {item['tags']}\n")
+    if item["license"]:
+        front += f"license: {item['license']}\n"
+    if item["source_url"]:
+        front += f"source: {item['source_url']}\n"
+    front += "---\n\n"
+    return front + (item["markdown"] or "")
+
+
+def _skill_prompt(item):
+    """A ready-to-paste prompt that loads the skill into an assistant."""
+    return ("Please use the following skill. Follow its instructions whenever they are "
+            "relevant to my requests.\n\n"
+            f"# {item['title']}\n\n{item['markdown'] or ''}\n\n"
+            "— (skill shared from FastSkills)")
+
+
 @rt("/skills/{sid:int}/download")
 def get(session, sid: int):
     identity = who(session)
     item = db.visible_skill(identity, sid)
     if not item:
         return Response("Skill not found", status_code=404)
-    safe = re.sub(r"[^A-Za-z0-9._-]+", "-", item["slug"]).strip("-.") or "skill"
-    front = (f"---\ntitle: {item['title']}\ndescription: {item['description']}\n"
-             f"category: {item['category']}\nauthor: {item['author_label']}\n"
-             f"tags: {item['tags']}\n")
-    if item["license"]:
-        front += f"license: {item['license']}\n"
-    if item["source_url"]:
-        front += f"source: {item['source_url']}\n"
-    front += "---\n\n"
-    body = front + (item["markdown"] or "")
-    return Response(body, media_type="text/markdown",
-                    headers={"Content-Disposition": f'attachment; filename="{safe}.md"'})
+    return Response(_skill_md_text(item), media_type="text/markdown",
+                    headers={"Content-Disposition": f'attachment; filename="{_safe_slug(item)}.md"'})
+
+
+@rt("/skills/{sid:int}/prompt")
+def get(session, sid: int):
+    identity = who(session)
+    item = db.visible_skill(identity, sid)
+    if not item:
+        return Response("Skill not found", status_code=404)
+    return Response(_skill_prompt(item), media_type="text/plain; charset=utf-8")
+
+
+@rt("/skills/{sid:int}/zip")
+def get(session, sid: int):
+    identity = who(session)
+    item = db.visible_skill(identity, sid)
+    if not item:
+        return Response("Skill not found", status_code=404)
+    slug = _safe_slug(item)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr(f"{slug}/SKILL.md", _skill_md_text(item))
+    return Response(buf.getvalue(), media_type="application/zip",
+                    headers={"Content-Disposition": f'attachment; filename="{slug}.zip"'})
 
 
 @rt("/skills/{sid:int}/edit")
