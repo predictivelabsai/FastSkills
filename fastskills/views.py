@@ -63,6 +63,16 @@ BASE_CSS = r"""
 .cardactions{display:flex;align-items:center;gap:6px;position:relative;z-index:1}.carduse{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;cursor:pointer;display:inline-flex;align-items:center;color:#3f4654}.carduse:hover{background:var(--tint);border-color:var(--accent);color:var(--accent)}.carduse svg{height:15px;width:auto;display:block}.carduse svg path{fill:currentColor}
 .userow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0 4px}.uselabel{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.usebtn{display:inline-flex;align-items:center;gap:7px}.usebtn svg{height:16px;width:auto}.usebtn svg path{fill:currentColor}.usehelp{margin-top:12px;font-size:13px;color:var(--muted);max-width:640px}.usehelp summary{cursor:pointer;color:var(--accent);font-weight:600}.usehelp ul{margin:8px 0;padding-left:20px;line-height:1.65}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;box-shadow:0 12px 34px rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:3000}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* hero 2-col + animated demo */
+.hero.herowrap{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;text-align:left;max-width:1200px;padding:52px 24px 20px}.heroleft{min-width:0}.heroleft .searchwrap{margin-left:0}.heroleft .workswith{justify-content:flex-start;margin-left:0}.heroright{min-width:0}
+.demo{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px #312e8118;overflow:hidden;width:100%;max-width:470px;margin-left:auto}
+.demo-head{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--panel)}.demo-dots{display:flex;gap:6px}.demo-dots i{width:10px;height:10px;border-radius:99px;background:#dfe3ea}.demo-htitle{font-weight:800;font-size:13px}.demo-use{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.demo-use svg{height:14px;width:auto}.demo-use svg path{fill:#3f4654}
+.demo-body{padding:15px 16px 16px;min-height:372px}.demo-skill{display:flex;align-items:center;gap:8px;margin-bottom:11px}.demo-cat{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:99px;color:#fff}.demo-skillname{font-size:16px;font-weight:800;letter-spacing:-.01em}
+.demo-prompt{background:var(--tint);border:1px solid #e7e3fb;border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.45;color:var(--ink);min-height:38px;margin-bottom:12px}.demo-caret{display:inline-block;width:7px;height:14px;background:var(--accent);vertical-align:-2px;margin-left:1px;animation:demoblink 1s step-end infinite}@keyframes demoblink{50%{opacity:0}}
+.demo-result{opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}.demo-result.show{opacity:1;transform:none}.demo table{width:100%;border-collapse:collapse;font-size:12px}.demo th,.demo td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}.demo th{color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.demo td.ok{color:#027a48;font-weight:700}.demo td.warn{color:#b45309;font-weight:700}.demo td.num{text-align:right;font-variant-numeric:tabular-nums}
+.demo-foot{margin-top:11px;font-size:11px;color:var(--muted);opacity:0;transition:opacity .45s}.demo-foot.show{opacity:1}.demo-foot b{color:var(--accent)}
+.demo-prog{display:flex;gap:5px;margin-top:14px}.demo-prog i{height:3px;border-radius:99px;background:#e6e3f3;flex:1;transition:background .2s}.demo-prog i.on{background:var(--accent)}
+@media(max-width:900px){.hero.herowrap{grid-template-columns:1fr;gap:26px;text-align:center}.heroleft .searchwrap{margin-left:auto}.heroleft .workswith{justify-content:center}.demo{margin:0 auto}}
 .cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-right:26px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
 .sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
@@ -166,6 +176,74 @@ def site_footer():
         cls="footer")
 
 
+def demo_widget():
+    """A looping, animated product demo (four scenes) for the landing hero."""
+    return Div(
+        Div(Div(I(), I(), I(), cls="demo-dots"),
+            Span("FastSkills", cls="demo-htitle"),
+            Div("Use with ", NotStr(OPENAI_SVG), NotStr(ANTHROPIC_SVG), cls="demo-use"),
+            cls="demo-head"),
+        Div(
+            Div(Span(id="demo-cat", cls="demo-cat"), Span(id="demo-skill", cls="demo-skillname"),
+                cls="demo-skill"),
+            Div(Span(id="demo-prompt"), Span(cls="demo-caret"), cls="demo-prompt"),
+            Div(id="demo-result", cls="demo-result"),
+            Div(id="demo-foot", cls="demo-foot"),
+            Div(I(), I(), I(), I(), id="demo-prog", cls="demo-prog"),
+            cls="demo-body"),
+        cls="demo", id="fs-demo")
+
+
+DEMO_JS = r"""
+const _SC=[
+ {cat:'Finance',color:'#0f766e',skill:'Comps Finder',prompt:'Find trading comps for a €40M-EBITDA European industrials target',
+  table:`<table><tr><th>Company</th><th class="num">EV/EBITDA</th><th class="num">EV/Rev</th></tr>
+  <tr><td>Alpha Industrials</td><td class="num">8.9x</td><td class="num">1.4x</td></tr>
+  <tr><td>Beta Manufacturing</td><td class="num">7.6x</td><td class="num">1.1x</td></tr>
+  <tr><td>Gamma Systems</td><td class="num">9.4x</td><td class="num">1.6x</td></tr>
+  <tr><td><b>Median</b></td><td class="num"><b>8.9x</b></td><td class="num"><b>1.4x</b></td></tr></table>`},
+ {cat:'Marketing',color:'#be185d',skill:'SEO Audit · fastsme.com',prompt:'Audit fastsme.com for on-page SEO',
+  table:`<table><tr><th>Check</th><th>Result</th><th>Status</th></tr>
+  <tr><td>Title</td><td>43 chars</td><td class="ok">Good</td></tr>
+  <tr><td>Meta description</td><td>56 chars</td><td class="warn">Short</td></tr>
+  <tr><td>H1</td><td>1</td><td class="ok">Good</td></tr>
+  <tr><td>Image alt</td><td>7 / 7</td><td class="ok">Good</td></tr>
+  <tr><td>OpenGraph</td><td>3 tags</td><td class="warn">Add more</td></tr></table>`},
+ {cat:'Legal',color:'#1d4ed8',skill:'NDA Review',prompt:'Review this one-way NDA and flag the key risks',
+  table:`<table><tr><th>Clause</th><th>Risk</th><th>Suggested redline</th></tr>
+  <tr><td>Term</td><td class="warn">Perpetual</td><td>Cap at 3 years</td></tr>
+  <tr><td>Confidential info</td><td class="warn">Overbroad</td><td>Add carve-outs</td></tr>
+  <tr><td>Governing law</td><td class="warn">Missing</td><td>Specify jurisdiction</td></tr></table>`},
+ {cat:'Trading',color:'#b45309',skill:'Backtester · yfinance',prompt:'Backtest an SMA 20/50 crossover on AAPL, 2023–24 (source: yfinance)',
+  table:`<table><tr><th>Metric</th><th class="num">Value</th></tr>
+  <tr><td>Trades</td><td class="num">5</td></tr>
+  <tr><td>Strategy return</td><td class="num">+46.0%</td></tr>
+  <tr><td>Buy &amp; hold</td><td class="num">+103.8%</td></tr>
+  <tr><td>Sharpe</td><td class="num">1.28</td></tr></table>`}
+];
+(function(){
+ const root=document.getElementById('fs-demo'); if(!root) return;
+ const cat=root.querySelector('#demo-cat'),sk=root.querySelector('#demo-skill'),pr=root.querySelector('#demo-prompt'),
+   res=root.querySelector('#demo-result'),foot=root.querySelector('#demo-foot'),prog=[...root.querySelectorAll('#demo-prog i')];
+ let i=0,timers=[];
+ const at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+ const clear=()=>{timers.forEach(clearTimeout);timers=[]};
+ function scene(n){
+  const s=_SC[n];
+  cat.textContent=s.cat; cat.style.background=s.color; sk.textContent=s.skill;
+  pr.textContent=''; res.classList.remove('show'); res.innerHTML=s.table;
+  foot.classList.remove('show'); foot.innerHTML='Rendered as a table · <b>⤓ PDF</b> · <b>⤓ CSV</b>';
+  prog.forEach((p,k)=>p.classList.toggle('on',k===n));
+  const txt=s.prompt; let c=0;
+  (function type(){ if(c<=txt.length){pr.textContent=txt.slice(0,c);c++;at(22,type);}
+    else {at(250,()=>res.classList.add('show'));at(700,()=>foot.classList.add('show'));at(3600,next);} })();
+ }
+ function next(){clear(); i=(i+1)%_SC.length; scene(i);}
+ scene(0);
+})();
+"""
+
+
 def skill_card(item, who=None, fav_ids=None):
     color = CAT_COLOR.get(item["category"], ACCENT)
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()][:3]
@@ -230,22 +308,25 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
         Body(
             public_nav(who),
             Section(
-                Span("Open skills library", cls="eyebrow"),
-                H1("Find the skill for the job."),
-                P("A searchable catalog of reusable skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
-                Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
-                         Button("Search", cls="btn"), cls="searchbar"),
-                     (Input(type="hidden", name="category", value=active_category) if active_category else None),
-                     method="get", action="/", cls="searchwrap"),
-                Div(Span("Works with", cls="ww-label"),
-                    A(NotStr(ANTHROPIC_SVG), "Anthropic", href="https://www.anthropic.com",
-                      target="_blank", rel="noopener noreferrer", cls="ww-item"),
-                    A(NotStr(OPENAI_SVG), "ChatGPT", href="https://chatgpt.com",
-                      target="_blank", rel="noopener noreferrer", cls="ww-item"),
-                    A(NotStr(GROK_SVG), "xAI / Grok", href="https://x.ai",
-                      target="_blank", rel="noopener noreferrer", cls="ww-item"),
-                    cls="workswith"),
-                cls="hero"),
+                Div(
+                    Span("Open skills library", cls="eyebrow"),
+                    H1("Find the skill for the job."),
+                    P("A searchable catalog of reusable skills across Finance, Trading, Legal and Marketing — contribute your own, keep it private or share it public."),
+                    Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
+                             Button("Search", cls="btn"), cls="searchbar"),
+                         (Input(type="hidden", name="category", value=active_category) if active_category else None),
+                         method="get", action="/", cls="searchwrap"),
+                    Div(Span("Works with", cls="ww-label"),
+                        A(NotStr(ANTHROPIC_SVG), "Anthropic", href="https://www.anthropic.com",
+                          target="_blank", rel="noopener noreferrer", cls="ww-item"),
+                        A(NotStr(OPENAI_SVG), "ChatGPT", href="https://chatgpt.com",
+                          target="_blank", rel="noopener noreferrer", cls="ww-item"),
+                        A(NotStr(GROK_SVG), "xAI / Grok", href="https://x.ai",
+                          target="_blank", rel="noopener noreferrer", cls="ww-item"),
+                        cls="workswith"),
+                    cls="heroleft"),
+                Div(demo_widget(), cls="heroright"),
+                cls="hero herowrap"),
             Div(*tabs, cls="tabs"),
             sub_row,
             Div(Div(Span(f"{len(items)} skill{'s' if len(items) != 1 else ''} · {heading}"),
@@ -255,7 +336,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                 grid, cls="catwrap"),
             site_footer(),
             account_auth.auth_modal("FastSkills"),
-            Script(account_auth.AUTH_JS), Script(USE_JS)))
+            Script(account_auth.AUTH_JS), Script(USE_JS), Script(DEMO_JS)))
 
 
 def detail_page(who, item, body_html, faved=False):
@@ -330,7 +411,7 @@ def detail_page(who, item, body_html, faved=False):
                 cls="detail"),
             site_footer(),
             account_auth.auth_modal("FastSkills"),
-            Script(account_auth.AUTH_JS), Script(USE_JS)))
+            Script(account_auth.AUTH_JS), Script(USE_JS), Script(DEMO_JS)))
 
 
 def _fmt(ts):
