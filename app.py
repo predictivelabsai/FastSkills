@@ -50,17 +50,19 @@ def render_markdown(text):
 
 # ── catalog ──────────────────────────────────────────────────────────────────
 @rt("/")
-def get(session, q: str = "", category: str = "", sub: str = ""):
+def get(session, q: str = "", category: str = "", sub: str = "", source: str = ""):
     identity = who(session)
     category = category if category in db.CATEGORIES else None
     sub = sub.strip() or None
-    items = db.catalog(category, q.strip() or None, sub=sub)
+    source = source if source in ("predictive", "community") else None
+    items = db.catalog(category, q.strip() or None, sub=sub, source=source)
     counts = db.category_counts()
     total = sum(counts.values())
     sublabels = db.sublabels(category) if category else []
     return views.catalog_page(identity, items, counts, category, q.strip(), total,
                               sublabels=sublabels, active_sub=sub,
-                              fav_ids=db.favourite_ids(identity))
+                              fav_ids=db.favourite_ids(identity),
+                              source=source, src_counts=db.source_counts(category))
 
 
 @rt("/mine")

@@ -29,7 +29,7 @@ PARTNERS = (
 )
 
 CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d",
-             "Design": "#9333ea", "Productivity": "#0891b2"}
+             "Design": "#9333ea", "UI": "#e11d48", "Productivity": "#0891b2"}
 
 # Suggested sub-labels per category (see prompts/skill-labeller.md). Editable free
 # text — these only populate the editor's autocomplete.
@@ -47,6 +47,7 @@ SUBLABELS = {
                   "Analytics", "Brand & PR", "Pricing & Offers", "Community & Influencer",
                   "Research", "Strategy"],
     "Design": ["Design Engineering", "Animation", "UI", "Prototyping"],
+    "UI": ["Frontend", "Accessibility", "Motion", "Design Systems", "Metadata"],
     "Productivity": ["Obsidian", "Notes", "Automation", "Knowledge Management"],
 }
 
@@ -78,7 +79,7 @@ BASE_CSS = r"""
 .demo-prog{display:flex;gap:5px;margin-top:14px}.demo-prog i{height:3px;border-radius:99px;background:#e6e3f3;flex:1;transition:background .2s}.demo-prog i.on{background:var(--accent)}
 @media(max-width:900px){.hero.herowrap{grid-template-columns:1fr;gap:26px;text-align:center}.heroleft .searchwrap{margin-left:auto}.heroleft .workswith{justify-content:center}.demo{margin:0 auto}}
 .cardtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-right:26px}.catbadge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:99px;color:#fff}.sublabel{font-size:11px;font-weight:700;color:var(--accent);background:var(--tint);border-radius:99px;padding:4px 9px}
-.sublabelrow{display:flex;gap:8px;flex-wrap:wrap;max-width:1200px;margin:14px auto 0;padding:0 24px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
+.sublabelrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;max-width:1200px;margin:14px auto 0;padding:0 24px}.srcfilter{margin-top:10px}.srcfilter .ww-label{margin-right:2px}.subchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink)}.subchip .count{color:var(--muted);font-size:11px;margin-left:5px}.subchip.active{background:var(--accent);border-color:var(--accent);color:#fff}.subchip.active .count{color:#ffffffcc}
 .card h3{margin:0 0 8px;font-size:18px;line-height:1.25}.card .desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;color:var(--muted)}.author{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ink)}.avatar{width:22px;height:22px;border-radius:99px;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:800}
 .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.tag{font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:2px 9px}
@@ -285,7 +286,7 @@ def skill_card(item, who=None, fav_ids=None):
 
 
 def catalog_page(who, items, counts, active_category=None, q="", total=0,
-                 sublabels=(), active_sub=None, fav_ids=None):
+                 sublabels=(), active_sub=None, fav_ids=None, source=None, src_counts=None):
     tabs = [A("All", Span(str(total), cls="count"),
               href="/" + (f"?q={quote(q)}" if q else ""),
               cls="tab" + ("" if active_category else " active"))]
@@ -303,6 +304,27 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                            href=f"/?category={quote(active_category)}&sub={quote(s['sub_label'])}{qs}",
                            cls="subchip" + (" active" if active_sub == s["sub_label"] else "")))
         sub_row = Div(*chips, cls="sublabelrow")
+    sc = src_counts or {}
+
+    def _surl(src):
+        p = []
+        if active_category:
+            p.append(f"category={quote(active_category)}")
+        if active_sub:
+            p.append(f"sub={quote(active_sub)}")
+        if q:
+            p.append(f"q={quote(q)}")
+        if src:
+            p.append(f"source={src}")
+        return "/?" + "&".join(p) if p else "/"
+    src_row = Div(
+        Span("Source", cls="ww-label"),
+        A("All", href=_surl(None), cls="subchip" + ("" if source else " active")),
+        A("Predictive Labs", Span(str(sc.get("predictive", 0)), cls="count"),
+          href=_surl("predictive"), cls="subchip" + (" active" if source == "predictive" else "")),
+        A("Community", Span(str(sc.get("community", 0)), cls="count"),
+          href=_surl("community"), cls="subchip" + (" active" if source == "community" else "")),
+        cls="sublabelrow srcfilter")
     grid = (Div(*[skill_card(i, who, fav_ids) for i in items], cls="grid") if items
             else Div("No skills match your search yet.", cls="empty"))
     heading = (f"{active_category} · {active_sub}" if active_sub else active_category) \
@@ -333,6 +355,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
                 cls="hero herowrap"),
             Div(*tabs, cls="tabs"),
             sub_row,
+            src_row,
             Div(Div(Span(f"{len(items)} skill{'s' if len(items) != 1 else ''} · {heading}"),
                     (A("+ Add your skill", href="/skills/new", cls="btn ghost sm") if who
                      else Button("+ Add your skill", cls="btn ghost sm", onclick="authOpen('register')", type="button")),

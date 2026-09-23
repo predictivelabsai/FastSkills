@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from .database import rows, row, execute, insert, tx, init_schema
 from .mdconvert import markdown_to_doc, plain_text
 
-CATEGORIES = ("Finance", "Trading", "Legal", "Marketing", "Design", "Productivity")
+CATEGORIES = ("Finance", "Trading", "Legal", "Marketing", "Design", "UI", "Productivity")
 
 
 def now() -> str:
@@ -135,13 +135,17 @@ def visible_skill(who, sid):
     return item if can_view(who, item) else None
 
 
-def catalog(category=None, q=None, author=None, sub=None):
+def catalog(category=None, q=None, author=None, sub=None, source=None):
     where = ["visibility='public'", "status='published'", "deleted_at IS NULL"]
     args = []
     if category and category in CATEGORIES:
         where.append("category=?"); args.append(category)
     if sub:
         where.append("sub_label=?"); args.append(sub)
+    if source == "predictive":
+        where.append("author_label='Predictive Labs'")
+    elif source == "community":
+        where.append("author_label<>'Predictive Labs'")
     if author:
         where.append("author_label=?"); args.append(author)
     if q:
@@ -149,6 +153,19 @@ def catalog(category=None, q=None, author=None, sub=None):
         like = f"%{q}%"; args += [like, like, like, like]
     return rows("SELECT s.*,u.name owner_name FROM skills s LEFT JOIN users u ON u.id=s.owner_id "
                 f"WHERE {' AND '.join(where)} ORDER BY category,sub_label,title", args)
+
+
+def source_counts(category=None):
+    where = ["visibility='public'", "status='published'", "deleted_at IS NULL"]
+    args = []
+    if category and category in CATEGORIES:
+        where.append("category=?"); args.append(category)
+    r = row("SELECT "
+            "SUM(CASE WHEN author_label='Predictive Labs' THEN 1 ELSE 0 END) pred, "
+            "SUM(CASE WHEN author_label<>'Predictive Labs' THEN 1 ELSE 0 END) comm "
+            f"FROM skills WHERE {' AND '.join(where)}", args)
+    return {"predictive": (r["pred"] if r and r["pred"] else 0),
+            "community": (r["comm"] if r and r["comm"] else 0)}
 
 
 def sublabels(category):

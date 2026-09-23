@@ -29,6 +29,9 @@ PACKS = [
     ("TheMattBerman/google-ads-copilot",    "Matt Berman",          "Marketing",    "Paid Ads",          "gads"),
     ("garrettjsmith/localseoskills",        "garrettjsmith",        "Marketing",    "Local SEO",         "lseo"),
     ("superamped/ai-marketing-skills",      "superamped",           "Marketing",    "Strategy",          "samp"),
+    # UI skills directory (ui-skills.com); per-skill sub-labels applied via a
+    # dedicated import — this entry documents the source/credit for reproducibility.
+    ("ibelick/ui-skills",                   "Julien Thibeaut (ibelick)", "UI",       "Frontend",          "uiskills"),
 ]
 
 FRONT = re.compile(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", re.DOTALL)

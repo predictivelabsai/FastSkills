@@ -50,10 +50,11 @@ def _entries():
     entries = []
     for path in sorted(SEED_DIR.rglob("*.md")):
         meta, body = _parse(path.read_text(encoding="utf-8"))
-        category = (meta.get("category") or "").title()
-        if category not in db.CATEGORIES:
-            category = path.parent.name.title()  # fall back to the folder name
-        if category not in db.CATEGORIES:
+        def _canon(name):
+            name = (name or "").strip()
+            return next((c for c in db.CATEGORIES if c.lower() == name.lower()), None)
+        category = _canon(meta.get("category")) or _canon(path.parent.name)
+        if not category:
             continue
         title = meta.get("title") or meta.get("name") or path.stem.replace("-", " ").title()
         entries.append({
