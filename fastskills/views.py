@@ -29,7 +29,7 @@ PARTNERS = (
 )
 
 CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Marketing": "#be185d",
-             "Design": "#9333ea", "UI": "#e11d48", "Productivity": "#0891b2"}
+             "Design": "#9333ea", "Productivity": "#0891b2"}
 
 # Suggested sub-labels per category (see prompts/skill-labeller.md). Editable free
 # text — these only populate the editor's autocomplete.
@@ -46,8 +46,7 @@ SUBLABELS = {
                   "Product Marketing", "Growth & CRO", "Sales & Outbound", "GTM", "Affiliate",
                   "Analytics", "Brand & PR", "Pricing & Offers", "Community & Influencer",
                   "Research", "Strategy"],
-    "Design": ["Design Engineering", "Animation", "UI", "Prototyping"],
-    "UI": ["Frontend", "Accessibility", "Motion", "Design Systems", "Metadata"],
+    "Design": ["Design Engineering", "UI", "Animation", "Prototyping"],
     "Productivity": ["Obsidian", "Notes", "Automation", "Knowledge Management"],
 }
 

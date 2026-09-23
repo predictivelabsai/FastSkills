@@ -1,8 +1,8 @@
 ---
 title: Create Design Md
 description: Create or update a DESIGN.md from an existing product repository or public website.
-category: UI
-sublabel: Design Systems
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT

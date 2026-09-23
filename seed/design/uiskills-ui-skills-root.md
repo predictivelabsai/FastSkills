@@ -1,8 +1,8 @@
 ---
 title: Ui Skills Root
 description: Use before UI-related work to select the smallest useful UI Skills context through the ui-skills CLI.
-category: UI
-sublabel: Frontend
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT

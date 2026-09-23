@@ -1,8 +1,8 @@
 ---
 title: Fixing Motion Performance
 description: Audit and fix animation performance issues including layout thrashing, compositor properties, scroll-linked motion, and blur effects.
-category: UI
-sublabel: Motion
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT

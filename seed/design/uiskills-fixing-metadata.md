@@ -1,8 +1,8 @@
 ---
 title: Fixing Metadata
 description: Audit and fix HTML metadata including page titles, meta descriptions, canonical URLs, Open Graph tags, Twitter cards, favicons, JSON-LD structured data, and robots directives.
-category: UI
-sublabel: Metadata
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT

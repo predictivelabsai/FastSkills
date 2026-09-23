@@ -1,8 +1,8 @@
 ---
 title: Improve Ui
 description: Audit an existing product surface against its own design evidence, identify verified UI problems, and write self-contained implementation plans for another agent.
-category: UI
-sublabel: Frontend
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT

@@ -1,8 +1,8 @@
 ---
 title: Fixing Accessibility
 description: Audit and fix HTML accessibility issues including ARIA labels, keyboard navigation, focus management, color contrast, and form errors.
-category: UI
-sublabel: Accessibility
+category: Design
+sublabel: UI
 author: Julien Thibeaut (ibelick)
 tags: 
 license: MIT
