@@ -32,6 +32,10 @@ PACKS = [
     # UI skills directory (ui-skills.com); per-skill sub-labels applied via a
     # dedicated import — this entry documents the source/credit for reproducibility.
     ("ibelick/ui-skills",                   "Julien Thibeaut (ibelick)", "Design",   "UI",                "uiskills"),
+    # Community finance skill packs (MIT) — credited to their authors, NOT Anthropic
+    # (Anthropic publishes no open finance/trading skills).
+    ("andreworia/claude-excel-skills",      "Andrew Oria",          "Finance",  "Financial Modelling", "xlfin"),
+    ("isanthoshgandhi/venture-capital-intelligence", "Santhosh Gandhi", "Finance", "Venture Capital",  "vci"),
 ]
 
 FRONT = re.compile(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", re.DOTALL)

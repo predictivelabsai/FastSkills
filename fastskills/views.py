@@ -36,7 +36,7 @@ CAT_COLOR = {"Finance": "#0f766e", "Trading": "#b45309", "Legal": "#1d4ed8", "Ma
 SUBLABELS = {
     "Finance": ["Family Office", "Investor CRM", "Fund Management", "Private Equity",
                 "Venture Capital", "Private Credit", "Real Estate", "M&A", "IPO & ECM",
-                "Public Markets", "Diligence", "Tax & Compliance"],
+                "Public Markets", "Diligence", "Financial Modelling", "Tax & Compliance"],
     "Trading": ["Backtesting", "Paper Trading", "Options", "Portfolio Management",
                 "Validation", "Reconciliation", "Reporting"],
     "Legal": ["Contracts", "Privacy & Data Protection", "Litigation", "Corporate & Governance",
