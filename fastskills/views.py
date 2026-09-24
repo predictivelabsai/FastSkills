@@ -114,7 +114,7 @@ BASE_CSS = r"""
 """
 
 
-def head(title, description="An open, searchable catalog of reusable skills for finance, marketing, legal, trading, design and productivity."):
+def head(title, description="Your ultimate AI skills, instructions and prompts playbook — for finance, marketing, legal, trading, design and productivity."):
     return Head(
         Title(title), Meta(charset="utf-8"),
         Meta(name="viewport", content="width=device-width,initial-scale=1"),
@@ -335,8 +335,8 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
             Section(
                 Div(
                     Span("Open skills library", cls="eyebrow"),
-                    H1("Find the skill for the job."),
-                    P("A searchable catalog of reusable skills for finance, marketing, legal, trading, design and productivity — contribute your own, keep it private or share it public."),
+                    H1("Find the skills."),
+                    P("Your ultimate AI skills, instructions and prompts playbook."),
                     Form(Div(Input(name="q", value=q, placeholder="Search skills, tags, authors…", cls="search"),
                              Button("Search", cls="btn"), cls="searchbar"),
                          (Input(type="hidden", name="category", value=active_category) if active_category else None),
