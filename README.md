@@ -4,7 +4,35 @@ An open, searchable catalog of Claude/agent **skills** — browse and filter by
 category, contribute your own, and keep each skill public (default) or private.
 Part of the open-source [FastSME](https://fastsme.com) suite.
 
-Categories: **Finance · Trading · Legal · Marketing** (no leaderboard).
+Categories: **Finance · Trading · Legal · Marketing · Design · Productivity**, plus a
+**strategy Leaderboard** (`/leaderboard`).
+
+## Strategies & leaderboard
+
+A *strategy* is a skill with `kind: strategy` (editor → **Type**, or `/strategies/new`): a
+plain-language prompt plus a machine-readable JSON **Parameters** block in AlpaTrade's
+`strategy_configs` shape (`params` + `execution`). Users can own several; each is public or
+private, and only public (+ published) strategies are listed on `/leaderboard`. Owners toggle
+visibility from the leaderboard or the strategy page (making one public also publishes it).
+
+Each leaderboard row shows: strategy name, user, description, annualised return, running since
+(start date / days), and alpha vs SPY, with **Copy for ChatGPT**, **Copy for Claude** (copies the
+prompt and opens the assistant, pre-filled via `?q=` when short enough) and **Clone to AlpaTrade**
+(copies an AlpaTrade-ready prompt with the full config and opens alpatrade.chat; the strategy page
+also serves `/strategies/{id}/alpatrade-import`, a JSON import payload). JSON API: `/api/strategies`.
+
+- Annualised return = return since live start × 252 / NYSE trading days (simple, AlpaTrade's
+  `engine/reporting/annualize.py` convention; compounded shown on hover as indicative only).
+- Alpha = strategy return − SPY return over the same period.
+- Performance is stored as a dated snapshot in `strategy_stats`. Seeded snapshots live in
+  `seed/strategy_stats.json` and are refreshed from the AlpaTrade live run (read-only) with:
+
+```bash
+python scripts/refresh_strategy_stats.py --alpatrade-dir ~/dev/plai/alpatrade   # then commit + push
+```
+
+The seeded example is Julian Kaljuvee's live Mag-7 buy-the-dip strategy:
+`seed/trading/mag7-btd-live.md`.
 
 ## Stack
 

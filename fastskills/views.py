@@ -1,5 +1,6 @@
 from __future__ import annotations
 import html as _html
+import json as _json
 from datetime import datetime
 from urllib.parse import quote
 from fasthtml.common import *
@@ -8,6 +9,7 @@ from .version import RELEASE_DATE, VERSION
 from .db import CATEGORIES, favourite_total
 from . import account_auth
 from .logos import ANTHROPIC_SVG, OPENAI_SVG, GROK_SVG
+from .strategies import pct, fmt_day, annualised_tooltip, alpha_tooltip, ALPATRADE_URL
 
 ACCENT = "#7c3aed"
 TINT = "#f5f3ff"
@@ -37,7 +39,7 @@ SUBLABELS = {
     "Finance": ["Family Office", "Investor CRM", "Fund Management", "Private Equity",
                 "Venture Capital", "Private Credit", "Real Estate", "M&A", "IPO & ECM",
                 "Public Markets", "Diligence", "Financial Modelling", "Tax & Compliance"],
-    "Trading": ["Backtesting", "Paper Trading", "Options", "Portfolio Management",
+    "Trading": ["Strategy", "Backtesting", "Paper Trading", "Options", "Portfolio Management",
                 "Validation", "Reconciliation", "Reporting"],
     "Legal": ["Contracts", "Privacy & Data Protection", "Litigation", "Corporate & Governance",
               "Regulatory & Compliance", "IP & Licensing", "AI Governance", "Legal Research",
@@ -108,6 +110,15 @@ BASE_CSS = r"""
 .doc-section code{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.88em}.doc-section pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px;overflow:auto;margin:14px 0}.doc-section pre code{background:none;border:0;padding:0;font-size:13px;line-height:1.6}
 .doc-section table{border-collapse:collapse;width:100%;margin:14px 0;display:block;overflow-x:auto}.doc-section th,.doc-section td{border:1px solid var(--line);padding:9px 11px;text-align:left;font-size:14px;vertical-align:top}.doc-section th{background:var(--panel);font-weight:700}
 .callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--tint);border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14.5px;line-height:1.6}
+/* leaderboard */
+.lb{max-width:1200px;margin:0 auto;padding:40px 24px 80px}.lb h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lb .lead{color:var(--muted);font-size:17px;line-height:1.6;max-width:760px;margin:0}
+.lbwrap{overflow-x:auto;margin-top:26px;border:1px solid var(--line);border-radius:16px}.lbtable{width:100%;border-collapse:collapse;min-width:920px}.lbtable th,.lbtable td{text-align:left;padding:14px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}.lbtable tr:last-child td{border-bottom:0}.lbtable th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel)}
+.lbtable td.num,.lbtable th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.lbrank{color:var(--muted);font-weight:700;width:34px}.lbname{font-weight:800;font-size:15px;text-decoration:none;color:var(--ink)}.lbname:hover{color:var(--accent)}.lbdesc{color:var(--muted);font-size:13px;line-height:1.5;margin-top:4px;max-width:420px}
+.lbbig{font-weight:800;font-size:16px;cursor:help}.pos{color:#027a48}.neg{color:#b42318}.lbsub{display:block;color:var(--muted);font-size:12px;margin-top:3px;font-weight:500}
+.lbactions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.lbbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap}.lbbtn:hover{background:var(--tint);border-color:var(--accent);color:var(--accent)}.lbbtn svg{height:13px;width:auto}.lbbtn svg path{fill:currentColor}.lbbtn.at{color:#1F5D43;border-color:#cfe3d8}
+.lbnote{color:var(--muted);font-size:13px;line-height:1.6;margin-top:14px;max-width:900px}.lbmine{margin-top:44px}.lbmine h2{font-size:22px;margin:0 0 6px}.lbhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.perfstrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 4px}.perfcell{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}.perfcell small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}.perfcell b{font-size:18px}
+@media(max-width:760px){.perfstrip{grid-template-columns:1fr 1fr}}
 @media(max-width:860px){.docs{grid-template-columns:1fr;gap:0}.toc{display:none}}
 @media(max-width:960px){.grid,.featuregrid,.partnergrid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.grid,.featuregrid,.partnergrid,.pricinggrid,.metagrid{grid-template-columns:1fr}.shell{grid-template-columns:1fr}.sidebar{display:none}.editorwrap{padding:28px 18px}}
@@ -133,6 +144,7 @@ def public_nav(who):
     if who:
         right = Div(
             A("Browse", href="/"),
+            A("Leaderboard", href="/leaderboard"),
             A("Docs", href="/docs"),
             A("My Skills", href="/mine"),
             A("New Skill", href="/skills/new", cls="btn sm"),
@@ -142,6 +154,7 @@ def public_nav(who):
     else:
         right = Div(
             A("Browse", href="/"),
+            A("Leaderboard", href="/leaderboard"),
             A("Docs", href="/docs"),
             Button("Sign in", cls="btn ghost sm", onclick="authOpen('login')", type="button"),
             Button("Add a skill", cls="btn sm", onclick="authOpen('register')", type="button"),
@@ -365,7 +378,7 @@ def catalog_page(who, items, counts, active_category=None, q="", total=0,
             Script(account_auth.AUTH_JS), Script(USE_JS), Script(DEMO_JS)))
 
 
-def detail_page(who, item, body_html, faved=False):
+def detail_page(who, item, body_html, faved=False, perf=None, prompts=None):
     color = CAT_COLOR.get(item["category"], ACCENT)
     tags = [t.strip() for t in (item.get("tags") or "").split(",") if t.strip()]
     author = item.get("author_label") or item.get("owner_name") or "Community"
@@ -432,6 +445,7 @@ def detail_page(who, item, body_html, faved=False):
                                Li(B("Copy prompt"), " copies the skill so you can paste it into any "
                                   "assistant, including Grok.")),
                             cls="usehelp"),
+                    (strategy_panel(item, perf, who, prompts) if item.get("kind") == "strategy" else None),
                     cls="detailhead"),
                 Div(NotStr(body_html), cls="prose"),
                 cls="detail"),
@@ -586,6 +600,7 @@ def docs_page(who):
                     Tr(Td(Code("description")), Td("One line shown on the catalog card and used for search.")),
                     Tr(Td(Code("category")), Td("One of Finance, Trading, Legal, Marketing.")),
                     Tr(Td(Code("sublabel")), Td("The second-level label within the category (e.g. Contracts).")),
+                    Tr(Td(Code("kind")), Td("Optional: strategy marks a trading strategy for the Leaderboard (default skill).")),
                     Tr(Td(Code("author")), Td("Attribution shown on the card and detail page.")),
                     Tr(Td(Code("tags")), Td("Comma-separated keywords for search and filtering.")),
                     Tr(Td(Code("license")), Td("Licence the skill is shared under (e.g. MIT).")),
@@ -687,6 +702,33 @@ def docs_page(who):
               ". Author attribution (the name on the card) is separate from ownership, so you "
               "can credit an original author while owning your own copy."),
         ]),
+        ("strategies", "Strategies & leaderboard", [
+            P("A ", B("strategy"), " is a skill that describes a trading strategy: a plain-language "
+              "prompt plus a machine-readable ", B("Parameters"), " block (JSON in the same shape as an "
+              "AlpaTrade ", Code("strategy_configs"), " row: ", Code("params"), " + ", Code("execution"),
+              "). Mark any skill as a strategy with the ", B("Type"), " field in the editor, or start "
+              "from ", A("New strategy", href="/strategies/new"), "."),
+            P("The ", A("Leaderboard", href="/leaderboard"), " lists every ", B("public"),
+              " strategy with: name, user, description, annualised return, how long it has been "
+              "running, and alpha versus SPY. You can own several strategies and switch each between "
+              "public and private from the leaderboard (making one public also publishes it); private "
+              "strategies are never listed."),
+            Ul(Li(B("Annualised return"), " = return since the live start × 252 / trading days "
+                  "(simple, AlpaTrade's convention). The compounded figure is shown on hover as "
+                  "indicative only, because gains aren't reinvested immediately."),
+               Li(B("Alpha"), " = strategy return minus SPY's return over the same period."),
+               Li("Performance is a dated snapshot (hover for the as-of date and source). Seeded "
+                  "strategies are refreshed from AlpaTrade's live run data with ",
+                  Code("scripts/refresh_strategy_stats.py"), ".")),
+            H3("Copy & clone"),
+            Ul(Li(B("Copy for ChatGPT / Claude"), " copies the strategy prompt to your clipboard and "
+                  "opens the assistant (pre-filled when the prompt is short enough for a link; "
+                  "otherwise just paste)."),
+               Li(B("Clone to AlpaTrade"), " copies a ready-to-paste AlpaTrade prompt with the full "
+                  "config and opens alpatrade.chat. The strategy page also offers an ",
+                  B("AlpaTrade import (.json)"), " download, and the API serves it at ",
+                  Code("/api/strategies/{id}"), ".")),
+        ]),
         ("contribute", "Contributing", [
             P("There are two ways to add to FastSkills:"),
             Ul(Li("Create a skill in the app and publish it public — it appears in the catalog "
@@ -707,6 +749,10 @@ def docs_page(who):
                     Tr(Td(Code("GET /api/categories")), Td("The categories with skill counts.")),
                     Tr(Td(Code("GET /api/skills/{id}")), Td("One skill, including its markdown "
                         + "and content.")),
+                    Tr(Td(Code("GET /api/strategies")), Td("Public leaderboard strategies with "
+                        + "annualised return, alpha vs SPY, live start and as-of date.")),
+                    Tr(Td(Code("GET /api/strategies/{id}")), Td("One public strategy, including its "
+                        + "markdown and the AlpaTrade import payload.")),
                 )),
             P("Interactive docs live at ", A("/api/docs", href="/api/docs"), "."),
         ]),
@@ -763,6 +809,7 @@ def _sidebar(who, active=""):
             A("＋", href="/skills/new", title="New skill"), cls="sidehead"),
         Div(f"{who.get('name') or who['email']}", cls="side-user"),
         item("Browse all", "/", "browse"),
+        item("Leaderboard", "/leaderboard", "leaderboard"),
         A("★ Favourites",
           (Span(str(_fav_n), cls="side-count") if _fav_n else None),
           href="/favourites",
@@ -841,7 +888,7 @@ document.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>{const c=editor
  if(cmd==='bold')c.toggleBold().run(); if(cmd==='italic')c.toggleItalic().run(); if(cmd==='underline')c.toggleUnderline().run(); if(cmd==='h2')c.toggleHeading({level:2}).run(); if(cmd==='bullet')c.toggleBulletList().run(); if(cmd==='ordered')c.toggleOrderedList().run(); if(cmd==='quote')c.toggleBlockquote().run(); if(cmd==='code')c.toggleCodeBlock().run(); if(cmd==='table')c.insertTable({rows:3,cols:3,withHeaderRow:true}).run();});
 let timer,version=Number(document.body.dataset.version);
 const title=document.querySelector('#skill-title'); title.addEventListener('input',queueSave);
-['#meta-description','#meta-category','#meta-sublabel','#meta-author','#meta-tags','#meta-visibility'].forEach(sel=>{const node=document.querySelector(sel);if(node)node.addEventListener('input',queueSave)});
+['#meta-description','#meta-category','#meta-sublabel','#meta-author','#meta-tags','#meta-visibility','#meta-kind'].forEach(sel=>{const node=document.querySelector(sel);if(node)node.addEventListener('input',queueSave)});
 function meta(sel){const node=document.querySelector(sel);return node?node.value:''}
 function queueSave(){status.textContent='Unsaved changes';clearTimeout(timer);timer=setTimeout(save,700)}
 
@@ -947,7 +994,7 @@ function setMode(mode){
  switching=true;if(mode==='rich')editor.commands.setContent(state.doc,{emitUpdate:false});if(mode==='block')renderBlocks(state.doc);if(mode==='markdown')markdown.value=docMarkdown(state.doc);switching=false;
  document.querySelectorAll('[data-mode]').forEach(button=>{button.classList.toggle('active',button.dataset.mode===mode);button.setAttribute('aria-pressed',button.dataset.mode===mode?'true':'false')});document.querySelectorAll('[data-rich-tool]').forEach(button=>button.hidden=mode!=='rich');
 }
-async function save(){clearTimeout(timer);readMode();status.textContent='Saving…';const markdownValue=state.mode==='markdown'?markdown.value:docMarkdown(state.doc);const res=await fetch(saveUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title.value,content_json:JSON.stringify(state.doc),markdown:markdownValue,version,description:meta('#meta-description'),category:meta('#meta-category'),sub_label:meta('#meta-sublabel'),author_label:meta('#meta-author'),tags:meta('#meta-tags'),visibility:meta('#meta-visibility')})});const out=await res.json();if(res.status===409){status.textContent='Newer version exists — reload';return false}if(res.ok){version=out.version;document.body.dataset.version=version;status.textContent='Saved';return true}status.textContent=out.error||'Save failed';return false}
+async function save(){clearTimeout(timer);readMode();status.textContent='Saving…';const markdownValue=state.mode==='markdown'?markdown.value:docMarkdown(state.doc);const res=await fetch(saveUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title.value,content_json:JSON.stringify(state.doc),markdown:markdownValue,version,description:meta('#meta-description'),category:meta('#meta-category'),sub_label:meta('#meta-sublabel'),author_label:meta('#meta-author'),tags:meta('#meta-tags'),visibility:meta('#meta-visibility'),kind:meta('#meta-kind')})});const out=await res.json();if(res.status===409){status.textContent='Newer version exists — reload';return false}if(res.ok){version=out.version;document.body.dataset.version=version;status.textContent='Saved';return true}status.textContent=out.error||'Save failed';return false}
 document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>setMode(button.dataset.mode));
 blockEditor.addEventListener('input',queueSave);markdown.addEventListener('input',queueSave);
 document.querySelector('#add-block').onclick=()=>{const added=renderBlock({type:'paragraph',node:{type:'paragraph'}});blockList.appendChild(added);added.querySelector('.block-edit').focus();queueSave()};
@@ -987,6 +1034,11 @@ def editor_page(who, item):
         Div(Label("Tags (comma-separated)"),
             Input(id="meta-tags", name="tags", value=item.get("tags") or "",
                   placeholder="research, diligence"), cls="metafield"),
+        Div(Label("Type"),
+            Select(Option("Skill", value="skill", selected=(item.get("kind") or "skill") == "skill"),
+                   Option("Strategy (listed on the Leaderboard when public)", value="strategy",
+                          selected=item.get("kind") == "strategy"),
+                   id="meta-kind", name="kind"), cls="metafield"),
         Div(Label("Visibility"),
             Select(Option("Public", value="public", selected=(item["visibility"] == "public")),
                    Option("Private", value="private", selected=(item["visibility"] == "private")),
@@ -1029,3 +1081,157 @@ def editor_page(who, item):
              cls="shell",
              data_version=str(item["version"]),
              data_save_url=f"/skills/{item['id']}/save"))
+
+
+# ── strategies leaderboard ──────────────────────────────────────────────────
+STRAT_JS = r"""
+const _LB={chatgpt:{q:'https://chatgpt.com/?q=',home:'https://chatgpt.com/',name:'ChatGPT'},claude:{q:'https://claude.ai/new?q=',home:'https://claude.ai/new',name:'Claude'}};
+function _sp(id){const n=document.getElementById('sp-'+id);return n?JSON.parse(n.textContent):null}
+function _copyText(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);return new Promise((ok,no)=>{const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();let r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();r?ok():no()})}
+function copyStrategy(id,provider){const p=_sp(id);if(!p)return;const b=_LB[provider];const url=b.q+encodeURIComponent(p.assistant);const deep=url.length<7000;
+ _copyText(p.assistant).then(()=>_toast('Strategy copied to clipboard — '+(deep?'opening '+b.name:'paste it into '+b.name))).catch(()=>_toast('Copy failed — use Download .md on the strategy page'));
+ window.open(deep?url:b.home,'_blank','noopener')}
+function cloneToAlpaTrade(id){const p=_sp(id);if(!p)return;
+ _copyText(p.alpatrade).then(()=>_toast('Strategy config copied — paste it into the AlpaTrade chat')).catch(()=>_toast('Copy failed — download the AlpaTrade import JSON instead'));
+ window.open('""" + ALPATRADE_URL + r"""','_blank','noopener')}
+"""
+
+
+def _prompt_script(sid, prompts):
+    data = _json.dumps(prompts).replace("</", "<\\/")
+    return Script(NotStr(data), type="application/json", id=f"sp-{sid}")
+
+
+def _signed(v):
+    return "" if v is None else ("pos" if v >= 0 else "neg")
+
+
+def strategy_actions(sid):
+    return Div(
+        Button(NotStr(OPENAI_SVG), "Copy for ChatGPT", type="button", cls="lbbtn",
+               title="Copy the strategy prompt and open ChatGPT", onclick=f"copyStrategy({sid},'chatgpt')"),
+        Button(NotStr(ANTHROPIC_SVG), "Copy for Claude", type="button", cls="lbbtn",
+               title="Copy the strategy prompt and open Claude", onclick=f"copyStrategy({sid},'claude')"),
+        Button("⑂ Clone to AlpaTrade", type="button", cls="lbbtn at",
+               title="Copy the strategy config and open alpatrade.chat (paste it into the chat). "
+                     "A machine-readable import JSON is on the strategy page.",
+               onclick=f"cloneToAlpaTrade({sid})"),
+        cls="lbactions")
+
+
+def _leader_row(rank, it):
+    m = it["m"]
+    running = (Span("Since ", fmt_day(m["live_start"]),
+                    Span(f"{m['days_running']} days running", cls="lbsub"))
+               if m["live_start"] else Span("—"))
+    return Tr(
+        Td(str(rank), cls="lbrank"),
+        Td(A(it["title"], href=f"/skills/{it['id']}", cls="lbname"),
+           Div(it.get("description") or "", cls="lbdesc")),
+        Td(it.get("owner_name") or "—"),
+        Td(Span(pct(m["annualised_pct"]), cls="lbbig " + _signed(m["annualised_pct"]),
+                title=annualised_tooltip(m)), cls="num"),
+        Td(running, cls="num"),
+        Td(Span(pct(m["alpha_pct"]), cls="lbbig " + _signed(m["alpha_pct"]),
+                title=alpha_tooltip(m)), cls="num"),
+        Td(strategy_actions(it["id"])))
+
+
+def _mine_row(it, who):
+    public = it["visibility"] == "public"
+    toggle = Form(Input(type="hidden", name="visibility", value="private" if public else "public"),
+                  Input(type="hidden", name="next", value="/leaderboard"),
+                  Button("Make private" if public else "Make public", cls="lbbtn"),
+                  method="post", action=f"/strategies/{it['id']}/visibility", cls="inlineform")
+    listed = public and it["status"] == "published"
+    return Tr(
+        Td(A(it["title"], href=f"/skills/{it['id']}", cls="lbname"),
+           Div(it.get("description") or "", cls="lbdesc")),
+        Td(Span("Public" if public else "Private", cls="pagebadge " + it["visibility"]), " ",
+           Span(it["status"].title(), cls="pagebadge " + it["status"])),
+        Td("Listed" if listed else "Not listed", cls="lbsub"),
+        Td(Div(toggle, A("Edit", href=f"/skills/{it['id']}/edit", cls="lbbtn"), cls="lbactions")))
+
+
+def leaderboard_page(who, items, mine=(), prompts=None):
+    prompts = prompts or {}
+    as_ofs = sorted({it["m"]["as_of"] for it in items if it["m"]["as_of"]})
+    if items:
+        table = Div(Table(
+            Thead(Tr(Th("#"), Th("Strategy"), Th("User"), Th("Annualised return", cls="num"),
+                     Th("Running", cls="num"), Th("Alpha vs SPY", cls="num"), Th(""))),
+            Tbody(*[_leader_row(i + 1, it) for i, it in enumerate(items)]),
+            cls="lbtable"), cls="lbwrap")
+    else:
+        table = Div("No public strategies yet.", cls="empty")
+    note = P(B("Annualised return"), " = return since the strategy went live × 252 / trading days "
+             "(simple; the compounded figure is on hover and is indicative only, as gains aren't "
+             "reinvested immediately). ", B("Alpha"), " = strategy return minus SPY's return over "
+             "the same period. Figures are dated snapshots of each strategy's live account",
+             (f" (latest: session close {fmt_day(as_ofs[-1])})" if as_ofs else ""),
+             "; hover a figure for the calculation and as-of date. Past performance over a short "
+             "period says little about the future. Not investment advice.", cls="lbnote")
+    if who:
+        new_btn = A("+ New strategy", href="/strategies/new", cls="btn sm")
+        mine_block = Div(
+            Div(H2("Your strategies"), new_btn, cls="lbhead"),
+            P("Own as many strategies as you like. Only public strategies appear on the leaderboard; "
+              "making one public also publishes it.", cls="lbnote", style="margin-top:4px"),
+            (Div(Table(Thead(Tr(Th("Strategy"), Th("Visibility"), Th("Leaderboard"), Th(""))),
+                       Tbody(*[_mine_row(it, who) for it in mine]), cls="lbtable"), cls="lbwrap")
+             if mine else Div("You haven't shared a strategy yet. Create one, or open any skill "
+                              "in the editor and set its Type to Strategy.", cls="empty",
+                              style="padding:28px")),
+            cls="lbmine")
+    else:
+        mine_block = Div(
+            Div(H2("Share your strategy"), cls="lbhead"),
+            P("Sign in to add your own strategies, keep them private, or publish them here.",
+              cls="lbnote", style="margin-top:4px"),
+            Button("Sign in", cls="btn sm", type="button", onclick="authOpen('login')"),
+            cls="lbmine")
+    scripts = [_prompt_script(sid, p) for sid, p in prompts.items()]
+    return Html(
+        head("Strategy leaderboard · FastSkills",
+             "Public trading strategies with live track records — copy one into ChatGPT, Claude or AlpaTrade."),
+        Body(
+            public_nav(who),
+            Div(Span("Strategies", cls="eyebrow"),
+                H1("Leaderboard"),
+                P("Public trading strategies with a live track record, ranked by annualised return. "
+                  "Copy any strategy into ChatGPT or Claude as a ready-made skill, or clone it into "
+                  "AlpaTrade to backtest and paper-trade it.", cls="lead"),
+                table, note, mine_block,
+                cls="lb"),
+            site_footer(),
+            *scripts,
+            account_auth.auth_modal("FastSkills"),
+            Script(account_auth.AUTH_JS), Script(USE_JS), Script(STRAT_JS)))
+
+
+def strategy_panel(item, perf, who, prompts):
+    m = perf or {}
+    cells = [("Annualised return", pct(m.get("annualised_pct")), annualised_tooltip(m) if m else ""),
+             ("Alpha vs SPY", pct(m.get("alpha_pct")), alpha_tooltip(m) if m else ""),
+             ("Live since", fmt_day(m.get("live_start")),
+              f"{m['days_running']} days running" if m.get("days_running") is not None else ""),
+             ("As of", fmt_day(m.get("as_of")), m.get("source") or "")]
+    owner = who and item["owner_id"] == who["sub"]
+    toggle = None
+    if owner:
+        public = item["visibility"] == "public"
+        toggle = Form(Input(type="hidden", name="visibility", value="private" if public else "public"),
+                      Input(type="hidden", name="next", value=f"/skills/{item['id']}"),
+                      Button("Make private (hide from leaderboard)" if public
+                             else "Make public (list on leaderboard)", cls="btn ghost"),
+                      method="post", action=f"/strategies/{item['id']}/visibility", cls="inlineform")
+    return Div(
+        Div(*[Div(Small(k), B(v), title=t, cls="perfcell") for k, v, t in cells], cls="perfstrip"),
+        Div(Span("Strategy", cls="uselabel"),
+            Button("⑂ Clone to AlpaTrade", type="button", cls="btn ghost",
+                   onclick=f"cloneToAlpaTrade({item['id']})"),
+            A("AlpaTrade import (.json)", href=f"/strategies/{item['id']}/alpatrade-import", cls="btn ghost"),
+            A("Leaderboard", href="/leaderboard", cls="btn ghost"),
+            toggle, cls="userow"),
+        _prompt_script(item["id"], prompts or {}),
+        Script(STRAT_JS))

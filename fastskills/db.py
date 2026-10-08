@@ -7,6 +7,7 @@ from .database import rows, row, execute, insert, tx, init_schema
 from .mdconvert import markdown_to_doc, plain_text
 
 CATEGORIES = ("Finance", "Trading", "Legal", "Marketing", "Design", "Productivity")
+KINDS = ("skill", "strategy")  # a strategy is a skill with a live track record + leaderboard row
 
 
 def now() -> str:
@@ -48,7 +49,14 @@ CREATE TABLE IF NOT EXISTS favourites(
   PRIMARY KEY(user_id, skill_id));
 CREATE INDEX IF NOT EXISTS idx_favourites_user ON favourites(user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_skills_category ON skills(category, visibility, status);
-CREATE INDEX IF NOT EXISTS idx_skills_owner ON skills(owner_id, deleted_at)
+CREATE INDEX IF NOT EXISTS idx_skills_owner ON skills(owner_id, deleted_at);
+CREATE TABLE IF NOT EXISTS strategy_stats(
+  skill_id INTEGER PRIMARY KEY,
+  live_start TEXT, start_equity DOUBLE PRECISION, benchmark TEXT DEFAULT 'SPY',
+  start_benchmark DOUBLE PRECISION, as_of TEXT, equity DOUBLE PRECISION,
+  benchmark_value DOUBLE PRECISION, return_pct DOUBLE PRECISION,
+  benchmark_return_pct DOUBLE PRECISION, trading_days INTEGER,
+  source TEXT DEFAULT '', updated_at TEXT)
 """
 
 # Columns added after the initial schema shipped; applied idempotently on init.
@@ -56,6 +64,7 @@ _MIGRATIONS = [
     "ALTER TABLE skills ADD COLUMN sub_label TEXT DEFAULT ''",
     "ALTER TABLE skills ADD COLUMN forked_from INTEGER",
     "ALTER TABLE skills ADD COLUMN forked_from_title TEXT DEFAULT ''",
+    "ALTER TABLE skills ADD COLUMN kind TEXT DEFAULT 'skill'",
 ]
 
 
@@ -271,7 +280,7 @@ def create_skill(who, title="Untitled skill", category="Finance"):
 
 def save_skill(who, sid, *, title, content_json, markdown, version,
                description=None, category=None, sub_label=None, author_label=None,
-               tags=None, visibility=None):
+               tags=None, visibility=None, kind=None):
     current = skill(sid)
     if not current or not can_edit(who, current):
         return None
@@ -299,6 +308,8 @@ def save_skill(who, sid, *, title, content_json, markdown, version,
         fields["tags"] = tags
     if visibility in ("public", "private"):
         fields["visibility"] = visibility
+    if kind in KINDS:
+        fields["kind"] = kind
     with tx() as s:
         s.execute(
             "INSERT INTO skill_versions(skill_id,version,title,content_json,markdown,created_by,created_at) "
@@ -353,12 +364,12 @@ def clone_skill(who, source_id):
     return insert(
         "INSERT INTO skills(slug,title,description,category,sub_label,author_label,owner_id,"
         "visibility,status,tags,content_json,markdown,plain_text,source_url,license,seeded,"
-        "forked_from,forked_from_title,created_by,updated_by,created_at,updated_at) "
-        "VALUES(?,?,?,?,?,?,?,'private','draft',?,?,?,?,?,?,0,?,?,?,?,?,?)",
+        "forked_from,forked_from_title,kind,created_by,updated_by,created_at,updated_at) "
+        "VALUES(?,?,?,?,?,?,?,'private','draft',?,?,?,?,?,?,0,?,?,?,?,?,?,?)",
         (slug, src["title"], src["description"], src["category"], src["sub_label"],
          src["author_label"], who["sub"], src["tags"], src["content_json"], src["markdown"],
          src["plain_text"], src["source_url"], src["license"], source_id, src["title"],
-         who["sub"], who["sub"], ts, ts))
+         src.get("kind") or "skill", who["sub"], who["sub"], ts, ts))
 
 
 # ── version history ──────────────────────────────────────────────────────────
@@ -452,24 +463,138 @@ def seed_bulk(owner_id, owner_name, entries):
                     continue
                 s.execute(
                     "UPDATE skills SET title=?,description=?,category=?,sub_label=?,author_label=?,"
-                    "tags=?,content_json=?,markdown=?,plain_text=?,source_url=?,license=?,updated_at=? "
-                    "WHERE id=?",
+                    "tags=?,content_json=?,markdown=?,plain_text=?,source_url=?,license=?,kind=?,"
+                    "updated_at=? WHERE id=?",
                     (entry["title"], entry["description"], entry["category"],
                      entry.get("sub_label", ""), entry["author_label"], entry["tags"],
                      content_json, entry["markdown"], text, entry.get("source_url", ""),
-                     entry.get("license", ""), ts, existing["id"]))
+                     entry.get("license", ""), entry.get("kind", "skill"), ts, existing["id"]))
             else:
                 s.execute(
                     "INSERT INTO skills(slug,title,description,category,sub_label,author_label,"
                     "owner_id,visibility,status,tags,content_json,markdown,plain_text,source_url,"
-                    "license,seeded,created_by,updated_by,created_at,updated_at) "
-                    "VALUES(?,?,?,?,?,?,?,'public','published',?,?,?,?,?,?,1,?,?,?,?)",
+                    "license,seeded,kind,created_by,updated_by,created_at,updated_at) "
+                    "VALUES(?,?,?,?,?,?,?,'public','published',?,?,?,?,?,?,1,?,?,?,?,?)",
                     (entry["slug"], entry["title"], entry["description"], entry["category"],
                      entry.get("sub_label", ""), entry["author_label"], owner_id, entry["tags"],
                      content_json, entry["markdown"], text, entry.get("source_url", ""),
-                     entry.get("license", ""), owner_id, owner_id, ts, ts))
+                     entry.get("license", ""), entry.get("kind", "skill"), owner_id, owner_id,
+                     ts, ts))
             n += 1
     return n
+
+# ── strategies & leaderboard ─────────────────────────────────────────────────
+_STATS_COLS = ("live_start", "start_equity", "benchmark", "start_benchmark", "as_of", "equity",
+               "benchmark_value", "return_pct", "benchmark_return_pct", "trading_days", "source")
+_STRATEGY_SELECT = (
+    "SELECT s.id,s.slug,s.title,s.description,s.owner_id,s.visibility,s.status,s.version,"
+    "s.created_at,s.updated_at,s.author_label,u.name owner_name,"
+    + ",".join(f"st.{c}" for c in _STATS_COLS) +
+    " FROM skills s LEFT JOIN users u ON u.id=s.owner_id "
+    "LEFT JOIN strategy_stats st ON st.skill_id=s.id ")
+
+
+def leaderboard():
+    """Public + published strategies with their latest stats snapshot."""
+    return rows(_STRATEGY_SELECT +
+                "WHERE s.kind='strategy' AND s.visibility='public' AND s.status='published' "
+                "AND s.deleted_at IS NULL ORDER BY s.title")
+
+
+def my_strategies(who):
+    if not who:
+        return []
+    return rows(_STRATEGY_SELECT + "WHERE s.kind='strategy' AND s.owner_id=? AND s.deleted_at IS NULL "
+                "ORDER BY s.updated_at DESC", (who["sub"],))
+
+
+def strategy_stats(sid):
+    return row("SELECT * FROM strategy_stats WHERE skill_id=?", (sid,))
+
+
+def upsert_strategy_stats(sid, stats, only_if_newer=True):
+    """Insert/update a strategy's performance snapshot. With ``only_if_newer`` an
+    older ``as_of`` never overwrites a newer one (e.g. a stale seed on reboot)."""
+    current = strategy_stats(sid)
+    if current and only_if_newer and (current.get("as_of") or "") > (stats.get("as_of") or ""):
+        return False
+    vals = [stats.get(c) for c in _STATS_COLS]
+    if current:
+        execute("UPDATE strategy_stats SET " + ",".join(f"{c}=?" for c in _STATS_COLS) +
+                ",updated_at=? WHERE skill_id=?", (*vals, now(), sid))
+    else:
+        execute("INSERT INTO strategy_stats(skill_id," + ",".join(_STATS_COLS) + ",updated_at) "
+                "VALUES(" + ",".join("?" * (len(_STATS_COLS) + 2)) + ")", (sid, *vals, now()))
+    return True
+
+
+STRATEGY_TEMPLATE = """# My strategy
+
+*For research and education only. Not investment advice.*
+
+Describe the strategy in plain language: what it trades, when it buys, how it sizes, and how it exits.
+
+## The strategy in plain language
+
+### Universe
+- Which instruments, which session.
+
+### Entry
+- The exact signal and when it is checked.
+
+### Position size
+- Fraction of equity per position; cash only or margin.
+
+### Exits
+- Take-profit, stop-loss, holding period.
+
+## Instructions for the assistant
+1. Treat the Parameters block as the source of truth.
+2. Backtest against SPY over the same period and report total return, annualised return, alpha, trades, win rate and max drawdown.
+3. Never place live orders.
+
+## Parameters (machine-readable)
+
+```json
+{
+  "schema": "alpatrade.strategy_config/v1",
+  "name": "my_strategy",
+  "params": {"symbols": ["AAPL"], "dip": 3.0, "ref": "high20", "tp": 8.0, "sl": 1.5,
+             "min_hold": 3, "max_hold": 3, "pos_frac": 0.142857},
+  "execution": {}
+}
+```
+"""
+
+
+def create_strategy(who, title="Untitled strategy"):
+    """A new private draft strategy (kind='strategy', Trading · Strategy) with a template body."""
+    sid = create_skill(who, title, "Trading")
+    doc = json.dumps(markdown_to_doc(STRATEGY_TEMPLATE))
+    execute("UPDATE skills SET kind='strategy',sub_label='Strategy',markdown=?,content_json=?,"
+            "plain_text=? WHERE id=?",
+            (STRATEGY_TEMPLATE, doc, plain_text(json.loads(doc)), sid))
+    return sid
+
+
+def set_strategy_visibility(who, sid, visibility):
+    """Owner toggle used by the leaderboard. Making a strategy public also publishes
+    it (only public + published strategies are listed); private keeps the status."""
+    if visibility not in ("public", "private"):
+        raise ValueError("visibility")
+    item = skill(sid)
+    if not can_edit(who, item):
+        return False
+    status = "published" if visibility == "public" else item["status"]
+    execute("UPDATE skills SET visibility=?,status=?,updated_by=?,updated_at=? WHERE id=?",
+            (visibility, status, who["sub"], now(), sid))
+    return True
+
+
+def find_skill(owner_id, slug):
+    return row("SELECT id FROM skills WHERE owner_id=? AND slug=? AND deleted_at IS NULL",
+               (owner_id, slug))
+
 
 # NOTE: init() is intentionally NOT called at import time. Importing this module
 # must never touch the database (a slow/unreachable Postgres would block the web

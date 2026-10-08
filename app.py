@@ -8,7 +8,7 @@ from fasthtml.common import *
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
 load_dotenv()
-from fastskills import account_auth, db, seed, views
+from fastskills import account_auth, db, seed, strategies, views
 from fastskills.api import api
 from fastskills.version import RELEASE_DATE, VERSION
 
@@ -78,6 +78,76 @@ def get(session):
     return views.docs_page(who(session))
 
 
+# ── strategies & leaderboard ─────────────────────────────────────────────────
+def _with_metrics(items):
+    out = []
+    for it in items:
+        out.append({**it, "m": strategies.metrics(it)})
+    return out
+
+
+def _rank_key(it):
+    v = it["m"]["annualised_pct"]
+    return (v is None, -(v or 0), it["title"].lower())
+
+
+@rt("/leaderboard")
+def get(session):
+    identity = who(session)
+    public = sorted(_with_metrics(db.leaderboard()), key=_rank_key)
+    mine = _with_metrics(db.my_strategies(identity)) if identity else []
+    prompts = {}
+    for it in public + mine:
+        full = db.skill(it["id"])
+        prompts[it["id"]] = {"assistant": strategies.assistant_prompt(full),
+                             "alpatrade": strategies.alpatrade_prompt(full)}
+    return views.leaderboard_page(identity, public, mine, prompts)
+
+
+@rt("/strategies/new")
+def get(session):
+    identity = guard(session)
+    if isinstance(identity, RedirectResponse):
+        return identity
+    sid = db.create_strategy(identity)
+    return RedirectResponse(f"/skills/{sid}/edit", status_code=303)
+
+
+@rt("/strategies/{sid:int}/visibility")
+def post(session, sid: int, visibility: str, next: str = "/leaderboard"):
+    identity = guard(session)
+    if isinstance(identity, RedirectResponse):
+        return identity
+    try:
+        db.set_strategy_visibility(identity, sid, visibility)
+    except ValueError:
+        return Response("Invalid visibility", status_code=422)
+    dest = next if next.startswith("/") and not next.startswith("//") else "/leaderboard"
+    return RedirectResponse(dest, status_code=303)
+
+
+def _visible_strategy(session, sid):
+    item = db.visible_skill(who(session), sid)
+    return item if item and item.get("kind") == "strategy" else None
+
+
+@rt("/strategies/{sid:int}/alpatrade-import")
+def get(session, sid: int):
+    item = _visible_strategy(session, sid)
+    if not item:
+        return Response("Strategy not found", status_code=404)
+    return JSONResponse(strategies.alpatrade_import(item), headers={
+        "Content-Disposition": f'attachment; filename="{_safe_slug(item)}.alpatrade.json"'})
+
+
+@rt("/strategies/{sid:int}/alpatrade-prompt")
+def get(session, sid: int):
+    item = _visible_strategy(session, sid)
+    if not item:
+        return Response("Strategy not found", status_code=404)
+    return Response(strategies.alpatrade_prompt(item), media_type="text/plain; charset=utf-8")
+
+
 @rt("/favourites")
 def get(session, category: str = ""):
     identity = guard(session)
@@ -113,8 +183,13 @@ def get(session, sid: int):
     item = db.visible_skill(identity, sid)
     if not item:
         return Response("Skill not found", status_code=404)
+    perf = prompts = None
+    if item.get("kind") == "strategy":
+        perf = strategies.metrics(db.strategy_stats(sid)) if db.strategy_stats(sid) else None
+        prompts = {"assistant": strategies.assistant_prompt(item),
+                   "alpatrade": strategies.alpatrade_prompt(item)}
     return views.detail_page(identity, item, render_markdown(item["markdown"]),
-                             faved=db.is_favourite(identity, sid))
+                             faved=db.is_favourite(identity, sid), perf=perf, prompts=prompts)
 
 
 def _safe_slug(item):
@@ -124,8 +199,10 @@ def _safe_slug(item):
 def _skill_md_text(item):
     """Full SKILL.md text (frontmatter + body), used by download and the zip."""
     front = (f"---\ntitle: {item['title']}\ndescription: {item['description']}\n"
-             f"category: {item['category']}\nsublabel: {item.get('sub_label', '')}\n"
-             f"author: {item['author_label']}\ntags: {item['tags']}\n")
+             f"category: {item['category']}\nsublabel: {item.get('sub_label', '')}\n")
+    if item.get("kind") == "strategy":
+        front += "kind: strategy\n"
+    front += f"author: {item['author_label']}\ntags: {item['tags']}\n"
     if item["license"]:
         front += f"license: {item['license']}\n"
     if item["source_url"]:
@@ -136,6 +213,8 @@ def _skill_md_text(item):
 
 def _skill_prompt(item):
     """A ready-to-paste prompt that loads the skill into an assistant."""
+    if item.get("kind") == "strategy":
+        return strategies.assistant_prompt(item)
     return ("Please use the following skill. Follow its instructions whenever they are "
             "relevant to my requests.\n\n"
             f"# {item['title']}\n\n{item['markdown'] or ''}\n\n"
@@ -204,7 +283,8 @@ async def post(request, session, sid: int):
             sub_label=body.get("sub_label"),
             author_label=body.get("author_label"),
             tags=body.get("tags"),
-            visibility=body.get("visibility"))
+            visibility=body.get("visibility"),
+            kind=body.get("kind"))
     except (ValueError, TypeError):
         return JSONResponse({"error": "invalid content"}, status_code=422)
     if not result:

@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-10-08T14:25:20+00:00",
+  "generated_by": "scripts/refresh_strategy_stats.py",
+  "strategies": {
+    "mag7-btd-live": {
+      "live_start": "2026-09-24",
+      "start_equity": 2725.59,
+      "benchmark": "SPY",
+      "start_benchmark": 767.29,
+      "as_of": "2026-10-07",
+      "equity": 2805.88,
+      "benchmark_value": 777.3,
+      "return_pct": 2.946,
+      "benchmark_return_pct": 1.305,
+      "trading_days": 10,
+      "source": "AlpaTrade live run (Alpaca live account), daily snapshot at the 2026-10-07 session close; account return vs SPY since 2026-09-24"
+    }
+  }
+}
