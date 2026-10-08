@@ -103,3 +103,23 @@ def test_routes_render():
     api = c.get("/api/strategies").json()["strategies"]
     assert any(s["id"] == sid and s["alpha_pct"] is not None for s in api)
     assert c.get(f"/skills/{sid}").status_code == 200
+
+
+def test_mobile_markup():
+    """Mobile layout hooks: hamburger nav on every public page, stacked-card labels and
+    tap-friendly compounded / benchmark figures on the leaderboard and strategy page."""
+    from starlette.testclient import TestClient
+    import app as webapp
+    seed.run(force=True)
+    c = TestClient(webapp.app)
+    home = c.get("/").text
+    assert 'class="navburger"' in home and 'aria-controls="fs-navlinks"' in home
+    assert 'id="fs-navlinks"' in home and 'href="/leaderboard"' in home
+    lb = c.get("/leaderboard").text
+    for label in ("Annualised", "Alpha vs SPY", "User", "Running"):
+        assert f'data-label="{label}"' in lb
+    assert "compounded +" in lb and "lbmob" in lb and "data-tip=" in lb
+    assert "@media(max-width:760px)" in lb
+    sid = next(r["id"] for r in db.leaderboard() if r["slug"] == "mag7-btd-live")
+    page = c.get(f"/skills/{sid}").text
+    assert 'class="perfsub"' in page and 'class="navburger"' in page

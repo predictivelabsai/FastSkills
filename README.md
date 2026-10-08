@@ -22,8 +22,12 @@ prompt and opens the assistant, pre-filled via `?q=` when short enough) and **Cl
 also serves `/strategies/{id}/alpatrade-import`, a JSON import payload). JSON API: `/api/strategies`.
 
 - Annualised return = return since live start × 252 / NYSE trading days (simple, AlpaTrade's
-  `engine/reporting/annualize.py` convention; compounded shown on hover as indicative only).
+  `engine/reporting/annualize.py` convention; compounded shown on hover as indicative only — on
+  phones it is shown under the figure, and tapping a figure shows the calculation).
 - Alpha = strategy return − SPY return over the same period.
+- Mobile (≤760px): the site nav collapses into a hamburger menu and the leaderboard renders as
+  stacked cards (name, annualised, alpha, user, running, full-width Copy/Clone buttons). Any change
+  to the landing page or FastSkills pages should be checked at ~375px and ~414px as well as desktop.
 - Performance is stored as a dated snapshot in `strategy_stats`. Seeded snapshots live in
   `seed/strategy_stats.json` and are refreshed from the AlpaTrade live run (read-only) with:
 

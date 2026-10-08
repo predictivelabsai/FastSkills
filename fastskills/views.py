@@ -55,7 +55,7 @@ SUBLABELS = {
 BASE_CSS = r"""
 :root{--accent:#7c3aed;--tint:#f5f3ff;--ink:#172033;--muted:#667085;--line:#e5e7eb;--panel:#f8fafc}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}a{color:inherit}
-.nav{height:68px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:auto;padding:0 24px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800}.mark{width:34px;height:34px;background:var(--accent);color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:800}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{text-decoration:none;font-weight:600;color:var(--ink)}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:var(--accent);color:#fff;padding:11px 17px;font-weight:700;text-decoration:none;cursor:pointer}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:8px 13px;font-size:13px}
+.nav{height:68px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:auto;padding:0 24px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800}.mark{width:34px;height:34px;background:var(--accent);color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:800}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{text-decoration:none;font-weight:600;color:var(--ink)}.navlinks a.btn{color:#fff}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:var(--accent);color:#fff;padding:11px 17px;font-weight:700;text-decoration:none;cursor:pointer}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:8px 13px;font-size:13px}
 .hero{max-width:1000px;margin:auto;padding:66px 24px 24px;text-align:center}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.17em;text-transform:uppercase}.hero h1{font-size:clamp(38px,5.4vw,60px);line-height:1.04;letter-spacing:-.05em;margin:16px 0}.hero p{font-size:19px;line-height:1.6;color:var(--muted);max-width:660px;margin:0 auto}
 .searchwrap{max-width:640px;margin:30px auto 0}.searchbar{display:flex;gap:10px}.searchbar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font:inherit;font-size:15px}.searchbar input:focus{outline:2px solid color-mix(in srgb,var(--accent) 22%,white);border-color:var(--accent)}
 .workswith{display:flex;align-items:center;justify-content:center;gap:14px 24px;flex-wrap:wrap;margin:30px auto 0}.ww-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.ww-item{display:inline-flex;align-items:center;gap:8px;color:#3f4654;font-weight:650;font-size:14px;text-decoration:none;transition:color .15s}.ww-item:hover{color:var(--accent)}.ww-item svg{height:20px;width:auto;display:block}.ww-item svg path{fill:currentColor}
@@ -68,7 +68,7 @@ BASE_CSS = r"""
 .cardfav-wrap{position:absolute;top:9px;right:12px;z-index:1}.cardfav-wrap form{margin:0}.cardfav{border:0;background:transparent;font-size:20px;line-height:1;color:#c7ccd6;cursor:pointer;padding:2px}.cardfav:hover{color:#f59e0b}.cardfav.on{color:#f59e0b}
 .cardactions{display:flex;align-items:center;gap:6px;position:relative;z-index:1}.carduse{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;cursor:pointer;display:inline-flex;align-items:center;color:#3f4654}.carduse:hover{background:var(--tint);border-color:var(--accent);color:var(--accent)}.carduse svg{height:15px;width:auto;display:block}.carduse svg path{fill:currentColor}
 .userow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0 4px}.uselabel{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.usebtn{display:inline-flex;align-items:center;gap:7px}.usebtn svg{height:16px;width:auto}.usebtn svg path{fill:currentColor}.usehelp{margin-top:12px;font-size:13px;color:var(--muted);max-width:640px}.usehelp summary{cursor:pointer;color:var(--accent);font-weight:600}.usehelp ul{margin:8px 0;padding-left:20px;line-height:1.65}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;box-shadow:0 12px 34px rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:3000}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;left:50%;bottom:26px;width:max-content;max-width:min(560px,calc(100vw - 32px));line-height:1.45;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;box-shadow:0 12px 34px rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:3000}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* hero 2-col + animated demo */
 .hero.herowrap{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;text-align:left;max-width:1200px;padding:52px 24px 20px}.heroleft{min-width:0}.heroleft .searchwrap{margin-left:0}.heroleft .workswith{justify-content:flex-start;margin-left:0}.heroright{min-width:0}
 .demo{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px #312e8118;overflow:hidden;width:100%;max-width:470px;margin-left:auto}
@@ -121,6 +121,28 @@ BASE_CSS = r"""
 @media(max-width:760px){.perfstrip{grid-template-columns:1fr 1fr}}
 @media(max-width:860px){.docs{grid-template-columns:1fr;gap:0}.toc{display:none}}
 @media(max-width:960px){.grid,.featuregrid,.partnergrid{grid-template-columns:1fr 1fr}}
+/* mobile (≤760px): hamburger nav, stacked leaderboard cards, tap-friendly actions */
+.navburger{display:none;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);align-items:center;justify-content:center;cursor:pointer;padding:0}.navburger svg{width:22px;height:22px}.navburger .i-close,.nav.open .navburger .i-open{display:none}.nav.open .navburger .i-close{display:block}
+.lbmob,.perfsub{display:none}
+@media(max-width:760px){
+.nav{position:relative;height:60px;padding:0 16px}.navburger{display:inline-flex}
+.navlinks{display:none;position:absolute;top:100%;left:0;right:0;z-index:60;flex-direction:column;align-items:stretch;gap:0;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 18px 40px #0f172a1f;padding:4px 16px 16px}.nav.open .navlinks{display:flex}
+.navlinks>a:not(.btn){padding:13px 2px;border-bottom:1px solid var(--line);font-size:16px}.navlinks>.btn{margin-top:12px;padding:12px 16px;font-size:15px;width:100%}.navlinks .avatar{display:none}
+.hero.herowrap{padding:30px 16px 12px}.hero p{font-size:17px}.tabs{padding:0 16px}.sublabelrow{padding:0 16px}.catwrap{padding:0 16px 56px}.footer{padding:26px 16px}
+.lb{padding:28px 16px 60px}.lb h1{font-size:32px}.lb .lead{font-size:16px}
+.lbwrap{overflow:visible;border:0;border-radius:0;margin-top:20px}.lbtable{display:block;min-width:0}.lbtable thead{display:none}.lbtable tbody{display:flex;flex-direction:column;gap:12px}
+.lbtable tr{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 14px;border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}
+.lbtable td,.lbtable tr:last-child td{display:block;padding:0;border:0;min-width:0}.lbtable td.num{text-align:left;white-space:normal}
+.lbtable td[data-label]::before{content:attr(data-label);display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+.lbtable tr td.c-name{grid-column:1/-1;padding-right:48px}.lbtable .c-ann{order:1}.lbtable .c-alpha{order:2}.lbtable .c-user{order:3}.lbtable .c-run{order:4}.lbtable .c-act{order:5;grid-column:1/-1;padding-top:14px;border-top:1px solid var(--line)}
+.lbtable tr td.lbrank{position:absolute;line-height:1.4;top:14px;right:14px;width:auto;background:var(--tint);color:var(--accent);border-radius:99px;padding:3px 9px;font-size:12px}.lbtable .lbrank::before{content:"#"}
+.lbdesc{max-width:none}.lbbig{font-size:20px;cursor:pointer}.lbmob{display:block}.lbtable .c-name .lbname{font-size:16px}
+.lbactions{justify-content:flex-start;gap:8px}.lbbtn{flex:1 1 140px;justify-content:center;min-height:44px;padding:10px 12px;font-size:13px}.lbbtn svg{height:15px}.lbactions .inlineform{flex:1 1 140px}.lbactions .inlineform .lbbtn{width:100%}
+.lbtable.mine .c-vis,.lbtable.mine .c-listed{order:1}
+.lbhead .btn{min-height:40px}
+.srcfilter{justify-content:center}.carduse{padding:8px 9px}.cardclone{padding:8px 12px}
+.detail{padding:24px 16px 60px}.detailhead h1{font-size:30px}.userow .uselabel{flex-basis:100%}.perfsub{display:block;font-size:12px;color:var(--muted);margin-top:2px}.perfcell{cursor:pointer}
+}
 @media(max-width:760px){.grid,.featuregrid,.partnergrid,.pricinggrid,.metagrid{grid-template-columns:1fr}.shell{grid-template-columns:1fr}.sidebar{display:none}.editorwrap{padding:28px 18px}}
 """
 
@@ -159,7 +181,17 @@ def public_nav(who):
             Button("Sign in", cls="btn ghost sm", onclick="authOpen('login')", type="button"),
             Button("Add a skill", cls="btn sm", onclick="authOpen('register')", type="button"),
             cls="navlinks")
-    return Nav(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"), right, cls="nav")
+    right.attrs["id"] = "fs-navlinks"
+    burger = Button(NotStr(_BURGER_SVG), type="button", cls="navburger", aria_label="Menu",
+                    aria_expanded="false", aria_controls="fs-navlinks",
+                    onclick="const n=this.closest('.nav');this.setAttribute('aria-expanded',n.classList.toggle('open'))")
+    return Nav(A(Span("S", cls="mark"), "FastSkills", href="/", cls="brand"), burger, right, cls="nav")
+
+
+_BURGER_SVG = ('<svg class="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+               'stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
+               '<svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+               'stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>')
 
 
 LINKEDIN_URL = "https://www.linkedin.com/company/predictive-labs-ltd"
@@ -169,7 +201,8 @@ PREDICTIVELABS_URL = "https://predictivelabs.ai"
 # change; a length guard + clipboard fallback keeps it robust for long skills.
 USE_JS = r"""
 async function _skillPrompt(id){const r=await fetch(`/skills/${id}/prompt`);if(!r.ok)throw new Error('x');return await r.text()}
-function _toast(m){let t=document.getElementById('fs-toast');if(!t){t=document.createElement('div');t.id='fs-toast';t.className='toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3800)}
+function _toast(m){let t=document.getElementById('fs-toast');if(!t){t=document.createElement('div');t.id='fs-toast';t.className='toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),Math.max(3800,m.length*45))}
+document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el&&el.dataset.tip&&window.matchMedia('(hover: none)').matches)_toast(el.dataset.tip)});
 const _USE={chatgpt:{q:'https://chatgpt.com/?q=',home:'https://chatgpt.com/',name:'ChatGPT'},claude:{q:'https://claude.ai/new?q=',home:'https://claude.ai/new',name:'Claude'}};
 async function useSkill(id,provider,ev){if(ev){ev.preventDefault();ev.stopPropagation()}const b=_USE[provider];let p;try{p=await _skillPrompt(id)}catch(e){_toast('Could not load skill');return}
  const url=b.q+encodeURIComponent(p);
@@ -712,12 +745,14 @@ def docs_page(who):
               " strategy with: name, user, description, annualised return, how long it has been "
               "running, and alpha versus SPY. You can own several strategies and switch each between "
               "public and private from the leaderboard (making one public also publishes it); private "
-              "strategies are never listed."),
+              "strategies are never listed. On phones each strategy is shown as a card with its key "
+              "figures and full-width Copy / Clone buttons."),
             Ul(Li(B("Annualised return"), " = return since the live start × 252 / trading days "
-                  "(simple, AlpaTrade's convention). The compounded figure is shown on hover as "
-                  "indicative only, because gains aren't reinvested immediately."),
+                  "(simple, AlpaTrade's convention). The compounded figure is shown on hover (on phones: "
+                  "under the figure, tap for the calculation) as indicative only, because gains "
+                  "aren't reinvested immediately."),
                Li(B("Alpha"), " = strategy return minus SPY's return over the same period."),
-               Li("Performance is a dated snapshot (hover for the as-of date and source). Seeded "
+               Li("Performance is a dated snapshot (hover, or tap on a phone, for the as-of date and source). Seeded "
                   "strategies are refreshed from AlpaTrade's live run data with ",
                   Code("scripts/refresh_strategy_stats.py"), ".")),
             H3("Copy & clone"),
@@ -1124,17 +1159,26 @@ def _leader_row(rank, it):
     running = (Span("Since ", fmt_day(m["live_start"]),
                     Span(f"{m['days_running']} days running", cls="lbsub"))
                if m["live_start"] else Span("—"))
+    ann_tip, alpha_tip = annualised_tooltip(m), alpha_tooltip(m)
+    # On touch screens the hover tooltips become tap-to-toast (data-tip) and the
+    # compounded / benchmark figures are shown as small secondary text (.lbmob).
+    ann_sub = (Span(f"compounded {pct(m['annualised_compound_pct'])}", cls="lbsub lbmob")
+               if m.get("annualised_compound_pct") is not None else None)
+    alpha_sub = (Span(f"vs {m.get('benchmark') or 'SPY'} {pct(m['benchmark_return_pct'])}", cls="lbsub lbmob")
+                 if m.get("benchmark_return_pct") is not None else None)
     return Tr(
         Td(str(rank), cls="lbrank"),
         Td(A(it["title"], href=f"/skills/{it['id']}", cls="lbname"),
-           Div(it.get("description") or "", cls="lbdesc")),
-        Td(it.get("owner_name") or "—"),
+           Div(it.get("description") or "", cls="lbdesc"), cls="c-name"),
+        Td(it.get("owner_name") or "—", cls="c-user", data_label="User"),
         Td(Span(pct(m["annualised_pct"]), cls="lbbig " + _signed(m["annualised_pct"]),
-                title=annualised_tooltip(m)), cls="num"),
-        Td(running, cls="num"),
+                title=ann_tip, data_tip=ann_tip, tabindex="0"), ann_sub,
+           cls="num c-ann", data_label="Annualised"),
+        Td(running, cls="num c-run", data_label="Running"),
         Td(Span(pct(m["alpha_pct"]), cls="lbbig " + _signed(m["alpha_pct"]),
-                title=alpha_tooltip(m)), cls="num"),
-        Td(strategy_actions(it["id"])))
+                title=alpha_tip, data_tip=alpha_tip, tabindex="0"), alpha_sub,
+           cls="num c-alpha", data_label="Alpha vs SPY"),
+        Td(strategy_actions(it["id"]), cls="c-act"))
 
 
 def _mine_row(it, who):
@@ -1146,11 +1190,13 @@ def _mine_row(it, who):
     listed = public and it["status"] == "published"
     return Tr(
         Td(A(it["title"], href=f"/skills/{it['id']}", cls="lbname"),
-           Div(it.get("description") or "", cls="lbdesc")),
+           Div(it.get("description") or "", cls="lbdesc"), cls="c-name"),
         Td(Span("Public" if public else "Private", cls="pagebadge " + it["visibility"]), " ",
-           Span(it["status"].title(), cls="pagebadge " + it["status"])),
-        Td("Listed" if listed else "Not listed", cls="lbsub"),
-        Td(Div(toggle, A("Edit", href=f"/skills/{it['id']}/edit", cls="lbbtn"), cls="lbactions")))
+           Span(it["status"].title(), cls="pagebadge " + it["status"]),
+           cls="c-vis", data_label="Visibility"),
+        Td("Listed" if listed else "Not listed", cls="lbsub c-listed", data_label="Leaderboard"),
+        Td(Div(toggle, A("Edit", href=f"/skills/{it['id']}/edit", cls="lbbtn"), cls="lbactions"),
+           cls="c-act"))
 
 
 def leaderboard_page(who, items, mine=(), prompts=None):
@@ -1165,11 +1211,11 @@ def leaderboard_page(who, items, mine=(), prompts=None):
     else:
         table = Div("No public strategies yet.", cls="empty")
     note = P(B("Annualised return"), " = return since the strategy went live × 252 / trading days "
-             "(simple; the compounded figure is on hover and is indicative only, as gains aren't "
+             "(simple; the compounded figure is on hover, or under the figure on mobile, and is indicative only, as gains aren't "
              "reinvested immediately). ", B("Alpha"), " = strategy return minus SPY's return over "
              "the same period. Figures are dated snapshots of each strategy's live account",
              (f" (latest: session close {fmt_day(as_ofs[-1])})" if as_ofs else ""),
-             "; hover a figure for the calculation and as-of date. Past performance over a short "
+             "; hover (or tap) a figure for the calculation and as-of date. Past performance over a short "
              "period says little about the future. Not investment advice.", cls="lbnote")
     if who:
         new_btn = A("+ New strategy", href="/strategies/new", cls="btn sm")
@@ -1178,7 +1224,7 @@ def leaderboard_page(who, items, mine=(), prompts=None):
             P("Own as many strategies as you like. Only public strategies appear on the leaderboard; "
               "making one public also publishes it.", cls="lbnote", style="margin-top:4px"),
             (Div(Table(Thead(Tr(Th("Strategy"), Th("Visibility"), Th("Leaderboard"), Th(""))),
-                       Tbody(*[_mine_row(it, who) for it in mine]), cls="lbtable"), cls="lbwrap")
+                       Tbody(*[_mine_row(it, who) for it in mine]), cls="lbtable mine"), cls="lbwrap")
              if mine else Div("You haven't shared a strategy yet. Create one, or open any skill "
                               "in the editor and set its Type to Strategy.", cls="empty",
                               style="padding:28px")),
@@ -1211,11 +1257,14 @@ def leaderboard_page(who, items, mine=(), prompts=None):
 
 def strategy_panel(item, perf, who, prompts):
     m = perf or {}
-    cells = [("Annualised return", pct(m.get("annualised_pct")), annualised_tooltip(m) if m else ""),
-             ("Alpha vs SPY", pct(m.get("alpha_pct")), alpha_tooltip(m) if m else ""),
+    cells = [("Annualised return", pct(m.get("annualised_pct")), annualised_tooltip(m) if m else "",
+              f"compounded {pct(m['annualised_compound_pct'])}" if m.get("annualised_compound_pct") is not None else ""),
+             ("Alpha vs SPY", pct(m.get("alpha_pct")), alpha_tooltip(m) if m else "",
+              f"vs {m.get('benchmark') or 'SPY'} {pct(m['benchmark_return_pct'])}" if m.get("benchmark_return_pct") is not None else ""),
              ("Live since", fmt_day(m.get("live_start")),
+              f"{m['days_running']} days running" if m.get("days_running") is not None else "",
               f"{m['days_running']} days running" if m.get("days_running") is not None else ""),
-             ("As of", fmt_day(m.get("as_of")), m.get("source") or "")]
+             ("As of", fmt_day(m.get("as_of")), m.get("source") or "", "")]
     owner = who and item["owner_id"] == who["sub"]
     toggle = None
     if owner:
@@ -1226,7 +1275,8 @@ def strategy_panel(item, perf, who, prompts):
                              else "Make public (list on leaderboard)", cls="btn ghost"),
                       method="post", action=f"/strategies/{item['id']}/visibility", cls="inlineform")
     return Div(
-        Div(*[Div(Small(k), B(v), title=t, cls="perfcell") for k, v, t in cells], cls="perfstrip"),
+        Div(*[Div(Small(k), B(v), (Span(sub, cls="perfsub") if sub else None),
+                  title=t, data_tip=t or None, cls="perfcell") for k, v, t, sub in cells], cls="perfstrip"),
         Div(Span("Strategy", cls="uselabel"),
             Button("⑂ Clone to AlpaTrade", type="button", cls="btn ghost",
                    onclick=f"cloneToAlpaTrade({item['id']})"),
