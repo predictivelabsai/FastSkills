@@ -15,14 +15,8 @@ Every seeded skill is a Markdown file with normalized YAML frontmatter:
 
 Seeded skills are owned by SEED_OWNER and are public+published. Re-running
 upserts by (owner, slug); a skill a user has taken over is never clobbered.
-
-A seed file with ``kind: strategy`` becomes a leaderboard strategy. Its live
-performance snapshot comes from ``seed/strategy_stats.json`` (keyed by slug;
-regenerate from AlpaTrade with ``scripts/refresh_strategy_stats.py``). A snapshot
-never overwrites a newer one already in the database.
 """
 from __future__ import annotations
-import json
 import os
 import re
 from pathlib import Path
@@ -74,8 +68,6 @@ def _entries():
             "markdown": body.strip(),
             "source_url": meta.get("source", ""),
             "license": meta.get("license", ""),
-            "kind": (meta.get("kind") or "skill").strip().lower()
-            if (meta.get("kind") or "skill").strip().lower() in db.KINDS else "skill",
         })
     return entries
 
@@ -86,21 +78,23 @@ def _fingerprint(entries):
     for e in sorted(entries, key=lambda e: e["slug"]):
         h.update(("|".join((e["slug"], e["title"], e["description"], e["category"],
                             e["sub_label"], e["author_label"], e["tags"],
-                            e["markdown"], e.get("kind", "skill"))) + "\n").encode("utf-8"))
+                            e["markdown"])) + "\n").encode("utf-8"))
     return h.hexdigest()
 
 
-def seed_strategy_stats():
-    """Upsert the committed performance snapshots for seeded strategies."""
-    path = SEED_DIR / "strategy_stats.json"
-    if not path.is_file():
-        return 0
-    data = json.loads(path.read_text(encoding="utf-8"))
+# Seed slugs that were removed from seed/ and must not stay listed. They are
+# soft-deleted (deleted_at set; the row and its history are kept), only when still
+# owned by the seed loader (seeded=1). The strategy Leaderboard moved to AlpaTrade
+# (alpatrade.chat/leaderboard) in v0.2.2, taking the Mag-7 BTD strategy with it.
+RETIRED_SEED_SLUGS = ("mag7-btd-live",)
+
+
+def retire_seeds():
+    """Idempotently soft-delete retired seeded skills. Returns rows affected."""
     n = 0
-    for slug, stats in (data.get("strategies") or {}).items():
-        found = db.find_skill(SEED_OWNER, slug)
-        if found and db.upsert_strategy_stats(found["id"], stats):
-            n += 1
+    for slug in RETIRED_SEED_SLUGS:
+        n += db.execute("UPDATE skills SET deleted_at=? WHERE slug=? AND seeded=1 "
+                        "AND deleted_at IS NULL", (db.now(), slug)) or 0
     return n
 
 
@@ -109,6 +103,10 @@ def run(force=None):
     already fully seeded it returns immediately without touching the DB. Set
     FASTSKILLS_FORCE_SEED=1 (or pass force=True) to re-upsert every entry."""
     db.init()  # ensure schema/tables exist (idempotent)
+    try:
+        retire_seeds()
+    except Exception:  # noqa: BLE001 — never block seeding/startup on cleanup
+        pass
     if not SEED_DIR.is_dir():
         return 0
     if force is None:
@@ -120,11 +118,9 @@ def run(force=None):
     # Re-seed when the seed content has changed (new skills, edited labels, …),
     # not merely when the row count matches; skip fast when nothing changed.
     if not force and db.count_seeded() >= len(entries) and db.get_meta("seed_fingerprint") == fp:
-        seed_strategy_stats()
         return 0
     n = db.seed_bulk(SEED_OWNER, SEED_OWNER_NAME, entries)
     db.set_meta("seed_fingerprint", fp)
-    seed_strategy_stats()
     return n
 
 
